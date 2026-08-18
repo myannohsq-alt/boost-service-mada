@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -94,6 +95,7 @@ function ServicesPage() {
   };
 
   return (
+    <AuthGate>
     <Layout>
       <Section
         title="🛒 Services & Tarifs"
@@ -211,5 +213,6 @@ function ServicesPage() {
         </div>
       ) : null}
     </Layout>
+    </AuthGate>
   );
 }

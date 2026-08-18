@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/tutoriel")({
@@ -49,6 +50,7 @@ function TutoPage() {
   };
 
   return (
+    <AuthGate>
     <Layout>
       <Section title="📖 Tutoriel" subtitle="Guides simples pour bien utiliser la plateforme.">
         <div className="bsm-card p-5">
@@ -102,5 +104,6 @@ function TutoPage() {
         </div>
       </Section>
     </Layout>
+    </AuthGate>
   );
 }

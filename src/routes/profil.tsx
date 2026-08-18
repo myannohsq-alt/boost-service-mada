@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,7 +45,8 @@ function ProfilPage() {
 
   if (!user) {
     return (
-      <Layout>
+      <AuthGate>
+    <Layout>
         <Section title="👤 Profil" subtitle="Veuillez vous connecter.">
           <Link to="/auth" className="bsm-btn bsm-btn-primary">
             Se connecter
@@ -148,5 +150,6 @@ function ProfilPage() {
         </div>
       </Section>
     </Layout>
+    </AuthGate>
   );
 }

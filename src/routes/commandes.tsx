@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +43,7 @@ function OrdersPage() {
   });
 
   return (
+    <AuthGate>
     <Layout>
       <Section title="📦 Mes commandes">
         {!user ? (
@@ -74,5 +76,6 @@ function OrdersPage() {
         )}
       </Section>
     </Layout>
+    </AuthGate>
   );
 }

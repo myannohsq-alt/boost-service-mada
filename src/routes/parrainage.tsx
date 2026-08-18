@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +44,7 @@ function ReferralPage() {
   });
 
   return (
+    <AuthGate>
     <Layout>
       <Section title="🎁 Parrainage" subtitle="Invitez vos amis et suivez vos gains.">
         {!user ? (
@@ -111,5 +113,6 @@ function ReferralPage() {
         )}
       </Section>
     </Layout>
+    </AuthGate>
   );
 }

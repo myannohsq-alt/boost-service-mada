@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -72,6 +73,7 @@ function ProtectionPage() {
   };
 
   return (
+    <AuthGate>
     <Layout>
       <Section title="🛡️ Protection Compte" subtitle="Tutoriel vidéo premium — 5 000 Ar">
         <div className="bsm-card p-5">
@@ -133,5 +135,6 @@ function ProtectionPage() {
         ) : null}
       </Section>
     </Layout>
+    </AuthGate>
   );
 }
