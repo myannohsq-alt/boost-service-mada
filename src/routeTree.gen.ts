@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ServicesRouteImport } from './routes/services'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const ProfilRoute = ProfilRouteImport.update({
   path: '/profil',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RechargeRoute = RechargeRouteImport.update({
+  id: '/recharge',
+  path: '/recharge',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/profil': typeof ProfilRoute
+  '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/profil': typeof ProfilRoute
+  '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/profil': typeof ProfilRoute
+  '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/profil' | '/services'
+  fullPaths: '/' | '/auth' | '/profil' | '/recharge' | '/services'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/profil' | '/services'
-  id: '__root__' | '/' | '/auth' | '/profil' | '/services'
+  to: '/' | '/auth' | '/profil' | '/recharge' | '/services'
+  id: '__root__' | '/' | '/auth' | '/profil' | '/recharge' | '/services'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   ProfilRoute: typeof ProfilRoute
+  RechargeRoute: typeof RechargeRoute
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfilRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recharge': {
+      id: '/recharge'
+      path: '/recharge'
+      fullPath: '/recharge'
+      preLoaderRoute: typeof RechargeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   ProfilRoute: ProfilRoute,
+  RechargeRoute: RechargeRoute,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport
