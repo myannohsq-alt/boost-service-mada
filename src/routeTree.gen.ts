@@ -19,6 +19,7 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as TutorielRouteImport } from './routes/tutoriel'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +71,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TutorielRoute = TutorielRouteImport.update({
+  id: '/tutoriel',
+  path: '/tutoriel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/promotions': typeof PromotionsRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
+  '/tutoriel': typeof TutorielRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/promotions': typeof PromotionsRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
+  '/tutoriel': typeof TutorielRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/promotions': typeof PromotionsRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
+  '/tutoriel': typeof TutorielRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/promotions'
     | '/recharge'
     | '/services'
+    | '/tutoriel'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/promotions'
     | '/recharge'
     | '/services'
+    | '/tutoriel'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/promotions'
     | '/recharge'
     | '/services'
+    | '/tutoriel'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   PromotionsRoute: typeof PromotionsRoute
   RechargeRoute: typeof RechargeRoute
   ServicesRoute: typeof ServicesRoute
+  TutorielRoute: typeof TutorielRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tutoriel': {
+      id: '/tutoriel'
+      path: '/tutoriel'
+      fullPath: '/tutoriel'
+      preLoaderRoute: typeof TutorielRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   PromotionsRoute: PromotionsRoute,
   RechargeRoute: RechargeRoute,
   ServicesRoute: ServicesRoute,
+  TutorielRoute: TutorielRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
