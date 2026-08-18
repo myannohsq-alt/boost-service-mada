@@ -14,6 +14,7 @@ import { Route as ActualitesRouteImport } from './routes/actualites'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as DepotRouteImport } from './routes/depot'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PromotionsRouteImport } from './routes/promotions'
@@ -45,6 +46,11 @@ const CommandesRoute = CommandesRouteImport.update({
 const DepotRoute = DepotRouteImport.update({
   id: '/depot',
   path: '/depot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParrainageRoute = ParrainageRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
+  '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
+  '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
+  '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/commandes'
     | '/depot'
+    | '/faq'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/commandes'
     | '/depot'
+    | '/faq'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/commandes'
     | '/depot'
+    | '/faq'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CommandesRoute: typeof CommandesRoute
   DepotRoute: typeof DepotRoute
+  FaqRoute: typeof FaqRoute
   ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
   PromotionsRoute: typeof PromotionsRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/depot'
       fullPath: '/depot'
       preLoaderRoute: typeof DepotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/parrainage': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CommandesRoute: CommandesRoute,
   DepotRoute: DepotRoute,
+  FaqRoute: FaqRoute,
   ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
   PromotionsRoute: PromotionsRoute,
