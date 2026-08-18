@@ -125,6 +125,7 @@ function Index() {
         ))}
       </section>
 
+      {user ? (
       <div className="mt-8 overflow-hidden border-y border-border bg-card/50 py-2">
         <div className="animate-marquee flex w-max gap-8 text-xs font-semibold text-muted-foreground">
           {[...Array(2)].map((_, i) => (
@@ -138,6 +139,7 @@ function Index() {
             </span>
           ))}
         </div>
+      ) : null}
       </div>
 
       {user ? (
