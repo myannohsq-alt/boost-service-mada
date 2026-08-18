@@ -43,7 +43,7 @@ export function Section({
 }: {
   title: string;
   subtitle?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <section className="mx-auto w-full max-w-5xl px-4 py-8">
