@@ -5,9 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { phoneToEmail, useAuth } from "@/lib/useAuth";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    ref: typeof search["ref"] === "string" ? (search["ref"] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { ref?: string } =>
+    typeof search["ref"] === "string" ? { ref: search["ref"] as string } : {},
   head: () => ({
     meta: [
       { title: "Connexion & Inscription — BOOST SERVICE MADA" },
