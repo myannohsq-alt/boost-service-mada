@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as RechargeRouteImport } from './routes/recharge'
@@ -24,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommandesRoute = CommandesRouteImport.update({
+  id: '/commandes',
+  path: '/commandes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DepotRoute = DepotRouteImport.update({
@@ -50,6 +56,7 @@ const ServicesRoute = ServicesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
   '/profil': typeof ProfilRoute
   '/recharge': typeof RechargeRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
   '/profil': typeof ProfilRoute
   '/recharge': typeof RechargeRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
   '/profil': typeof ProfilRoute
   '/recharge': typeof RechargeRoute
@@ -74,13 +83,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/depot' | '/profil' | '/recharge' | '/services'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/commandes'
+    | '/depot'
+    | '/profil'
+    | '/recharge'
+    | '/services'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/depot' | '/profil' | '/recharge' | '/services'
+  to:
+    | '/'
+    | '/auth'
+    | '/commandes'
+    | '/depot'
+    | '/profil'
+    | '/recharge'
+    | '/services'
   id:
     | '__root__'
     | '/'
     | '/auth'
+    | '/commandes'
     | '/depot'
     | '/profil'
     | '/recharge'
@@ -90,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CommandesRoute: typeof CommandesRoute
   DepotRoute: typeof DepotRoute
   ProfilRoute: typeof ProfilRoute
   RechargeRoute: typeof RechargeRoute
@@ -110,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commandes': {
+      id: '/commandes'
+      path: '/commandes'
+      fullPath: '/commandes'
+      preLoaderRoute: typeof CommandesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/depot': {
@@ -146,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CommandesRoute: CommandesRoute,
   DepotRoute: DepotRoute,
   ProfilRoute: ProfilRoute,
   RechargeRoute: RechargeRoute,
