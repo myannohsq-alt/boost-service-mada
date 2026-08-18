@@ -10,33 +10,232 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActualitesRouteImport } from './routes/actualites'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AvisRouteImport } from './routes/avis'
+import { Route as CommandesRouteImport } from './routes/commandes'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DepotRouteImport } from './routes/depot'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ParrainageRouteImport } from './routes/parrainage'
+import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as PromotionsRouteImport } from './routes/promotions'
+import { Route as ProtectionRouteImport } from './routes/protection'
+import { Route as RechargeRouteImport } from './routes/recharge'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as TutorielRouteImport } from './routes/tutoriel'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActualitesRoute = ActualitesRouteImport.update({
+  id: '/actualites',
+  path: '/actualites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AvisRoute = AvisRouteImport.update({
+  id: '/avis',
+  path: '/avis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommandesRoute = CommandesRouteImport.update({
+  id: '/commandes',
+  path: '/commandes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DepotRoute = DepotRouteImport.update({
+  id: '/depot',
+  path: '/depot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParrainageRoute = ParrainageRouteImport.update({
+  id: '/parrainage',
+  path: '/parrainage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromotionsRoute = PromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectionRoute = ProtectionRouteImport.update({
+  id: '/protection',
+  path: '/protection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RechargeRoute = RechargeRouteImport.update({
+  id: '/recharge',
+  path: '/recharge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorielRoute = TutorielRouteImport.update({
+  id: '/tutoriel',
+  path: '/tutoriel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/actualites': typeof ActualitesRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/avis': typeof AvisRoute
+  '/commandes': typeof CommandesRoute
+  '/contact': typeof ContactRoute
+  '/depot': typeof DepotRoute
+  '/faq': typeof FaqRoute
+  '/parrainage': typeof ParrainageRoute
+  '/profil': typeof ProfilRoute
+  '/promotions': typeof PromotionsRoute
+  '/protection': typeof ProtectionRoute
+  '/recharge': typeof RechargeRoute
+  '/services': typeof ServicesRoute
+  '/tutoriel': typeof TutorielRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/actualites': typeof ActualitesRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/avis': typeof AvisRoute
+  '/commandes': typeof CommandesRoute
+  '/contact': typeof ContactRoute
+  '/depot': typeof DepotRoute
+  '/faq': typeof FaqRoute
+  '/parrainage': typeof ParrainageRoute
+  '/profil': typeof ProfilRoute
+  '/promotions': typeof PromotionsRoute
+  '/protection': typeof ProtectionRoute
+  '/recharge': typeof RechargeRoute
+  '/services': typeof ServicesRoute
+  '/tutoriel': typeof TutorielRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/actualites': typeof ActualitesRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
+  '/avis': typeof AvisRoute
+  '/commandes': typeof CommandesRoute
+  '/contact': typeof ContactRoute
+  '/depot': typeof DepotRoute
+  '/faq': typeof FaqRoute
+  '/parrainage': typeof ParrainageRoute
+  '/profil': typeof ProfilRoute
+  '/promotions': typeof PromotionsRoute
+  '/protection': typeof ProtectionRoute
+  '/recharge': typeof RechargeRoute
+  '/services': typeof ServicesRoute
+  '/tutoriel': typeof TutorielRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/actualites'
+    | '/admin'
+    | '/auth'
+    | '/avis'
+    | '/commandes'
+    | '/contact'
+    | '/depot'
+    | '/faq'
+    | '/parrainage'
+    | '/profil'
+    | '/promotions'
+    | '/protection'
+    | '/recharge'
+    | '/services'
+    | '/tutoriel'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/actualites'
+    | '/admin'
+    | '/auth'
+    | '/avis'
+    | '/commandes'
+    | '/contact'
+    | '/depot'
+    | '/faq'
+    | '/parrainage'
+    | '/profil'
+    | '/promotions'
+    | '/protection'
+    | '/recharge'
+    | '/services'
+    | '/tutoriel'
+  id:
+    | '__root__'
+    | '/'
+    | '/actualites'
+    | '/admin'
+    | '/auth'
+    | '/avis'
+    | '/commandes'
+    | '/contact'
+    | '/depot'
+    | '/faq'
+    | '/parrainage'
+    | '/profil'
+    | '/promotions'
+    | '/protection'
+    | '/recharge'
+    | '/services'
+    | '/tutoriel'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActualitesRoute: typeof ActualitesRoute
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
+  AvisRoute: typeof AvisRoute
+  CommandesRoute: typeof CommandesRoute
+  ContactRoute: typeof ContactRoute
+  DepotRoute: typeof DepotRoute
+  FaqRoute: typeof FaqRoute
+  ParrainageRoute: typeof ParrainageRoute
+  ProfilRoute: typeof ProfilRoute
+  PromotionsRoute: typeof PromotionsRoute
+  ProtectionRoute: typeof ProtectionRoute
+  RechargeRoute: typeof RechargeRoute
+  ServicesRoute: typeof ServicesRoute
+  TutorielRoute: typeof TutorielRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +247,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/actualites': {
+      id: '/actualites'
+      path: '/actualites'
+      fullPath: '/actualites'
+      preLoaderRoute: typeof ActualitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/avis': {
+      id: '/avis'
+      path: '/avis'
+      fullPath: '/avis'
+      preLoaderRoute: typeof AvisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commandes': {
+      id: '/commandes'
+      path: '/commandes'
+      fullPath: '/commandes'
+      preLoaderRoute: typeof CommandesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/depot': {
+      id: '/depot'
+      path: '/depot'
+      fullPath: '/depot'
+      preLoaderRoute: typeof DepotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parrainage': {
+      id: '/parrainage'
+      path: '/parrainage'
+      fullPath: '/parrainage'
+      preLoaderRoute: typeof ParrainageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promotions': {
+      id: '/promotions'
+      path: '/promotions'
+      fullPath: '/promotions'
+      preLoaderRoute: typeof PromotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/protection': {
+      id: '/protection'
+      path: '/protection'
+      fullPath: '/protection'
+      preLoaderRoute: typeof ProtectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recharge': {
+      id: '/recharge'
+      path: '/recharge'
+      fullPath: '/recharge'
+      preLoaderRoute: typeof RechargeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutoriel': {
+      id: '/tutoriel'
+      path: '/tutoriel'
+      fullPath: '/tutoriel'
+      preLoaderRoute: typeof TutorielRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActualitesRoute: ActualitesRoute,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
+  AvisRoute: AvisRoute,
+  CommandesRoute: CommandesRoute,
+  ContactRoute: ContactRoute,
+  DepotRoute: DepotRoute,
+  FaqRoute: FaqRoute,
+  ParrainageRoute: ParrainageRoute,
+  ProfilRoute: ProfilRoute,
+  PromotionsRoute: PromotionsRoute,
+  ProtectionRoute: ProtectionRoute,
+  RechargeRoute: RechargeRoute,
+  ServicesRoute: ServicesRoute,
+  TutorielRoute: TutorielRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
