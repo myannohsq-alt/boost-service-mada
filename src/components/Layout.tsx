@@ -86,14 +86,14 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
 
           <nav className="ml-auto hidden items-center gap-1 lg:flex">
-            {nav.slice(0, 6).map((n) => (
+            {visibleNav.slice(0, 6).map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
                 className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 activeProps={{ className: "bg-secondary text-foreground" }}
               >
-                {t(n.key)}
+                {navLabel(n)}
               </Link>
             ))}
           </nav>
@@ -138,7 +138,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <span className="font-display text-sm font-bold">BOOST SERVICE MADA</span>
             </div>
             <div className="flex flex-col gap-1">
-              {nav.map((n) => (
+              {visibleNav.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
@@ -146,7 +146,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                   activeProps={{ className: "bg-secondary text-foreground" }}
                 >
-                  {t(n.key)}
+                  {navLabel(n)}
                 </Link>
               ))}
               {isAdmin ? (
