@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as DepotRouteImport } from './routes/depot'
+import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -37,6 +38,11 @@ const DepotRoute = DepotRouteImport.update({
   path: '/depot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ParrainageRoute = ParrainageRouteImport.update({
+  id: '/parrainage',
+  path: '/parrainage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfilRoute = ProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
+  '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
+  '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/depot': typeof DepotRoute
+  '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/commandes'
     | '/depot'
+    | '/parrainage'
     | '/profil'
     | '/recharge'
     | '/services'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/commandes'
     | '/depot'
+    | '/parrainage'
     | '/profil'
     | '/recharge'
     | '/services'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/commandes'
     | '/depot'
+    | '/parrainage'
     | '/profil'
     | '/recharge'
     | '/services'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CommandesRoute: typeof CommandesRoute
   DepotRoute: typeof DepotRoute
+  ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
   RechargeRoute: typeof RechargeRoute
   ServicesRoute: typeof ServicesRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/parrainage': {
+      id: '/parrainage'
+      path: '/parrainage'
+      fullPath: '/parrainage'
+      preLoaderRoute: typeof ParrainageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profil': {
       id: '/profil'
       path: '/profil'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CommandesRoute: CommandesRoute,
   DepotRoute: DepotRoute,
+  ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
   RechargeRoute: RechargeRoute,
   ServicesRoute: ServicesRoute,
