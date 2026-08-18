@@ -43,20 +43,10 @@ function ProfilPage() {
     },
   });
 
-  if (!user) {
-    return (
-      <AuthGate>
-    <Layout>
-        <Section title="👤 Profil" subtitle="Veuillez vous connecter.">
-          <Link to="/auth" className="bsm-btn bsm-btn-primary">
-            Se connecter
-          </Link>
-        </Section>
-      </Layout>
-    );
-  }
-
   return (
+    <AuthGate>
+    <Layout>
+
     <Layout>
       <Section title="👤 Mon profil">
         <div className="grid gap-3 sm:grid-cols-2">
