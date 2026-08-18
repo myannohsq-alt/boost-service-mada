@@ -7,21 +7,23 @@ import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
-  { to: "/", key: "home" },
-  { to: "/services", key: "services" },
-  { to: "/depot", key: "depositNav" },
-  { to: "/recharge", key: "recharge" },
-  { to: "/commandes", key: "myOrders" },
-  { to: "/profil", key: "profile" },
-  { to: "/parrainage", key: "referral" },
-  { to: "/actualites", key: "news" },
-  { to: "/promotions", key: "promotions" },
-  { to: "/tutoriel", key: "tutorial" },
-  { to: "/protection", key: "protection" },
-  { to: "/avis", key: "reviews" },
-  { to: "/faq", key: "faq" },
-  { to: "/contact", key: "contact" },
+  { to: "/", key: "home", label: "🏠 Accueil", public: true },
+  { to: "/a-propos", key: "about", label: "ℹ️ À propos", public: true },
+  { to: "/services", key: "services", label: "🛒 Services", public: false },
+  { to: "/depot", key: "depositNav", label: "💳 Dépôt", public: false },
+  { to: "/recharge", key: "recharge", label: "🔋 Recharge", public: false },
+  { to: "/commandes", key: "myOrders", label: "📦 Mes commandes", public: false },
+  { to: "/profil", key: "profile", label: "👤 Profil", public: false },
+  { to: "/parrainage", key: "referral", label: "🎁 Parrainage", public: false },
+  { to: "/actualites", key: "news", label: "📰 Actualités", public: false },
+  { to: "/promotions", key: "promotions", label: "🔥 Promotions", public: false },
+  { to: "/tutoriel", key: "tutorial", label: "🎬 Tutoriels", public: false },
+  { to: "/protection", key: "protection", label: "🛡️ Protection", public: false },
+  { to: "/avis", key: "reviews", label: "⭐ Avis", public: false },
+  { to: "/faq", key: "faq", label: "❓ FAQ", public: true },
+  { to: "/contact", key: "contact", label: "📞 Contact", public: true },
 ] as const;
+
 
 export function Logo({ size = 44 }: { size?: number }) {
   return (
@@ -60,6 +62,10 @@ export function Layout({ children }: { children: ReactNode }) {
   const { profile, isAdmin, user } = useAuth();
   const [open, setOpen] = useState(false);
 
+  const visibleNav = user ? nav : nav.filter((n) => n.public);
+  const navLabel = (n: (typeof nav)[number]) => (n.key === "about" ? n.label : t(n.key));
+
+
   return (
     <div className="min-h-screen bsm-hero">
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl">
@@ -80,14 +86,14 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
 
           <nav className="ml-auto hidden items-center gap-1 lg:flex">
-            {nav.slice(0, 6).map((n) => (
+            {visibleNav.slice(0, 6).map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
                 className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 activeProps={{ className: "bg-secondary text-foreground" }}
               >
-                {t(n.key)}
+                {navLabel(n)}
               </Link>
             ))}
           </nav>
@@ -132,7 +138,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <span className="font-display text-sm font-bold">BOOST SERVICE MADA</span>
             </div>
             <div className="flex flex-col gap-1">
-              {nav.map((n) => (
+              {visibleNav.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
@@ -140,7 +146,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                   activeProps={{ className: "bg-secondary text-foreground" }}
                 >
-                  {t(n.key)}
+                  {navLabel(n)}
                 </Link>
               ))}
               {isAdmin ? (

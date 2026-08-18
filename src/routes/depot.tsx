@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { NUMBERS } from "./recharge";
 
 export const Route = createFileRoute("/depot")({
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/depot")({
 
 function DepotPage() {
   return (
+    <AuthGate>
     <Layout>
       <Section title="💳 Dépôt" subtitle="Dépôt minimum : 1 000 Ar.">
         <div className="grid gap-3 sm:grid-cols-3">
@@ -57,5 +59,6 @@ function DepotPage() {
         </div>
       </Section>
     </Layout>
+    </AuthGate>
   );
 }

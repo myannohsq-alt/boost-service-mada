@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Layout, Section } from "@/components/Layout";
+import { AuthGate } from "@/components/AuthGate";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -56,6 +57,7 @@ function RechargePage() {
   };
 
   return (
+    <AuthGate>
     <Layout>
       <Section title="💰 Recharge" subtitle="Dépôt minimum : 1 000 Ar.">
         <div className="grid gap-3 sm:grid-cols-3">
@@ -120,5 +122,6 @@ function RechargePage() {
         )}
       </Section>
     </Layout>
+    </AuthGate>
   );
 }
