@@ -62,6 +62,10 @@ export function Layout({ children }: { children: ReactNode }) {
   const { profile, isAdmin, user } = useAuth();
   const [open, setOpen] = useState(false);
 
+  const visibleNav = user ? nav : nav.filter((n) => n.public);
+  const navLabel = (n: (typeof nav)[number]) => (n.key === "about" ? n.label : t(n.key));
+
+
   return (
     <div className="min-h-screen bsm-hero">
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl">
