@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActualitesRouteImport } from './routes/actualites'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AvisRouteImport } from './routes/avis'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DepotRouteImport } from './routes/depot'
@@ -43,6 +44,11 @@ const AdminRoute = AdminRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AvisRoute = AvisRouteImport.update({
+  id: '/avis',
+  path: '/avis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommandesRoute = CommandesRouteImport.update({
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/actualites': typeof ActualitesRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
   '/depot': typeof DepotRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/actualites': typeof ActualitesRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
   '/depot': typeof DepotRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/actualites': typeof ActualitesRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
   '/depot': typeof DepotRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/admin'
     | '/auth'
+    | '/avis'
     | '/commandes'
     | '/contact'
     | '/depot'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/admin'
     | '/auth'
+    | '/avis'
     | '/commandes'
     | '/contact'
     | '/depot'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/admin'
     | '/auth'
+    | '/avis'
     | '/commandes'
     | '/contact'
     | '/depot'
@@ -212,6 +224,7 @@ export interface RootRouteChildren {
   ActualitesRoute: typeof ActualitesRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  AvisRoute: typeof AvisRoute
   CommandesRoute: typeof CommandesRoute
   ContactRoute: typeof ContactRoute
   DepotRoute: typeof DepotRoute
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/avis': {
+      id: '/avis'
+      path: '/avis'
+      fullPath: '/avis'
+      preLoaderRoute: typeof AvisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/commandes': {
@@ -340,6 +360,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActualitesRoute: ActualitesRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  AvisRoute: AvisRoute,
   CommandesRoute: CommandesRoute,
   ContactRoute: ContactRoute,
   DepotRoute: DepotRoute,

@@ -89,7 +89,7 @@ function AdminPage() {
               <div key={r.id} className="bsm-card p-4">
                 <p className="font-semibold text-gold">{formatAr(Number(r.amount))}</p>
                 <p className="text-xs text-muted-foreground">
-                  Envoi : {r.sender_number} • Réf : {r.reference} • {r.status}
+                  Envoi : {r.sender_phone} • Réf : {r.reference} • {r.status}
                 </p>
                 {r.status === "pending" ? (
                   <div className="mt-3 flex gap-2">
