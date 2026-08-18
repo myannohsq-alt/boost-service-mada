@@ -7,21 +7,23 @@ import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
-  { to: "/", key: "home" },
-  { to: "/services", key: "services" },
-  { to: "/depot", key: "depositNav" },
-  { to: "/recharge", key: "recharge" },
-  { to: "/commandes", key: "myOrders" },
-  { to: "/profil", key: "profile" },
-  { to: "/parrainage", key: "referral" },
-  { to: "/actualites", key: "news" },
-  { to: "/promotions", key: "promotions" },
-  { to: "/tutoriel", key: "tutorial" },
-  { to: "/protection", key: "protection" },
-  { to: "/avis", key: "reviews" },
-  { to: "/faq", key: "faq" },
-  { to: "/contact", key: "contact" },
+  { to: "/", key: "home", label: "🏠 Accueil", public: true },
+  { to: "/a-propos", key: "about", label: "ℹ️ À propos", public: true },
+  { to: "/services", key: "services", label: "🛒 Services", public: false },
+  { to: "/depot", key: "depositNav", label: "💳 Dépôt", public: false },
+  { to: "/recharge", key: "recharge", label: "🔋 Recharge", public: false },
+  { to: "/commandes", key: "myOrders", label: "📦 Mes commandes", public: false },
+  { to: "/profil", key: "profile", label: "👤 Profil", public: false },
+  { to: "/parrainage", key: "referral", label: "🎁 Parrainage", public: false },
+  { to: "/actualites", key: "news", label: "📰 Actualités", public: false },
+  { to: "/promotions", key: "promotions", label: "🔥 Promotions", public: false },
+  { to: "/tutoriel", key: "tutorial", label: "🎬 Tutoriels", public: false },
+  { to: "/protection", key: "protection", label: "🛡️ Protection", public: false },
+  { to: "/avis", key: "reviews", label: "⭐ Avis", public: false },
+  { to: "/faq", key: "faq", label: "❓ FAQ", public: true },
+  { to: "/contact", key: "contact", label: "📞 Contact", public: true },
 ] as const;
+
 
 export function Logo({ size = 44 }: { size?: number }) {
   return (
