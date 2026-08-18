@@ -42,7 +42,7 @@ function ReviewsPage() {
     setMsg(null);
     const { error } = await supabase
       .from("reviews")
-      .insert({ rating, comment: comment.trim().slice(0, 500) });
+      .insert({ rating, comment: comment.trim().slice(0, 500), user_id: user!.id });
     if (error) return setMsg(`❌ ${error.message}`);
     setComment("");
     setMsg("✅ Merci pour votre avis !");
