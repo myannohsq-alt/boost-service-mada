@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActualitesRouteImport } from './routes/actualites'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const ActualitesRoute = ActualitesRouteImport.update({
   id: '/actualites',
   path: '/actualites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -98,6 +104,7 @@ const TutorielRoute = TutorielRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/actualites': typeof ActualitesRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/actualites': typeof ActualitesRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/actualites': typeof ActualitesRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/actualites'
+    | '/admin'
     | '/auth'
     | '/commandes'
     | '/contact'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/actualites'
+    | '/admin'
     | '/auth'
     | '/commandes'
     | '/contact'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/actualites'
+    | '/admin'
     | '/auth'
     | '/commandes'
     | '/contact'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActualitesRoute: typeof ActualitesRoute
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   CommandesRoute: typeof CommandesRoute
   ContactRoute: typeof ContactRoute
@@ -226,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/actualites'
       fullPath: '/actualites'
       preLoaderRoute: typeof ActualitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -318,6 +338,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActualitesRoute: ActualitesRoute,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   CommandesRoute: CommandesRoute,
   ContactRoute: ContactRoute,
