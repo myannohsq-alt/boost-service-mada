@@ -47,7 +47,6 @@ function ProfilPage() {
     <AuthGate>
     <Layout>
 
-    <Layout>
       <Section title="👤 Mon profil">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="bsm-card p-4">
