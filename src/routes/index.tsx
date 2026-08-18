@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, Logo } from "@/components/Layout";
 import { useI18n, formatAr } from "@/lib/i18n";
+import { useAuth } from "@/lib/useAuth";
+import { MembersOnlyCard } from "@/components/AuthGate";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -35,6 +37,7 @@ const features = [
 
 function Index() {
   const { t } = useI18n();
+  const { user } = useAuth();
 
   const { data: stats } = useQuery({
     queryKey: ["public-stats"],
@@ -46,6 +49,7 @@ function Index() {
 
   const { data: topServices } = useQuery({
     queryKey: ["top-services"],
+    enabled: Boolean(user),
     queryFn: async () => {
       const { data } = await supabase
         .from("services")
@@ -82,12 +86,25 @@ function Index() {
         </div>
 
         <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Link to="/depot" className="bsm-btn bsm-btn-primary">
-            {t("deposit")}
-          </Link>
-          <Link to="/services" className="bsm-btn bsm-btn-gold">
-            {t("orderNow")}
-          </Link>
+          {user ? (
+            <>
+              <Link to="/depot" className="bsm-btn bsm-btn-primary">
+                {t("deposit")}
+              </Link>
+              <Link to="/services" className="bsm-btn bsm-btn-gold">
+                {t("orderNow")}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/auth" className="bsm-btn bsm-btn-primary">
+                ✨ Créer un compte
+              </Link>
+              <Link to="/auth" className="bsm-btn bsm-btn-gold">
+                🔑 Se connecter
+              </Link>
+            </>
+          )}
           <Link to="/contact" className="bsm-btn bsm-btn-ghost">
             {t("contactSupport")}
           </Link>
@@ -123,6 +140,7 @@ function Index() {
         </div>
       </div>
 
+      {user ? (
       <section className="mx-auto w-full max-w-5xl px-4 py-10">
         <h2 className="text-xl font-bold">🔥 Services populaires</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -146,6 +164,9 @@ function Index() {
           </Link>
         </div>
       </section>
+      ) : (
+        <MembersOnlyCard />
+      )}
 
       <section className="mx-auto w-full max-w-5xl px-4 pb-12">
         <div className="bsm-card p-5">
