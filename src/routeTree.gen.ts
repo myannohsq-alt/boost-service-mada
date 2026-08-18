@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActualitesRouteImport } from './routes/actualites'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommandesRouteImport } from './routes/commandes'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
@@ -41,6 +42,11 @@ const AuthRoute = AuthRouteImport.update({
 const CommandesRoute = CommandesRouteImport.update({
   id: '/commandes',
   path: '/commandes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DepotRoute = DepotRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/actualites': typeof ActualitesRoute
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
+  '/contact': typeof ContactRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/actualites': typeof ActualitesRoute
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
+  '/contact': typeof ContactRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/actualites': typeof ActualitesRoute
   '/auth': typeof AuthRoute
   '/commandes': typeof CommandesRoute
+  '/contact': typeof ContactRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/auth'
     | '/commandes'
+    | '/contact'
     | '/depot'
     | '/faq'
     | '/parrainage'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/auth'
     | '/commandes'
+    | '/contact'
     | '/depot'
     | '/faq'
     | '/parrainage'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/actualites'
     | '/auth'
     | '/commandes'
+    | '/contact'
     | '/depot'
     | '/faq'
     | '/parrainage'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   ActualitesRoute: typeof ActualitesRoute
   AuthRoute: typeof AuthRoute
   CommandesRoute: typeof CommandesRoute
+  ContactRoute: typeof ContactRoute
   DepotRoute: typeof DepotRoute
   FaqRoute: typeof FaqRoute
   ParrainageRoute: typeof ParrainageRoute
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/commandes'
       fullPath: '/commandes'
       preLoaderRoute: typeof CommandesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/depot': {
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActualitesRoute: ActualitesRoute,
   AuthRoute: AuthRoute,
   CommandesRoute: CommandesRoute,
+  ContactRoute: ContactRoute,
   DepotRoute: DepotRoute,
   FaqRoute: FaqRoute,
   ParrainageRoute: ParrainageRoute,
