@@ -16,6 +16,7 @@ import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ServicesRouteImport } from './routes/services'
 
@@ -54,6 +55,11 @@ const ProfilRoute = ProfilRouteImport.update({
   path: '/profil',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PromotionsRoute = PromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RechargeRoute = RechargeRouteImport.update({
   id: '/recharge',
   path: '/recharge',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/depot': typeof DepotRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
+  '/promotions': typeof PromotionsRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/depot': typeof DepotRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
+  '/promotions': typeof PromotionsRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/depot': typeof DepotRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
+  '/promotions': typeof PromotionsRoute
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/depot'
     | '/parrainage'
     | '/profil'
+    | '/promotions'
     | '/recharge'
     | '/services'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/depot'
     | '/parrainage'
     | '/profil'
+    | '/promotions'
     | '/recharge'
     | '/services'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/depot'
     | '/parrainage'
     | '/profil'
+    | '/promotions'
     | '/recharge'
     | '/services'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   DepotRoute: typeof DepotRoute
   ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
+  PromotionsRoute: typeof PromotionsRoute
   RechargeRoute: typeof RechargeRoute
   ServicesRoute: typeof ServicesRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfilRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/promotions': {
+      id: '/promotions'
+      path: '/promotions'
+      fullPath: '/promotions'
+      preLoaderRoute: typeof PromotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recharge': {
       id: '/recharge'
       path: '/recharge'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   DepotRoute: DepotRoute,
   ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
+  PromotionsRoute: PromotionsRoute,
   RechargeRoute: RechargeRoute,
   ServicesRoute: ServicesRoute,
 }
