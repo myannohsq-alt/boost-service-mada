@@ -139,8 +139,8 @@ function Index() {
             </span>
           ))}
         </div>
-      ) : null}
       </div>
+      ) : null}
 
       {user ? (
       <section className="mx-auto w-full max-w-5xl px-4 py-10">
