@@ -20,6 +20,8 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const { user } = useAuth();
+
   return (
     <Layout>
       <Section title="📞 Contact" subtitle="Support disponible 24h/24.">
