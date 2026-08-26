@@ -87,7 +87,7 @@ function AuthPage() {
         <div className="bsm-card mt-6 space-y-3 p-5">
           {mode === "signup" ? (
             <div>
-              <label className="text-xs text-muted-foreground">👤 Nom</label>
+              <label className="text-xs text-muted-foreground">👤 Nom <span className="text-gold">*</span></label>
               <input
                 value={name}
                 maxLength={60}

@@ -71,9 +71,15 @@ function ServicesPage() {
   );
 
   const cost = selected ? Math.ceil((quantity / selected.unit) * Number(selected.price)) : 0;
+  const balance = Number(profile?.balance ?? 0);
+  const insufficient = cost > 0 && balance < cost;
 
   const submit = async () => {
     if (!selected) return;
+    if (insufficient) {
+      setMsg("⚠️ Solde insuffisant. Veuillez effectuer un dépôt ou une recharge avant de commander.");
+      return;
+    }
     setBusy(true);
     setMsg(null);
     const { error } = await supabase.rpc("place_order", {
@@ -93,6 +99,7 @@ function ServicesPage() {
     setPromo("");
     await refresh();
   };
+
 
   return (
     <AuthGate>
@@ -193,16 +200,33 @@ function ServicesPage() {
                   <span className="font-bold text-gold">{formatAr(cost)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Solde : {formatAr(profile?.balance ?? 0)}
+                  Solde : {formatAr(balance)}
                 </p>
+                {insufficient ? (
+                  <div className="rounded-lg border border-gold/40 bg-secondary p-3 text-xs">
+                    <p className="font-semibold text-gold">
+                      ⚠️ Solde insuffisant. Veuillez effectuer un dépôt ou une recharge avant de
+                      commander.
+                    </p>
+                    <div className="mt-3 flex gap-2">
+                      <Link to="/depot" className="bsm-btn bsm-btn-primary !py-2 !text-xs">
+                        💳 Faire un dépôt
+                      </Link>
+                      <Link to="/recharge" className="bsm-btn bsm-btn-gold !py-2 !text-xs">
+                        ⚡ Recharger
+                      </Link>
+                    </div>
+                  </div>
+                ) : null}
                 <div className="flex gap-2">
                   <button
-                    disabled={busy || !link.trim()}
+                    disabled={busy || !link.trim() || insufficient}
                     onClick={submit}
                     className="bsm-btn bsm-btn-primary flex-1 disabled:opacity-50"
                   >
-                    {busy ? "..." : "✅ Confirmer"}
+                    {busy ? "..." : insufficient ? "🔒 Solde insuffisant" : "✅ Confirmer"}
                   </button>
+
                   <button onClick={() => setSelected(null)} className="bsm-btn bsm-btn-ghost">
                     Annuler
                   </button>
