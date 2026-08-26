@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
+import { useAuth } from "@/lib/useAuth";
+
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
