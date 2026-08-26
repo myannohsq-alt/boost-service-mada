@@ -71,9 +71,15 @@ function ServicesPage() {
   );
 
   const cost = selected ? Math.ceil((quantity / selected.unit) * Number(selected.price)) : 0;
+  const balance = Number(profile?.balance ?? 0);
+  const insufficient = cost > 0 && balance < cost;
 
   const submit = async () => {
     if (!selected) return;
+    if (insufficient) {
+      setMsg("⚠️ Solde insuffisant. Veuillez effectuer un dépôt ou une recharge avant de commander.");
+      return;
+    }
     setBusy(true);
     setMsg(null);
     const { error } = await supabase.rpc("place_order", {
@@ -93,6 +99,7 @@ function ServicesPage() {
     setPromo("");
     await refresh();
   };
+
 
   return (
     <AuthGate>
