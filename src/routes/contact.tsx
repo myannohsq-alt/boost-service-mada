@@ -44,14 +44,27 @@ function ContactPage() {
           </a>
         </div>
 
-        <div className="bsm-card mt-4 p-5 text-sm">
-          <p className="font-semibold">📱 Numéros de paiement</p>
-          <ul className="mt-2 space-y-1 text-muted-foreground">
-            <li>0375141025 — ROLINE</li>
-            <li>0330296908 — MARODOLINX</li>
-            <li>0386100374 — THÉODORE</li>
-          </ul>
-        </div>
+        {user ? (
+          <div className="bsm-card mt-4 p-5 text-sm">
+            <p className="font-semibold">📱 Numéros de paiement</p>
+            <ul className="mt-2 space-y-1 text-muted-foreground">
+              <li>0375141025 — ROLINE</li>
+              <li>0330296908 — MARODOLINX</li>
+              <li>0386100374 — THÉODORE</li>
+            </ul>
+          </div>
+        ) : (
+          <div className="bsm-card mt-4 p-5 text-center text-sm">
+            <p className="font-semibold">🔒 Numéros de paiement masqués</p>
+            <p className="mt-2 text-muted-foreground">
+              Veuillez vous connecter pour accéder aux services et aux numéros de paiement.
+            </p>
+            <Link to="/auth" className="bsm-btn bsm-btn-primary mt-4">
+              🔑 Se connecter
+            </Link>
+          </div>
+        )}
+
       </Section>
     </Layout>
   );
