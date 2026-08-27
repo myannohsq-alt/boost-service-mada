@@ -26,6 +26,7 @@ import { Route as ProtectionRouteImport } from './routes/protection'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
+import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +113,11 @@ const TutorielRoute = TutorielRouteImport.update({
   path: '/tutoriel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSmmgenSyncRoute = ApiPublicSmmgenSyncRouteImport.update({
+  id: '/api/public/smmgen-sync',
+  path: '/api/public/smmgen-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
+  '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
+  '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/recharge': typeof RechargeRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
+  '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/services'
     | '/tutoriel'
+    | '/api/public/smmgen-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/services'
     | '/tutoriel'
+    | '/api/public/smmgen-sync'
   id:
     | '__root__'
     | '/'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/services'
     | '/tutoriel'
+    | '/api/public/smmgen-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +261,7 @@ export interface RootRouteChildren {
   RechargeRoute: typeof RechargeRoute
   ServicesRoute: typeof ServicesRoute
   TutorielRoute: typeof TutorielRoute
+  ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorielRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/smmgen-sync': {
+      id: '/api/public/smmgen-sync'
+      path: '/api/public/smmgen-sync'
+      fullPath: '/api/public/smmgen-sync'
+      preLoaderRoute: typeof ApiPublicSmmgenSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   RechargeRoute: RechargeRoute,
   ServicesRoute: ServicesRoute,
   TutorielRoute: TutorielRoute,
+  ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
