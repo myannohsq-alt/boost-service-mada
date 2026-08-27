@@ -92,9 +92,15 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          last_synced_at: string | null
+          provider_error: string
+          provider_order_id: string | null
+          provider_status: string
           quantity: number
+          remains: number | null
           service_id: string | null
           service_label: string
+          start_count: number | null
           status: string
           target_link: string
           user_id: string
@@ -104,9 +110,15 @@ export type Database = {
           amount: number
           created_at?: string
           id?: string
+          last_synced_at?: string | null
+          provider_error?: string
+          provider_order_id?: string | null
+          provider_status?: string
           quantity: number
+          remains?: number | null
           service_id?: string | null
           service_label?: string
+          start_count?: number | null
           status?: string
           target_link: string
           user_id: string
@@ -116,9 +128,15 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          last_synced_at?: string | null
+          provider_error?: string
+          provider_order_id?: string | null
+          provider_status?: string
           quantity?: number
+          remains?: number | null
           service_id?: string | null
           service_label?: string
+          start_count?: number | null
           status?: string
           target_link?: string
           user_id?: string
@@ -256,6 +274,96 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_services: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          max_qty: number
+          min_qty: number
+          name: string
+          provider_service_id: string
+          rate_usd: number
+          raw: Json
+          selected: boolean
+          synced_at: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          max_qty?: number
+          min_qty?: number
+          name?: string
+          provider_service_id: string
+          rate_usd?: number
+          raw?: Json
+          selected?: boolean
+          synced_at?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          max_qty?: number
+          min_qty?: number
+          name?: string
+          provider_service_id?: string
+          rate_usd?: number
+          raw?: Json
+          selected?: boolean
+          synced_at?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      provider_settings: {
+        Row: {
+          api_key: string
+          api_url: string
+          ar_per_usd: number
+          auto_fulfill: boolean
+          created_at: string
+          id: string
+          markup_percent: number
+          pause_reason: string
+          paused: boolean
+          singleton: boolean
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string
+          api_url?: string
+          ar_per_usd?: number
+          auto_fulfill?: boolean
+          created_at?: string
+          id?: string
+          markup_percent?: number
+          pause_reason?: string
+          paused?: boolean
+          singleton?: boolean
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          api_url?: string
+          ar_per_usd?: number
+          auto_fulfill?: boolean
+          created_at?: string
+          id?: string
+          markup_percent?: number
+          pause_reason?: string
+          paused?: boolean
+          singleton?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       recharges: {
         Row: {
           amount: number
@@ -327,6 +435,7 @@ export type Database = {
           note: string | null
           platform: string
           price: number
+          provider_service_id: string | null
           sort_order: number
           unit: number
         }
@@ -340,6 +449,7 @@ export type Database = {
           note?: string | null
           platform: string
           price: number
+          provider_service_id?: string | null
           sort_order?: number
           unit?: number
         }
@@ -353,8 +463,108 @@ export type Database = {
           note?: string | null
           platform?: string
           price?: number
+          provider_service_id?: string | null
           sort_order?: number
           unit?: number
+        }
+        Relationships: []
+      }
+      sync_jobs: {
+        Row: {
+          attempts: number
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          kind: string
+          last_error: string
+          payload: Json
+          processed_at: string | null
+          run_after: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind: string
+          last_error?: string
+          payload?: Json
+          processed_at?: string | null
+          run_after?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind?: string
+          last_error?: string
+          payload?: Json
+          processed_at?: string | null
+          run_after?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sync_locks: {
+        Row: {
+          locked_until: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          locked_until: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          locked_until?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sync_runs: {
+        Row: {
+          created_at: string
+          detail: string
+          error: string
+          finished_at: string | null
+          id: string
+          items_failed: number
+          items_processed: number
+          kind: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string
+          error?: string
+          finished_at?: string | null
+          id?: string
+          items_failed?: number
+          items_processed?: number
+          kind: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string
+          error?: string
+          finished_at?: string | null
+          id?: string
+          items_failed?: number
+          items_processed?: number
+          kind?: string
+          started_at?: string
+          status?: string
         }
         Relationships: []
       }
@@ -408,6 +618,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      acquire_sync_lock: {
+        Args: { _name: string; _seconds: number }
+        Returns: boolean
+      }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
       has_role: {
         Args: {
@@ -426,6 +640,7 @@ export type Database = {
         Returns: string
       }
       public_stats: { Args: never; Returns: Json }
+      release_sync_lock: { Args: { _name: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
