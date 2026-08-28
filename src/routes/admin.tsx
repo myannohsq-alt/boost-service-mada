@@ -22,10 +22,17 @@ export const Route = createFileRoute("/admin")({
 const TABS = ["Recharges", "Commandes", "Utilisateurs", "Contenus"] as const;
 
 function AdminPage() {
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, loading, user } = useAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<(typeof TABS)[number]>("Recharges");
   const qc = useQueryClient();
   const [msg, setMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) void navigate({ to: "/auth" });
+    else if (!isAdmin) void navigate({ to: "/profil" });
+  }, [loading, user, isAdmin, navigate]);
 
   const { data } = useQuery({
     queryKey: ["admin-data"],
