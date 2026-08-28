@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 export type Profile = {
   id: string;
   name: string;
+  email: string;
+  avatar_url: string;
   phone: string;
   balance: number;
   referral_code: string;

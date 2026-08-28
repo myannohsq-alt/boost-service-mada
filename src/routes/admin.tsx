@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
@@ -22,10 +22,17 @@ export const Route = createFileRoute("/admin")({
 const TABS = ["Recharges", "Commandes", "Utilisateurs", "Contenus"] as const;
 
 function AdminPage() {
-  const { isAdmin, loading } = useAuth();
+  const { isAdmin, loading, user } = useAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<(typeof TABS)[number]>("Recharges");
   const qc = useQueryClient();
   const [msg, setMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) void navigate({ to: "/auth" });
+    else if (!isAdmin) void navigate({ to: "/profil" });
+  }, [loading, user, isAdmin, navigate]);
 
   const { data } = useQuery({
     queryKey: ["admin-data"],
@@ -169,7 +176,7 @@ function AdminPage() {
               <div key={p.id} className="bsm-card p-4">
                 <p className="font-semibold">{p.name || "Utilisateur"}</p>
                 <p className="text-xs text-muted-foreground">
-                  📞 {p.phone} • Code : {p.referral_code}
+                  📧 {p.email || "—"} • 📞 {p.phone || "—"} • Code : {p.referral_code}
                 </p>
                 <p className="text-sm text-gold">💰 {formatAr(Number(p.balance))}</p>
               </div>

@@ -153,8 +153,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string
           balance: number
           created_at: string
+          email: string
           id: string
           name: string
           phone: string
@@ -163,8 +165,10 @@ export type Database = {
           referred_by: string | null
         }
         Insert: {
+          avatar_url?: string
           balance?: number
           created_at?: string
+          email?: string
           id: string
           name?: string
           phone?: string
@@ -173,8 +177,10 @@ export type Database = {
           referred_by?: string | null
         }
         Update: {
+          avatar_url?: string
           balance?: number
           created_at?: string
+          email?: string
           id?: string
           name?: string
           phone?: string
