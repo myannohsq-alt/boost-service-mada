@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
