@@ -176,7 +176,7 @@ function AdminPage() {
               <div key={p.id} className="bsm-card p-4">
                 <p className="font-semibold">{p.name || "Utilisateur"}</p>
                 <p className="text-xs text-muted-foreground">
-                  📞 {p.phone} • Code : {p.referral_code}
+                  📧 {p.email || "—"} • 📞 {p.phone || "—"} • Code : {p.referral_code}
                 </p>
                 <p className="text-sm text-gold">💰 {formatAr(Number(p.balance))}</p>
               </div>
