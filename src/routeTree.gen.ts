@@ -24,6 +24,7 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as ProtectionRouteImport } from './routes/protection'
 import { Route as RechargeRouteImport } from './routes/recharge'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
@@ -103,6 +104,11 @@ const RechargeRoute = RechargeRouteImport.update({
   path: '/recharge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/promotions': typeof PromotionsRoute
   '/protection': typeof ProtectionRoute
   '/recharge': typeof RechargeRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/promotions': typeof PromotionsRoute
   '/protection': typeof ProtectionRoute
   '/recharge': typeof RechargeRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/promotions': typeof PromotionsRoute
   '/protection': typeof ProtectionRoute
   '/recharge': typeof RechargeRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/promotions'
     | '/protection'
     | '/recharge'
+    | '/reset-password'
     | '/services'
     | '/tutoriel'
     | '/api/public/smmgen-sync'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/promotions'
     | '/protection'
     | '/recharge'
+    | '/reset-password'
     | '/services'
     | '/tutoriel'
     | '/api/public/smmgen-sync'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/promotions'
     | '/protection'
     | '/recharge'
+    | '/reset-password'
     | '/services'
     | '/tutoriel'
     | '/api/public/smmgen-sync'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   PromotionsRoute: typeof PromotionsRoute
   ProtectionRoute: typeof ProtectionRoute
   RechargeRoute: typeof RechargeRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   TutorielRoute: typeof TutorielRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RechargeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -411,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   PromotionsRoute: PromotionsRoute,
   ProtectionRoute: ProtectionRoute,
   RechargeRoute: RechargeRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   TutorielRoute: TutorielRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
