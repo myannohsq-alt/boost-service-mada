@@ -68,13 +68,20 @@ export const saveProviderSettings = createServerFn({ method: "POST" })
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row } = await supabaseAdmin.from("provider_settings").select("id").limit(1).single();
-    const patch: Record<string, unknown> = {
+    if (!row) throw new Error("Réglages fournisseur introuvables");
+    const patch: {
+      api_url: string;
+      ar_per_usd: number;
+      markup_percent: number;
+      auto_fulfill: boolean;
+      api_key?: string;
+    } = {
       api_url: data.api_url.trim(),
       ar_per_usd: Number(data.ar_per_usd) || 4500,
       markup_percent: Number(data.markup_percent) || 0,
       auto_fulfill: data.auto_fulfill,
     };
-    if (data.api_key && data.api_key.trim()) patch['api_key'] = data.api_key.trim();
+    if (data.api_key && data.api_key.trim()) patch.api_key = data.api_key.trim();
     const { error } = await supabaseAdmin.from("provider_settings").update(patch).eq("id", row.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -86,6 +93,7 @@ export const resumeSync = createServerFn({ method: "POST" })
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row } = await supabaseAdmin.from("provider_settings").select("id").limit(1).single();
+    if (!row) throw new Error("Réglages fournisseur introuvables");
     await supabaseAdmin.from("provider_settings").update({ paused: false, pause_reason: "" }).eq("id", row.id);
     return { ok: true };
   });

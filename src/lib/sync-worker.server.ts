@@ -20,7 +20,7 @@ export type CycleResult = {
   detail: string;
   processed: number;
   failed: number;
-  runId?: string;
+  runId?: string | undefined;
 };
 
 function isBlockingError(message: string): boolean {
