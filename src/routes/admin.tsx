@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const TABS = ["Recharges", "Commandes", "Utilisateurs", "Contenus"] as const;
+const TABS = ["Recharges", "Commandes", "Services", "Utilisateurs", "Contenus"] as const;
 
 function AdminPage() {
   const { isAdmin, loading, user } = useAuth();
@@ -183,6 +183,8 @@ function AdminPage() {
             ))}
           </div>
         ) : null}
+
+        {tab === "Services" ? <AdminServices onDone={setMsg} /> : null}
 
         {tab === "Contenus" ? <AdminContent onDone={setMsg} /> : null}
       </Section>
