@@ -93,6 +93,7 @@ export type Database = {
           created_at: string
           id: string
           last_synced_at: string | null
+          notes: string
           provider_error: string
           provider_order_id: string | null
           provider_status: string
@@ -111,6 +112,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_synced_at?: string | null
+          notes?: string
           provider_error?: string
           provider_order_id?: string | null
           provider_status?: string
@@ -129,6 +131,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_synced_at?: string | null
+          notes?: string
           provider_error?: string
           provider_order_id?: string | null
           provider_status?: string
@@ -433,8 +436,10 @@ export type Database = {
       services: {
         Row: {
           active: boolean
+          badge: string
           category: string
           created_at: string
+          delivery_time: string
           id: string
           name_fr: string
           name_mg: string
@@ -447,8 +452,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          badge?: string
           category?: string
           created_at?: string
+          delivery_time?: string
           id?: string
           name_fr: string
           name_mg: string
@@ -461,8 +468,10 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          badge?: string
           category?: string
           created_at?: string
+          delivery_time?: string
           id?: string
           name_fr?: string
           name_mg?: string
@@ -639,6 +648,7 @@ export type Database = {
       place_order: {
         Args: {
           _link: string
+          _note?: string
           _promo: string
           _quantity: number
           _service_id: string
