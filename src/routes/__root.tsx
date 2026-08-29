@@ -127,6 +127,7 @@ function RootComponent() {
           <AuthProvider>
             {/* Required: nested routes render here. */}
             <Outlet />
+            <Toaster position="top-center" richColors />
           </AuthProvider>
         </I18nProvider>
       </ThemeProvider>

@@ -10,6 +10,7 @@ const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
   { to: "/a-propos", key: "about", label: "ℹ️ À propos", public: true },
   { to: "/services", key: "services", label: "🛒 Services", public: false },
+  { to: "/dashboard", key: "dashboard", label: "📊 Tableau de bord", public: false },
   { to: "/depot", key: "depositNav", label: "💳 Dépôt", public: false },
   { to: "/recharge", key: "recharge", label: "🔋 Recharge", public: false },
   { to: "/commandes", key: "myOrders", label: "📦 Mes commandes", public: false },
@@ -63,7 +64,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   const visibleNav = user ? nav : nav.filter((n) => n.public);
-  const navLabel = (n: (typeof nav)[number]) => (n.key === "about" ? n.label : t(n.key));
+  const navLabel = (n: (typeof nav)[number]) =>
+    n.key === "about" || n.key === "dashboard" ? n.label : t(n.key);
 
 
   return (

@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
@@ -67,6 +68,11 @@ const CommandesRoute = CommandesRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DepotRoute = DepotRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/parrainage': typeof ParrainageRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/commandes'
     | '/contact'
+    | '/dashboard'
     | '/depot'
     | '/faq'
     | '/parrainage'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/commandes'
     | '/contact'
+    | '/dashboard'
     | '/depot'
     | '/faq'
     | '/parrainage'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/commandes'
     | '/contact'
+    | '/dashboard'
     | '/depot'
     | '/faq'
     | '/parrainage'
@@ -264,6 +276,7 @@ export interface RootRouteChildren {
   AvisRoute: typeof AvisRoute
   CommandesRoute: typeof CommandesRoute
   ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRoute
   DepotRoute: typeof DepotRoute
   FaqRoute: typeof FaqRoute
   ParrainageRoute: typeof ParrainageRoute
@@ -333,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/depot': {
@@ -424,6 +444,7 @@ const rootRouteChildren: RootRouteChildren = {
   AvisRoute: AvisRoute,
   CommandesRoute: CommandesRoute,
   ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRoute,
   DepotRoute: DepotRoute,
   FaqRoute: FaqRoute,
   ParrainageRoute: ParrainageRoute,
