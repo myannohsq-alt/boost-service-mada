@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const TABS = ["Recharges", "Commandes", "Utilisateurs", "Contenus"] as const;
+const TABS = ["Recharges", "Commandes", "Services", "Utilisateurs", "Contenus"] as const;
 
 function AdminPage() {
   const { isAdmin, loading, user } = useAuth();
@@ -184,6 +184,8 @@ function AdminPage() {
           </div>
         ) : null}
 
+        {tab === "Services" ? <AdminServices onDone={setMsg} /> : null}
+
         {tab === "Contenus" ? <AdminContent onDone={setMsg} /> : null}
       </Section>
     </Layout>
@@ -283,6 +285,147 @@ function AdminContent({ onDone }: { onDone: (m: string) => void }) {
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+type AdminService = {
+  id: string;
+  platform: string;
+  category: string;
+  name_fr: string;
+  name_mg: string;
+  unit: number;
+  price: number;
+  note: string | null;
+  active: boolean;
+  badge: string;
+  delivery_time: string;
+  sort_order: number;
+};
+
+const BADGE_OPTIONS = [
+  { value: "", label: "Aucun badge" },
+  { value: "top", label: "🔥 Top Populaire" },
+  { value: "ultra", label: "⚡ Ultra" },
+  { value: "reco", label: "⭐ Recommandé" },
+  { value: "new", label: "🆕 Nouveau" },
+];
+
+function AdminServices({ onDone }: { onDone: (m: string) => void }) {
+  const qc = useQueryClient();
+  const [filter, setFilter] = useState("");
+
+  const { data: services } = useQuery({
+    queryKey: ["admin-services"],
+    queryFn: async () => {
+      const { data } = await supabase.from("services").select("*").order("sort_order");
+      return (data ?? []) as unknown as AdminService[];
+    },
+  });
+
+  const patch = async (id: string, values: Partial<AdminService>) => {
+    const { error } = await supabase.from("services").update(values).eq("id", id);
+    onDone(error ? `❌ ${error.message}` : "✅ Service mis à jour");
+    if (!error) await qc.invalidateQueries({ queryKey: ["admin-services"] });
+  };
+
+  const list = (services ?? []).filter((s) =>
+    (s.name_fr + s.platform + s.category).toLowerCase().includes(filter.toLowerCase()),
+  );
+
+  return (
+    <div className="space-y-3">
+      <input
+        className="bsm-input"
+        placeholder="🔎 Rechercher un service…"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+      />
+      {list.map((s) => (
+        <div key={s.id} className="bsm-card p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-semibold">
+              {s.name_fr}{" "}
+              <span className="text-xs text-muted-foreground">
+                ({s.platform} • {s.category})
+              </span>
+            </p>
+            <button
+              onClick={() => void patch(s.id, { active: !s.active })}
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                s.active ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
+              }`}
+            >
+              {s.active ? "👁️ Visible" : "🙈 Masqué"}
+            </button>
+          </div>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+            <label className="text-xs text-muted-foreground">
+              Prix (Ar)
+              <input
+                type="number"
+                defaultValue={Number(s.price)}
+                onBlur={(e) => {
+                  const v = Number(e.target.value);
+                  if (v !== Number(s.price)) void patch(s.id, { price: v });
+                }}
+                className="bsm-input mt-1"
+              />
+            </label>
+            <label className="text-xs text-muted-foreground">
+              Unité
+              <input
+                type="number"
+                defaultValue={s.unit}
+                onBlur={(e) => {
+                  const v = Number(e.target.value);
+                  if (v !== s.unit) void patch(s.id, { unit: v });
+                }}
+                className="bsm-input mt-1"
+              />
+            </label>
+            <label className="text-xs text-muted-foreground">
+              Livraison estimée
+              <input
+                defaultValue={s.delivery_time}
+                onBlur={(e) => {
+                  if (e.target.value !== s.delivery_time)
+                    void patch(s.id, { delivery_time: e.target.value });
+                }}
+                className="bsm-input mt-1"
+              />
+            </label>
+            <label className="text-xs text-muted-foreground">
+              Badge
+              <select
+                value={s.badge ?? ""}
+                onChange={(e) => void patch(s.id, { badge: e.target.value })}
+                className="bsm-input mt-1"
+              >
+                {BADGE_OPTIONS.map((b) => (
+                  <option key={b.value} value={b.value}>
+                    {b.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <label className="mt-2 block text-xs text-muted-foreground">
+            Note affichée
+            <input
+              defaultValue={s.note ?? ""}
+              onBlur={(e) => {
+                if (e.target.value !== (s.note ?? "")) void patch(s.id, { note: e.target.value });
+              }}
+              className="bsm-input mt-1"
+            />
+          </label>
+        </div>
+      ))}
+      {!list.length ? <p className="text-sm text-muted-foreground">Aucun service.</p> : null}
     </div>
   );
 }
