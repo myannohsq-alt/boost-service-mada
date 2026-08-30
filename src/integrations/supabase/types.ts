@@ -38,6 +38,106 @@ export type Database = {
         }
         Relationships: []
       }
+      community_comments: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts: {
+        Row: {
+          author_name: string
+          category: string
+          content: string
+          created_at: string
+          id: string
+          locked: boolean
+          pinned: boolean
+          user_id: string
+        }
+        Insert: {
+          author_name?: string
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          locked?: boolean
+          pinned?: boolean
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          locked?: boolean
+          pinned?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news: {
         Row: {
           content: string
@@ -378,6 +478,7 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          method: string
           reference: string
           sender_phone: string
           status: string
@@ -387,6 +488,7 @@ export type Database = {
           amount: number
           created_at?: string
           id?: string
+          method?: string
           reference: string
           sender_phone: string
           status?: string
@@ -396,6 +498,7 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          method?: string
           reference?: string
           sender_phone?: string
           status?: string
@@ -656,6 +759,10 @@ export type Database = {
         Returns: string
       }
       public_stats: { Args: never; Returns: Json }
+      reject_recharge: {
+        Args: { _reason?: string; _recharge_id: string }
+        Returns: undefined
+      }
       release_sync_lock: { Args: { _name: string }; Returns: undefined }
     }
     Enums: {
