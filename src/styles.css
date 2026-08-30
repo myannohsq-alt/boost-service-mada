@@ -53,14 +53,14 @@
   --card-foreground: oklch(0.18 0.02 260);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 260);
-  --primary: oklch(0.72 0.22 152);
-  --primary-foreground: oklch(0.15 0.03 160);
+  --primary: oklch(0.82 0.17 92);
+  --primary-foreground: oklch(0.16 0.02 95);
   --secondary: oklch(0.94 0.01 240);
   --secondary-foreground: oklch(0.2 0.02 260);
   --muted: oklch(0.95 0.008 240);
   --muted-foreground: oklch(0.5 0.02 250);
-  --accent: oklch(0.93 0.05 150);
-  --accent-foreground: oklch(0.2 0.03 160);
+  --accent: oklch(0.95 0.06 95);
+  --accent-foreground: oklch(0.24 0.05 95);
   --gold: oklch(0.84 0.16 90);
   --gold-foreground: oklch(0.18 0.03 90);
   --destructive: oklch(0.6 0.23 25);
@@ -70,52 +70,52 @@
   --info: oklch(0.65 0.16 240);
   --border: oklch(0.9 0.01 240);
   --input: oklch(0.92 0.01 240);
-  --ring: oklch(0.72 0.22 152);
+  --ring: oklch(0.82 0.17 92);
 
-  --surface-glow: 0 0 0 1px oklch(0.72 0.22 152 / 0.15), 0 18px 45px -20px oklch(0.72 0.22 152 / 0.35);
+  --surface-glow: 0 0 0 1px oklch(0.82 0.17 92 / 0.18), 0 18px 45px -20px oklch(0.82 0.17 92 / 0.35);
   --gradient-hero: radial-gradient(
       110% 90% at 15% 0%,
-      oklch(0.72 0.22 152 / 0.22) 0%,
+      oklch(0.82 0.17 92 / 0.24) 0%,
       transparent 55%
     ),
     radial-gradient(90% 80% at 90% 10%, oklch(0.84 0.16 90 / 0.18) 0%, transparent 55%);
-  --gradient-neon: linear-gradient(100deg, oklch(0.78 0.23 152), oklch(0.87 0.17 100));
+  --gradient-neon: linear-gradient(100deg, oklch(0.86 0.18 95), oklch(0.92 0.16 105));
 }
 
 .dark {
-  --background: oklch(0.16 0.022 265);
+  --background: oklch(0.13 0.008 95);
   --foreground: oklch(0.97 0.006 240);
-  --card: oklch(0.2 0.025 265);
+  --card: oklch(0.18 0.012 95);
   --card-foreground: oklch(0.97 0.006 240);
-  --popover: oklch(0.19 0.025 265);
+  --popover: oklch(0.17 0.012 95);
   --popover-foreground: oklch(0.97 0.006 240);
-  --primary: oklch(0.86 0.26 152);
-  --primary-foreground: oklch(0.15 0.03 160);
-  --secondary: oklch(0.26 0.03 265);
+  --primary: oklch(0.88 0.19 95);
+  --primary-foreground: oklch(0.16 0.02 95);
+  --secondary: oklch(0.24 0.018 95);
   --secondary-foreground: oklch(0.95 0.006 240);
-  --muted: oklch(0.25 0.028 265);
-  --muted-foreground: oklch(0.72 0.02 250);
-  --accent: oklch(0.3 0.06 155);
-  --accent-foreground: oklch(0.9 0.15 152);
+  --muted: oklch(0.23 0.016 95);
+  --muted-foreground: oklch(0.75 0.02 95);
+  --accent: oklch(0.3 0.07 95);
+  --accent-foreground: oklch(0.92 0.17 95);
   --gold: oklch(0.87 0.17 92);
   --gold-foreground: oklch(0.17 0.03 90);
   --destructive: oklch(0.65 0.23 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --success: oklch(0.8 0.22 152);
+  --success: oklch(0.8 0.2 150);
   --warning: oklch(0.87 0.17 92);
   --info: oklch(0.72 0.16 240);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.86 0.26 152);
+  --ring: oklch(0.88 0.19 95);
 
-  --surface-glow: 0 0 0 1px oklch(0.86 0.26 152 / 0.18), 0 22px 60px -24px oklch(0.86 0.26 152 / 0.45);
+  --surface-glow: 0 0 0 1px oklch(0.88 0.19 95 / 0.22), 0 22px 60px -24px oklch(0.88 0.19 95 / 0.45);
   --gradient-hero: radial-gradient(
       110% 90% at 12% -10%,
-      oklch(0.86 0.26 152 / 0.28) 0%,
+      oklch(0.88 0.19 95 / 0.26) 0%,
       transparent 58%
     ),
     radial-gradient(90% 80% at 95% 0%, oklch(0.87 0.17 92 / 0.22) 0%, transparent 55%);
-  --gradient-neon: linear-gradient(100deg, oklch(0.86 0.26 152), oklch(0.9 0.18 100));
+  --gradient-neon: linear-gradient(100deg, oklch(0.88 0.19 95), oklch(0.95 0.15 105));
 }
 
 @layer base {
@@ -255,4 +255,26 @@
 
 @utility animate-marquee {
   animation: bsm-marquee 26s linear infinite;
+}
+
+@utility bsm-glass {
+  background-color: color-mix(in oklab, var(--color-card) 62%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-primary) 28%, transparent);
+  border-radius: var(--radius-2xl);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 34px -14px var(--color-primary);
+}
+
+@utility bsm-glow-border {
+  border: 1px solid color-mix(in oklab, var(--color-primary) 55%, transparent);
+  box-shadow: 0 0 30px -8px var(--color-primary);
+}
+
+@keyframes bsm-slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-slide-up {
+  animation: bsm-slide-up 0.35s ease-out;
 }
