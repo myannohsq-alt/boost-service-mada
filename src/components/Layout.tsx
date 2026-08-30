@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState, type ReactNode } from "react";
 import logo from "@/assets/logo.png";
 import { useI18n, formatAr } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/useAuth";
+import { AiAssistant } from "@/components/AiAssistant";
 import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
@@ -11,20 +13,28 @@ const nav = [
   { to: "/a-propos", key: "about", label: "ℹ️ À propos", public: true },
   { to: "/services", key: "services", label: "🛒 Services", public: false },
   { to: "/dashboard", key: "dashboard", label: "📊 Tableau de bord", public: false },
-  { to: "/depot", key: "depositNav", label: "💳 Dépôt", public: false },
-  { to: "/recharge", key: "recharge", label: "🔋 Recharge", public: false },
-  { to: "/commandes", key: "myOrders", label: "📦 Mes commandes", public: false },
-  { to: "/profil", key: "profile", label: "👤 Profil", public: false },
+  { to: "/commandes", key: "myOrders", label: "📦 Suivi des commandes", public: false },
+  { to: "/depot", key: "depositNav", label: "💰 Dépôt / Recharge", public: false },
+  { to: "/groupe", key: "group", label: "👥 Groupe de discussion", public: false },
+  { to: "/tutoriel", key: "tutorial", label: "📚 Tutoriel", public: false },
+  { to: "/contact", key: "contact", label: "📞 Support", public: true },
+  { to: "/promotions", key: "promotions", label: "🎁 Promotions", public: false },
   { to: "/parrainage", key: "referral", label: "🎁 Parrainage", public: false },
   { to: "/actualites", key: "news", label: "📰 Actualités", public: false },
-  { to: "/promotions", key: "promotions", label: "🔥 Promotions", public: false },
-  { to: "/tutoriel", key: "tutorial", label: "🎬 Tutoriels", public: false },
   { to: "/protection", key: "protection", label: "🛡️ Protection", public: false },
   { to: "/avis", key: "reviews", label: "⭐ Avis", public: false },
+  { to: "/profil", key: "profile", label: "⚙️ Paramètres", public: false },
   { to: "/faq", key: "faq", label: "❓ FAQ", public: true },
-  { to: "/contact", key: "contact", label: "📞 Contact", public: true },
 ] as const;
 
+const ANNOUNCEMENTS = [
+  "🔥 Midira ao am tutoriel izay ijer tuto 😎",
+  "🚀 Tongasoa eto amin'ny BOOST SERVICE MADA",
+  "💰 Ataovy dépôt aloha vao manao commande",
+  "📦 Jereo ny commandes ao amin'ny compte-nao",
+  "🎁 Misy promotion manokana androany",
+  "❤️ Misaotra anao mampiasa BOOST SERVICE MADA",
+];
 
 export function Logo({ size = 44 }: { size?: number }) {
   return (
@@ -33,7 +43,7 @@ export function Logo({ size = 44 }: { size?: number }) {
       alt="Logo BOOST SERVICE MADA"
       width={size}
       height={size}
-      className="drop-shadow-[0_0_18px_oklch(0.86_0.26_152_/_0.5)]"
+      className="drop-shadow-[0_0_18px_var(--color-primary)]"
       style={{ width: size, height: size }}
     />
   );
@@ -57,82 +67,143 @@ export function Section({
   );
 }
 
+function LiveClock() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const id = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  return (
+    <span className="hidden items-center gap-1 rounded-full border border-primary/40 bg-card/70 px-3 py-1.5 font-display text-xs font-bold text-primary sm:inline-flex">
+      🕒 {now ? now.toLocaleTimeString("fr-FR") : "--:--:--"}
+    </span>
+  );
+}
+
+function AnnouncementBar() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setI((v) => (v + 1) % ANNOUNCEMENTS.length), 4000);
+    return () => window.clearInterval(id);
+  }, []);
+  return (
+    <div className="border-b border-primary/25 bg-gradient-to-r from-primary/15 via-transparent to-primary/15">
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-2 overflow-hidden px-4 py-2">
+        <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+          INFO
+        </span>
+        <p key={i} className="animate-slide-up truncate text-xs font-medium text-foreground/90">
+          {ANNOUNCEMENTS[i]}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function Layout({ children }: { children: ReactNode }) {
   const { t, lang, setLang } = useI18n();
   const { theme, toggle } = useTheme();
-  const { profile, isAdmin, user } = useAuth();
+  const { profile, isAdmin, user, refresh } = useAuth();
+  const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [spin, setSpin] = useState(false);
 
   const visibleNav = user ? nav : nav.filter((n) => n.public);
-  const navLabel = (n: (typeof nav)[number]) =>
-    n.key === "about" || n.key === "dashboard" ? n.label : t(n.key);
+  const navLabel = (n: (typeof nav)[number]) => {
+    if (n.key === "about" || n.key === "dashboard" || n.key === "group") return n.label;
+    const translated = t(n.key);
+    return translated === n.key ? n.label : n.label;
+  };
 
+  const doRefresh = async () => {
+    setSpin(true);
+    await Promise.all([refresh(), qc.invalidateQueries()]);
+    window.setTimeout(() => setSpin(false), 600);
+  };
+
+  const initials = (profile?.name || profile?.email || "BSM").slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen bsm-hero">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-4 py-3">
+      <header className="sticky top-0 z-40 border-b border-primary/25 bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-3 py-2.5 sm:px-4">
           <button
             aria-label="Menu"
             onClick={() => setOpen(true)}
-            className="bsm-btn bsm-btn-ghost !px-3 !py-2 lg:hidden"
+            className="bsm-btn bsm-btn-ghost !px-3 !py-2"
           >
             ☰
           </button>
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size={36} />
-            <span className="font-display text-sm font-bold leading-tight sm:text-base">
-              <span className="bsm-neon-text">BOOST</span> SERVICE{" "}
-              <span className="text-gold">MADA</span> 🇲🇬
-            </span>
-          </Link>
 
-          <nav className="ml-auto hidden items-center gap-1 lg:flex">
-            {visibleNav.slice(0, 6).map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                activeProps={{ className: "bg-secondary text-foreground" }}
-              >
-                {navLabel(n)}
-              </Link>
-            ))}
-          </nav>
+          {user ? (
+            <div className="flex min-w-0 items-center gap-2">
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt="Avatar"
+                  className="h-9 w-9 shrink-0 rounded-full border border-primary/50 object-cover"
+                />
+              ) : (
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/50 bg-secondary font-display text-[11px] font-bold text-primary">
+                  {initials}
+                </span>
+              )}
+              <div className="min-w-0 leading-tight">
+                <p className="truncate text-xs font-semibold">{profile?.name || "Membre"}</p>
+                <p className="font-display text-[11px] font-bold text-primary">
+                  💰 {formatAr(profile?.balance ?? 0)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <Link to="/" className="flex items-center gap-2">
+              <Logo size={32} />
+              <span className="font-display text-xs font-bold leading-tight sm:text-sm">
+                <span className="bsm-neon-text">BOOST</span> SERVICE{" "}
+                <span className="text-gold">MADA</span> 🇲🇬
+              </span>
+            </Link>
+          )}
 
-          <div className="ml-auto flex items-center gap-2 lg:ml-2">
+          <div className="ml-auto flex items-center gap-1.5">
+            <LiveClock />
+            <button
+              onClick={doRefresh}
+              aria-label="Actualiser"
+              className={`bsm-btn bsm-btn-ghost !px-3 !py-1.5 !text-xs ${spin ? "animate-spin" : ""}`}
+            >
+              🔄
+            </button>
             <button
               onClick={() => setLang(lang === "mg" ? "fr" : "mg")}
-              className="bsm-btn bsm-btn-ghost !px-3 !py-1.5 !text-xs"
+              className="bsm-btn bsm-btn-ghost hidden !px-3 !py-1.5 !text-xs sm:inline-flex"
               aria-label="Langue"
             >
-              {lang === "mg" ? "🇲🇬 MG" : "🇫🇷 FR"}
+              {lang === "mg" ? "🇲🇬" : "🇫🇷"}
             </button>
             <button
               onClick={toggle}
-              className="bsm-btn bsm-btn-ghost !px-3 !py-1.5 !text-xs"
+              className="bsm-btn bsm-btn-ghost hidden !px-3 !py-1.5 !text-xs sm:inline-flex"
               aria-label="Thème"
             >
               {theme === "dark" ? "🌙" : "☀️"}
             </button>
-            {user ? (
-              <Link to="/profil" className="bsm-btn bsm-btn-primary !px-3 !py-1.5 !text-xs">
-                {formatAr(profile?.balance ?? 0)}
-              </Link>
-            ) : (
+            {!user ? (
               <Link to="/auth" className="bsm-btn bsm-btn-primary !px-3 !py-1.5 !text-xs">
                 {t("login")}
               </Link>
-            )}
+            ) : null}
           </div>
         </div>
+        <AnnouncementBar />
       </header>
 
       {open ? (
         <div className="fixed inset-0 z-50 flex" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" />
           <aside
-            className="relative h-full w-72 overflow-y-auto border-r border-border bg-card p-4"
+            className="relative h-full w-72 overflow-y-auto border-r border-primary/30 bg-card p-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center gap-2">
@@ -178,13 +249,15 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <main className="pb-28">{children}</main>
 
+      <AiAssistant />
+
       <div className="fixed bottom-4 right-4 z-30 flex flex-col gap-3">
         <a
           href="https://m.me/BOOST-SERVICE"
           target="_blank"
           rel="noreferrer"
           aria-label="Messenger"
-          className="bsm-btn bsm-btn-primary animate-pulse-ring !h-12 !w-12 !p-0 text-lg"
+          className="bsm-btn bsm-btn-gold !h-12 !w-12 !p-0 text-lg"
         >
           💬
         </a>
@@ -193,13 +266,13 @@ export function Layout({ children }: { children: ReactNode }) {
           target="_blank"
           rel="noreferrer"
           aria-label="WhatsApp"
-          className="bsm-btn bsm-btn-gold !h-12 !w-12 !p-0 text-lg"
+          className="bsm-btn bsm-btn-ghost !h-12 !w-12 !p-0 text-lg"
         >
           📱
         </a>
       </div>
 
-      <footer className="border-t border-border bg-card/60 px-4 py-8 text-center text-xs text-muted-foreground">
+      <footer className="border-t border-primary/20 bg-card/60 px-4 py-8 text-center text-xs text-muted-foreground">
         <Logo size={40} />
         <p className="mt-3 font-display text-sm font-bold text-foreground">BOOST SERVICE MADA 🇲🇬</p>
         <p className="mt-1">{t("slogan")}</p>
