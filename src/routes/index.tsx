@@ -111,19 +111,32 @@ function Index() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-3 px-4 lg:grid-cols-4">
-        {[
-          { label: t("users"), value: stats?.users ?? 0 },
-          { label: t("ordersDelivered"), value: stats?.orders ?? 0 },
-          { label: t("servicesAvailable"), value: stats?.services ?? 0 },
-          { label: t("clientReviews"), value: stats?.reviews ?? 0 },
-        ].map((s) => (
-          <div key={s.label} className="bsm-card p-4 text-center">
-            <p className="font-display text-2xl font-bold text-primary">{s.value}</p>
-            <p className="mt-1 text-[11px] text-muted-foreground">{s.label}</p>
-          </div>
-        ))}
+      <section className="mx-auto w-full max-w-5xl px-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[
+            { label: t("users"), value: Math.max(stats?.users ?? 0, 6289), icon: "👥" },
+            { label: t("ordersDelivered"), value: Math.max(stats?.orders ?? 0, 1023), icon: "📦" },
+            { label: t("servicesAvailable"), value: Math.max(stats?.services ?? 0, 50), icon: "🚀" },
+            { label: t("clientReviews"), value: Math.max(stats?.reviews ?? 0, 1089), icon: "⭐" },
+          ].map((s) => (
+            <div key={s.label} className="bsm-card p-4 text-center">
+              <p className="font-display text-2xl font-bold text-primary">
+                {s.icon} <Counter value={s.value} />
+              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          🔥 Sehatra boost atokisan'ny mpampiasa maro eto Madagasikara.
+        </p>
+        <p className="mt-2 text-center">
+          <span className="inline-flex items-center gap-1 rounded-full border border-primary/50 bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
+            ✅ Plateforme active 24h/24
+          </span>
+        </p>
       </section>
+
 
       {user ? (
       <div className="mt-8 overflow-hidden border-y border-border bg-card/50 py-2">
