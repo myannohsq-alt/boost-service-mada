@@ -85,7 +85,7 @@ function ServicesPage() {
               <button
                 key={s.id}
                 onClick={() => setSelected(s)}
-                className="bsm-card group p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_0_28px_-8px_oklch(0.86_0.26_152_/_0.55)] active:scale-[0.98]"
+                className="bsm-card group p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_0_28px_-8px_var(--color-primary)] active:scale-[0.98]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-[11px] uppercase tracking-wide text-primary">{s.category}</p>
