@@ -20,6 +20,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as GroupeRouteImport } from './routes/groupe'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PromotionsRouteImport } from './routes/promotions'
@@ -85,6 +86,11 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroupeRoute = GroupeRouteImport.update({
+  id: '/groupe',
+  path: '/groupe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ParrainageRoute = ParrainageRouteImport.update({
   id: '/parrainage',
   path: '/parrainage',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
+  '/groupe': typeof GroupeRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
+  '/groupe': typeof GroupeRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
+  '/groupe': typeof GroupeRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/depot'
     | '/faq'
+    | '/groupe'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/depot'
     | '/faq'
+    | '/groupe'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/depot'
     | '/faq'
+    | '/groupe'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DepotRoute: typeof DepotRoute
   FaqRoute: typeof FaqRoute
+  GroupeRoute: typeof GroupeRoute
   ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
   PromotionsRoute: typeof PromotionsRoute
@@ -369,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groupe': {
+      id: '/groupe'
+      path: '/groupe'
+      fullPath: '/groupe'
+      preLoaderRoute: typeof GroupeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/parrainage': {
       id: '/parrainage'
       path: '/parrainage'
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DepotRoute: DepotRoute,
   FaqRoute: FaqRoute,
+  GroupeRoute: GroupeRoute,
   ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
   PromotionsRoute: PromotionsRoute,
