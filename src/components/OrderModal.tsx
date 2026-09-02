@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { fulfillNow } from "@/lib/sync-user.functions";
 
 export type ServiceCard = {
   id: string;
@@ -98,8 +99,13 @@ export function OrderModal({
       return;
     }
     toast.success("✅ Commande créée !", {
-      description: `${name} × ${quantity} — statut : En attente`,
+      description: `${name} × ${quantity} — envoi automatique au fournisseur…`,
     });
+    try {
+      await fulfillNow({ data: undefined as never });
+    } catch {
+      /* la commande reste en file, elle sera envoyée au prochain cycle */
+    }
     await refresh();
     onOrdered?.();
     onClose();

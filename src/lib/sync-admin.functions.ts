@@ -108,3 +108,36 @@ export const triggerSyncJob = createServerFn({ method: "POST" })
     const result = await runSyncCycle(`manuel:${data.kind}`);
     return result;
   });
+
+export const listProviderServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { search?: string; onlySelected?: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin
+      .from("provider_services")
+      .select("id, provider_service_id, name, category, rate_usd, min_qty, max_qty, selected")
+      .order("name", { ascending: true })
+      .limit(60);
+    if (data.onlySelected) q = q.eq("selected", true);
+    const term = (data.search ?? "").trim();
+    if (term) q = q.or(`name.ilike.%${term}%,category.ilike.%${term}%`);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const toggleProviderService = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; selected: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("provider_services")
+      .update({ selected: data.selected })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
