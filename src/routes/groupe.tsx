@@ -94,7 +94,7 @@ function GroupPage() {
   );
 
   const publish = async () => {
-    if (content.trim().length < 3) return toast.error("Écrivez un message plus long.");
+    if (content.trim().length < 3) { toast.error("Écrivez un message plus long."); return; }
     setBusy(true);
     const { error } = await supabase.from("community_posts").insert({
       user_id: user!.id,
@@ -103,7 +103,7 @@ function GroupPage() {
       content: content.trim(),
     });
     setBusy(false);
-    if (error) return toast.error(`❌ ${error.message}`);
+    if (error) { toast.error(`❌ ${error.message}`); return; }
     setContent("");
     toast.success("✅ Publication envoyée");
     await refetch();
@@ -123,13 +123,13 @@ function GroupPage() {
 
   const moderate = async (post: Post, values: Partial<Post>) => {
     const { error } = await supabase.from("community_posts").update(values).eq("id", post.id);
-    if (error) return toast.error(`❌ ${error.message}`);
+    if (error) { toast.error(`❌ ${error.message}`); return; }
     await refetch();
   };
 
   const remove = async (id: string) => {
     const { error } = await supabase.from("community_posts").delete().eq("id", id);
-    if (error) return toast.error(`❌ ${error.message}`);
+    if (error) { toast.error(`❌ ${error.message}`); return; }
     toast.success("🗑️ Publication supprimée");
     await refetch();
   };
@@ -245,7 +245,7 @@ function PostCard({
       author_name: authorName,
       content: text.trim(),
     });
-    if (error) return toast.error(`❌ ${error.message}`);
+    if (error) { toast.error(`❌ ${error.message}`); return; }
     setText("");
     await onRefetch();
   };
@@ -340,7 +340,7 @@ function PostCard({
             </div>
           )}
         </div>
-      )}
+      ) : null}
     </article>
   );
 }
