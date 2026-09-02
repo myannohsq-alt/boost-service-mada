@@ -340,7 +340,7 @@ function PostCard({
             </div>
           )}
         </div>
-      )}
+      ) : null}
     </article>
   );
 }
