@@ -192,6 +192,9 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
         </button>
       </div>
 
+      <ServicePicker onDone={onDone} />
+
+
       <div className="bsm-card space-y-3 p-4">
         <h3 className="font-display text-sm font-bold">
           🔄 Actions ({data?.selectedCount ?? 0} / {data?.providerCount ?? 0} services sélectionnés)
