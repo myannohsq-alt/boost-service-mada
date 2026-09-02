@@ -5,6 +5,7 @@ import { Layout, Section } from "@/components/Layout";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { AdminSync } from "@/components/AdminSync";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const TABS = ["Recharges", "Commandes", "Services", "Utilisateurs", "Contenus"] as const;
+const TABS = ["Recharges", "Commandes", "Services", "SMMGen", "Utilisateurs", "Contenus"] as const;
 
 function AdminPage() {
   const { isAdmin, loading, user } = useAuth();
@@ -185,6 +186,8 @@ function AdminPage() {
         ) : null}
 
         {tab === "Services" ? <AdminServices onDone={setMsg} /> : null}
+
+        {tab === "SMMGen" ? <AdminSync onDone={setMsg} /> : null}
 
         {tab === "Contenus" ? <AdminContent onDone={setMsg} /> : null}
       </Section>
