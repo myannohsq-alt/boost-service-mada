@@ -6,7 +6,75 @@ import {
   saveProviderSettings,
   resumeSync,
   triggerSyncJob,
+  listProviderServices,
+  toggleProviderService,
 } from "@/lib/sync-admin.functions";
+
+function ServicePicker({ onDone }: { onDone: (msg: string) => void }) {
+  const qc = useQueryClient();
+  const listFn = useServerFn(listProviderServices);
+  const toggleFn = useServerFn(toggleProviderService);
+  const [search, setSearch] = useState("Malagasy");
+  const [onlySelected, setOnlySelected] = useState(false);
+
+  const { data: rows } = useQuery({
+    queryKey: ["provider-services", search, onlySelected],
+    queryFn: () => listFn({ data: { search, onlySelected } }),
+  });
+
+  const toggle = useMutation({
+    mutationFn: (v: { id: string; selected: boolean }) => toggleFn({ data: v }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["provider-services"] });
+      await qc.invalidateQueries({ queryKey: ["sync-overview"] });
+      onDone("✅ Sélection mise à jour — pensez à publier.");
+    },
+    onError: (e: Error) => onDone(`❌ ${e.message}`),
+  });
+
+  return (
+    <div className="bsm-card space-y-3 p-4">
+      <h3 className="font-display text-sm font-bold">🇲🇬 Choisir les services à afficher</h3>
+      <input
+        className="bsm-input w-full"
+        placeholder="Rechercher (ex : Malagasy, Facebook…)"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <label className="flex items-center gap-2 text-xs">
+        <input
+          type="checkbox"
+          checked={onlySelected}
+          onChange={(e) => setOnlySelected(e.target.checked)}
+        />
+        Afficher uniquement les services sélectionnés
+      </label>
+      <div className="max-h-80 space-y-2 overflow-y-auto">
+        {(rows ?? []).map((r) => (
+          <label
+            key={r.id}
+            className="flex items-start gap-2 rounded-lg bg-secondary/60 p-2 text-xs"
+          >
+            <input
+              type="checkbox"
+              checked={Boolean(r.selected)}
+              onChange={(e) => toggle.mutate({ id: r.id, selected: e.target.checked })}
+            />
+            <span>
+              <span className="font-semibold">{r.name}</span>
+              <span className="block text-muted-foreground">
+                #{r.provider_service_id} • {r.category} • {r.rate_usd} USD/1000 • min {r.min_qty}
+              </span>
+            </span>
+          </label>
+        ))}
+        {!rows?.length ? (
+          <p className="text-sm text-muted-foreground">Aucun service trouvé.</p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
   const qc = useQueryClient();
