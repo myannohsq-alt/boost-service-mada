@@ -99,9 +99,9 @@ function DepotPage() {
 
   const submit = async () => {
     const value = Number(amount);
-    if (!Number.isFinite(value) || value < 1000) return toast.error("❌ Dépôt minimum : 1 000 Ar.");
-    if (sender.replace(/\D/g, "").length < 9) return toast.error("❌ Numéro d'envoi invalide.");
-    if (reference.trim().length < 3) return toast.error("❌ Référence transaction obligatoire.");
+    if (!Number.isFinite(value) || value < 1000) { toast.error("❌ Dépôt minimum : 1 000 Ar."); return; }
+    if (sender.replace(/\D/g, "").length < 9) { toast.error("❌ Numéro d'envoi invalide."); return; }
+    if (reference.trim().length < 3) { toast.error("❌ Référence transaction obligatoire."); return; }
 
     setBusy(true);
     const { error } = await supabase.from("recharges").insert({
