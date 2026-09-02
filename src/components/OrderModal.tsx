@@ -98,8 +98,14 @@ export function OrderModal({
       return;
     }
     toast.success("✅ Commande créée !", {
-      description: `${name} × ${quantity} — statut : En attente`,
+      description: `${name} × ${quantity} — envoi automatique au fournisseur…`,
     });
+    try {
+      const { fulfillNow } = await import("@/lib/sync-user.functions");
+      await fulfillNow({ data: undefined as never });
+    } catch {
+      /* la commande reste en file, elle sera envoyée au prochain cycle */
+    }
     await refresh();
     onOrdered?.();
     onClose();
