@@ -14,7 +14,7 @@ export type ServiceCard = {
   unit: number;
   price: number;
   note: string | null;
-  badge?: string | null;
+  badge?: string | null | undefined;
   delivery_time?: string | null;
 };
 
@@ -25,7 +25,7 @@ export const BADGES: Record<string, { label: string; className: string }> = {
   new: { label: "🆕 Nouveau", className: "bg-secondary text-foreground border-border" },
 };
 
-export function ServiceBadge({ badge }: { badge?: string | null }) {
+export function ServiceBadge({ badge }: { badge?: string | null | undefined }) {
   const b = badge ? BADGES[badge] : undefined;
   if (!b) return null;
   return (
