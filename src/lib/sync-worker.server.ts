@@ -6,7 +6,8 @@ const LOCK_NAME = "smmgen-worker";
 const LOCK_SECONDS = 240;
 const MAX_JOBS_PER_RUN = 5;
 const MAX_ORDERS_PER_RECONCILE = 50;
-const MAX_ATTEMPTS = 5;
+const MAX_ATTEMPTS = 2; // first try + one automatic retry
+const RETRY_DELAY_MS = 60_000; // retry a failed request once after 60 seconds
 
 type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
 
@@ -109,14 +110,30 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
         const message = e instanceof Error ? e.message : String(e);
         failed += 1;
         const giveUp = job.attempts + 1 >= MAX_ATTEMPTS || isBlockingError(message);
+        const nextRetry = new Date(Date.now() + RETRY_DELAY_MS).toISOString();
         await db
           .from("sync_jobs")
           .update({
             status: giveUp ? "failed" : "queued",
             last_error: message.slice(0, 500),
-            run_after: new Date(Date.now() + 5 * 60_000).toISOString(),
+            run_after: nextRetry,
           })
           .eq("id", job.id);
+        if (job.kind === "submit_order") {
+          const orderId = (job.payload as { order_id?: string } | null)?.order_id;
+          if (orderId) {
+            await db
+              .from("orders")
+              .update({
+                api_error: message.slice(0, 500),
+                provider_error: message.slice(0, 500),
+                retry_count: job.attempts + 1,
+                next_retry_at: giveUp ? null : nextRetry,
+                ...(giveUp ? { status: "failed" } : {}),
+              })
+              .eq("id", orderId);
+          }
+        }
         if (isBlockingError(message)) blocked = message;
       }
     }
@@ -247,10 +264,16 @@ async function publishSelected(db: Admin, settings: Settings) {
       .select("id")
       .eq("provider_service_id", ps.provider_service_id)
       .maybeSingle();
+    const meta = {
+      provider_name: "SMMGen",
+      provider_min: ps.min_qty,
+      provider_max: ps.max_qty,
+      provider_rate_usd: Number(ps.rate_usd),
+    };
     if (existing) {
       await db
         .from("services")
-        .update({ price, name_fr: ps.name, name_mg: ps.name, category: ps.category, unit: 1000 })
+        .update({ price, name_fr: ps.name, name_mg: ps.name, category: ps.category, unit: 1000, ...meta })
         .eq("id", existing.id);
     } else {
       await db.from("services").insert({
@@ -262,6 +285,7 @@ async function publishSelected(db: Admin, settings: Settings) {
         price,
         provider_service_id: ps.provider_service_id,
         active: true,
+        ...meta,
       });
     }
     count += 1;
@@ -281,26 +305,65 @@ async function submitOrder(
   if (!settings.auto_fulfill) return `envoi automatique désactivé (${orderId})`;
 
   const { data: service } = order.service_id
-    ? await db.from("services").select("provider_service_id").eq("id", order.service_id).maybeSingle()
+    ? await db
+        .from("services")
+        .select("provider_service_id, provider_min, provider_max")
+        .eq("id", order.service_id)
+        .maybeSingle()
     : { data: null };
+
+  // --- mapping + input validation before touching the provider ---
   const providerServiceId = service?.provider_service_id;
   if (!providerServiceId) {
-    await db.from("orders").update({ provider_error: "Service non lié à SMMGen" }).eq("id", orderId);
-    return `commande ${orderId}: service non lié à SMMGen (traitement manuel)`;
+    const msg = "Service non lié à SMMGen (mapping manquant)";
+    await db
+      .from("orders")
+      .update({ provider_error: msg, api_error: msg, status: "failed" })
+      .eq("id", orderId);
+    return `commande ${orderId}: ${msg}`;
+  }
+  if (!/^https?:\/\//i.test(order.target_link ?? "")) {
+    throw new Error("Lien invalide : il doit commencer par http(s)://");
+  }
+  const min = service?.provider_min ?? 1;
+  const max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
+  if (order.quantity < min || order.quantity > max) {
+    throw new Error(`Quantité hors limites fournisseur (min ${min}, max ${max})`);
   }
 
-  const res = await api.add(providerServiceId, order.target_link, order.quantity);
+  const res = await api.add(providerServiceId, order.target_link, order.quantity, orderId);
+  const providerOrderId = res?.order === undefined || res.order === null ? "" : String(res.order);
+  if (!providerOrderId) {
+    const msg = "SMMGen n'a retourné aucun identifiant de commande";
+    await db
+      .from("orders")
+      .update({
+        provider_error: msg,
+        api_error: msg,
+        status: "failed",
+        provider_response: res as never,
+      })
+      .eq("id", orderId);
+    throw new Error(msg);
+  }
+
   await db
     .from("orders")
     .update({
-      provider_order_id: String(res.order),
+      provider_order_id: providerOrderId,
       provider_status: "Pending",
       status: "processing",
       provider_error: "",
+      api_error: "",
+      provider_response: res as never,
+      provider_charge: res.charge === undefined ? null : Number(res.charge),
+      sent_at: new Date().toISOString(),
+      next_retry_at: null,
       last_synced_at: new Date().toISOString(),
+      last_sync_at: new Date().toISOString(),
     })
     .eq("id", orderId);
-  return `commande ${orderId} envoyée (SMMGen #${res.order})`;
+  return `commande ${orderId} envoyée (SMMGen #${providerOrderId})`;
 }
 
 async function reconcileOrders(db: Admin, api: ReturnType<typeof smmgen>) {
@@ -309,7 +372,7 @@ async function reconcileOrders(db: Admin, api: ReturnType<typeof smmgen>) {
     .select("id, provider_order_id, status, provider_status")
     .not("provider_order_id", "is", null)
     .in("status", ["pending", "processing"])
-    .order("last_synced_at", { ascending: true, nullsFirst: true })
+    .order("last_sync_at", { ascending: true, nullsFirst: true })
     .limit(MAX_ORDERS_PER_RECONCILE);
 
   const list = (orders ?? []).filter((o) => o.provider_order_id);
@@ -327,7 +390,9 @@ async function reconcileOrders(db: Admin, api: ReturnType<typeof smmgen>) {
         provider_status: String(s.status ?? ""),
         remains: s.remains === undefined ? null : Number(s.remains),
         start_count: s.start_count === undefined ? null : Number(s.start_count),
+        ...(s.charge === undefined ? {} : { provider_charge: Number(s.charge) }),
         last_synced_at: new Date().toISOString(),
+        last_sync_at: new Date().toISOString(),
         ...(local !== order.status ? { status: local } : {}),
       };
       await db.from("orders").update(patch).eq("id", order.id);
