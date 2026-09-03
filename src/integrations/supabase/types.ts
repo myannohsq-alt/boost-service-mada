@@ -38,6 +38,56 @@ export type Database = {
         }
         Relationships: []
       }
+      api_logs: {
+        Row: {
+          action: string
+          created_at: string
+          duration_ms: number
+          error: string
+          id: string
+          ok: boolean
+          order_id: string | null
+          provider: string
+          request: Json
+          response: Json
+          status_code: number | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          duration_ms?: number
+          error?: string
+          id?: string
+          ok?: boolean
+          order_id?: string | null
+          provider?: string
+          request?: Json
+          response?: Json
+          status_code?: number | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          duration_ms?: number
+          error?: string
+          id?: string
+          ok?: boolean
+          order_id?: string | null
+          provider?: string
+          request?: Json
+          response?: Json
+          status_code?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_logs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_comments: {
         Row: {
           author_name: string
@@ -190,15 +240,22 @@ export type Database = {
         Row: {
           admin_note: string | null
           amount: number
+          api_error: string
           created_at: string
           id: string
+          last_sync_at: string | null
           last_synced_at: string | null
+          next_retry_at: string | null
           notes: string
+          provider_charge: number | null
           provider_error: string
           provider_order_id: string | null
+          provider_response: Json
           provider_status: string
           quantity: number
           remains: number | null
+          retry_count: number
+          sent_at: string | null
           service_id: string | null
           service_label: string
           start_count: number | null
@@ -209,15 +266,22 @@ export type Database = {
         Insert: {
           admin_note?: string | null
           amount: number
+          api_error?: string
           created_at?: string
           id?: string
+          last_sync_at?: string | null
           last_synced_at?: string | null
+          next_retry_at?: string | null
           notes?: string
+          provider_charge?: number | null
           provider_error?: string
           provider_order_id?: string | null
+          provider_response?: Json
           provider_status?: string
           quantity: number
           remains?: number | null
+          retry_count?: number
+          sent_at?: string | null
           service_id?: string | null
           service_label?: string
           start_count?: number | null
@@ -228,15 +292,22 @@ export type Database = {
         Update: {
           admin_note?: string | null
           amount?: number
+          api_error?: string
           created_at?: string
           id?: string
+          last_sync_at?: string | null
           last_synced_at?: string | null
+          next_retry_at?: string | null
           notes?: string
+          provider_charge?: number | null
           provider_error?: string
           provider_order_id?: string | null
+          provider_response?: Json
           provider_status?: string
           quantity?: number
           remains?: number | null
+          retry_count?: number
+          sent_at?: string | null
           service_id?: string | null
           service_label?: string
           start_count?: number | null
@@ -438,11 +509,13 @@ export type Database = {
           ar_per_usd: number
           auto_fulfill: boolean
           created_at: string
+          cron_secret: string
           id: string
           markup_percent: number
           pause_reason: string
           paused: boolean
           singleton: boolean
+          sync_url: string
           updated_at: string
         }
         Insert: {
@@ -451,11 +524,13 @@ export type Database = {
           ar_per_usd?: number
           auto_fulfill?: boolean
           created_at?: string
+          cron_secret?: string
           id?: string
           markup_percent?: number
           pause_reason?: string
           paused?: boolean
           singleton?: boolean
+          sync_url?: string
           updated_at?: string
         }
         Update: {
@@ -464,11 +539,13 @@ export type Database = {
           ar_per_usd?: number
           auto_fulfill?: boolean
           created_at?: string
+          cron_secret?: string
           id?: string
           markup_percent?: number
           pause_reason?: string
           paused?: boolean
           singleton?: boolean
+          sync_url?: string
           updated_at?: string
         }
         Relationships: []
@@ -549,6 +626,10 @@ export type Database = {
           note: string | null
           platform: string
           price: number
+          provider_max: number | null
+          provider_min: number | null
+          provider_name: string
+          provider_rate_usd: number | null
           provider_service_id: string | null
           sort_order: number
           unit: number
@@ -565,6 +646,10 @@ export type Database = {
           note?: string | null
           platform: string
           price: number
+          provider_max?: number | null
+          provider_min?: number | null
+          provider_name?: string
+          provider_rate_usd?: number | null
           provider_service_id?: string | null
           sort_order?: number
           unit?: number
@@ -581,6 +666,10 @@ export type Database = {
           note?: string | null
           platform?: string
           price?: number
+          provider_max?: number | null
+          provider_min?: number | null
+          provider_name?: string
+          provider_rate_usd?: number | null
           provider_service_id?: string | null
           sort_order?: number
           unit?: number
@@ -764,6 +853,7 @@ export type Database = {
         Returns: undefined
       }
       release_sync_lock: { Args: { _name: string }; Returns: undefined }
+      trigger_smmgen_sync: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
