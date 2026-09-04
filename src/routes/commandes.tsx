@@ -64,6 +64,16 @@ function OrdersPage() {
                 <p className="mt-1 text-sm text-gold">
                   {o.quantity} • {formatAr(Number(o.amount))}
                 </p>
+                {o.provider_order_id ? (
+                  <p className="mt-1 text-[11px] text-primary">
+                    🆔 N° fournisseur SMMGen : {o.provider_order_id}
+                    {o.provider_status ? ` • ${o.provider_status}` : ""}
+                    {o.remains !== null && o.remains !== undefined ? ` • restant ${o.remains}` : ""}
+                  </p>
+                ) : null}
+                {o.api_error ? (
+                  <p className="mt-1 text-[11px] text-destructive">⚠️ {o.api_error}</p>
+                ) : null}
                 <p className="mt-1 text-[11px] text-muted-foreground">
                   {new Date(o.created_at).toLocaleString("fr-FR")}
                 </p>
