@@ -112,6 +112,12 @@ function DashboardPage() {
                       {o.quantity} • {formatAr(Number(o.amount))} •{" "}
                       {new Date(o.created_at).toLocaleDateString("fr-FR")}
                     </p>
+                    {o.provider_order_id ? (
+                      <p className="mt-1 text-[11px] text-primary">
+                        🆔 SMMGen #{o.provider_order_id}
+                        {o.provider_status ? ` • ${o.provider_status}` : ""}
+                      </p>
+                    ) : null}
                   </div>
                 ))}
                 {!orders.length ? (
