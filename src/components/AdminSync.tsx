@@ -9,6 +9,8 @@ import {
   listProviderServices,
   toggleProviderService,
 } from "@/lib/sync-admin.functions";
+import { AdminMapping } from "@/components/AdminMapping";
+import { AdminDebug } from "@/components/AdminDebug";
 
 function ServicePicker({ onDone }: { onDone: (msg: string) => void }) {
   const qc = useQueryClient();
