@@ -192,7 +192,12 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
         </button>
       </div>
 
+      <AdminDebug onDone={onDone} />
+
       <ServicePicker onDone={onDone} />
+
+      <AdminMapping onDone={onDone} />
+
 
 
       <div className="bsm-card space-y-3 p-4">
