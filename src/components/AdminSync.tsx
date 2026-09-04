@@ -9,6 +9,8 @@ import {
   listProviderServices,
   toggleProviderService,
 } from "@/lib/sync-admin.functions";
+import { AdminMapping } from "@/components/AdminMapping";
+import { AdminDebug } from "@/components/AdminDebug";
 
 function ServicePicker({ onDone }: { onDone: (msg: string) => void }) {
   const qc = useQueryClient();
@@ -192,7 +194,12 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
         </button>
       </div>
 
+      <AdminDebug onDone={onDone} />
+
       <ServicePicker onDone={onDone} />
+
+      <AdminMapping onDone={onDone} />
+
 
 
       <div className="bsm-card space-y-3 p-4">

@@ -141,3 +141,188 @@ export const toggleProviderService = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ---------------------------------------------------------------- mapping ---
+
+export const runAutoMap = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { autoMapServices } = await import("@/lib/service-mapping.server");
+    return await autoMapServices();
+  });
+
+export const listLocalServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { search?: string; onlyUnmapped?: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin
+      .from("services")
+      .select(
+        "id, platform, category, name_fr, unit, price, active, provider_service_id, provider_name, provider_min, provider_max, provider_rate_usd",
+      )
+      .order("platform", { ascending: true })
+      .limit(200);
+    if (data.onlyUnmapped) q = q.is("provider_service_id", null);
+    const term = (data.search ?? "").trim();
+    if (term) q = q.or(`name_fr.ilike.%${term}%,category.ilike.%${term}%,platform.ilike.%${term}%`);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const setServiceMapping = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { serviceId: string; providerServiceId: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const pid = data.providerServiceId.trim();
+    if (!pid) {
+      const { error } = await supabaseAdmin
+        .from("services")
+        .update({
+          provider_service_id: null,
+          provider_name: "BOOST SERVICE MADA (manuel)",
+          provider_min: null,
+          provider_max: null,
+          provider_rate_usd: null,
+        })
+        .eq("id", data.serviceId);
+      if (error) throw new Error(error.message);
+      return { ok: true, detail: "Mapping retiré" };
+    }
+    const { data: ps } = await supabaseAdmin
+      .from("provider_services")
+      .select("provider_service_id, name, min_qty, max_qty, rate_usd")
+      .eq("provider_service_id", pid)
+      .maybeSingle();
+    if (!ps) throw new Error(`ID SMMGen #${pid} introuvable dans le catalogue importé`);
+    const { error } = await supabaseAdmin
+      .from("services")
+      .update({
+        provider_service_id: ps.provider_service_id,
+        provider_name: "SMMGen",
+        provider_min: ps.min_qty,
+        provider_max: ps.max_qty,
+        provider_rate_usd: Number(ps.rate_usd),
+      })
+      .eq("id", data.serviceId);
+    if (error) throw new Error(error.message);
+    return { ok: true, detail: `Lié à #${pid} — ${ps.name}` };
+  });
+
+// ------------------------------------------------------------------ debug ---
+
+async function apiClient() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: s } = await supabaseAdmin.from("provider_settings").select("*").limit(1).maybeSingle();
+  if (!s?.api_key) throw new Error("Clé API SMMGen non configurée");
+  const { smmgen } = await import("@/lib/smmgen.server");
+  return { api: smmgen(s.api_url, s.api_key), settings: s };
+}
+
+export const smmgenDebug = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { test: "connection" | "balance" | "services" | "status"; order?: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    try {
+      const { api } = await apiClient();
+      if (data.test === "connection" || data.test === "balance") {
+        const b = await api.balance();
+        return { ok: true, detail: `Solde SMMGen : ${b.balance} ${b.currency ?? "USD"}` };
+      }
+      if (data.test === "services") {
+        const list = await api.services();
+        return { ok: true, detail: `${list.length} service(s) disponibles chez SMMGen` };
+      }
+      if (!data.order) throw new Error("Indiquez un ID de commande SMMGen");
+      const s = await api.status(data.order);
+      return { ok: true, detail: `#${data.order} → ${s.status ?? "?"} (restant ${s.remains ?? "—"})` };
+    } catch (e) {
+      return { ok: false, detail: e instanceof Error ? e.message : String(e) };
+    }
+  });
+
+export const getSmmgenStats = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const head = { count: "exact" as const, head: true };
+    const [imported, mapped, activeSvc, sent, failed, logs] = await Promise.all([
+      supabaseAdmin.from("provider_services").select("id", head),
+      supabaseAdmin.from("services").select("id", head).not("provider_service_id", "is", null),
+      supabaseAdmin.from("services").select("id", head).eq("active", true),
+      supabaseAdmin.from("orders").select("id", head).not("provider_order_id", "is", null),
+      supabaseAdmin.from("orders").select("id", head).eq("status", "failed"),
+      supabaseAdmin
+        .from("api_logs")
+        .select("id, action, ok, error, status_code, duration_ms, created_at")
+        .order("created_at", { ascending: false })
+        .limit(20),
+    ]);
+    let balance = "";
+    let balanceError = "";
+    try {
+      const { api } = await apiClient();
+      const b = await api.balance();
+      balance = `${b.balance} ${b.currency ?? "USD"}`;
+    } catch (e) {
+      balanceError = e instanceof Error ? e.message : String(e);
+    }
+    return {
+      balance,
+      balanceError,
+      imported: imported.count ?? 0,
+      mapped: mapped.count ?? 0,
+      activeServices: activeSvc.count ?? 0,
+      sentOrders: sent.count ?? 0,
+      failedOrders: failed.count ?? 0,
+      logs: logs.data ?? [],
+    };
+  });
+
+export const listFailedOrders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows } = await supabaseAdmin
+      .from("orders")
+      .select(
+        "id, service_label, quantity, target_link, status, api_error, provider_error, provider_order_id, retry_count, created_at",
+      )
+      .or("status.eq.failed,api_error.neq.")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    return rows ?? [];
+  });
+
+export const retryOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { orderId: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("id, provider_order_id")
+      .eq("id", data.orderId)
+      .maybeSingle();
+    if (!order) throw new Error("Commande introuvable");
+    if (order.provider_order_id) throw new Error("Commande déjà envoyée à SMMGen");
+    await supabaseAdmin
+      .from("orders")
+      .update({ status: "pending", api_error: "", provider_error: "", retry_count: 0, next_retry_at: null })
+      .eq("id", data.orderId);
+    await supabaseAdmin
+      .from("sync_jobs")
+      .insert({ kind: "submit_order", payload: { order_id: data.orderId } as never, dedupe_key: null });
+    const { runSyncCycle } = await import("@/lib/sync-worker.server");
+    const r = await runSyncCycle(`retry:${data.orderId}`);
+    return { status: r.status, detail: r.detail };
+  });
