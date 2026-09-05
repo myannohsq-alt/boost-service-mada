@@ -1,13 +1,17 @@
 // Background worker for the SMMGen queue (server-only).
-// Bounded batches, single-flight lock, idempotent progress, circuit breaker.
-import { smmgen, mapProviderStatus, type SmmgenService } from "./smmgen.server";
+// Bounded batches, single-flight lock, idempotent progress, rate-limit aware
+// backoff, and a circuit breaker for terminal provider errors.
+import { smmgen, mapProviderStatus, isRateLimit, RateLimitError, type SmmgenService } from "./smmgen.server";
 
 const LOCK_NAME = "smmgen-worker";
 const LOCK_SECONDS = 240;
-const MAX_JOBS_PER_RUN = 5;
-const MAX_ORDERS_PER_RECONCILE = 50;
-const MAX_ATTEMPTS = 2; // first try + one automatic retry
-const RETRY_DELAY_MS = 60_000; // retry a failed request once after 60 seconds
+const MAX_JOBS_PER_RUN = 8;
+const MAX_ORDERS_PER_RECONCILE = 200; // spread over batched status calls
+const STATUS_BATCH_SIZE = 100; // SMMGen multi-status batch
+const MAX_STATUS_BATCHES = 2;
+const MAX_ATTEMPTS = 8; // plenty of room for transient 429s
+const BALANCE_TTL_MS = 10 * 60_000;
+const SERVICES_TTL_MS = 12 * 60 * 60_000;
 
 type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
 
@@ -24,6 +28,7 @@ export type CycleResult = {
   runId?: string | undefined;
 };
 
+// Terminal errors: retrying the same request cannot succeed.
 function isBlockingError(message: string): boolean {
   const m = message.toLowerCase();
   return (
@@ -33,6 +38,12 @@ function isBlockingError(message: string): boolean {
     m.includes("insufficient") ||
     m.includes("unauthor")
   );
+}
+
+// Exponential backoff (with jitter) for a queued job attempt.
+function jobBackoffMs(attempts: number) {
+  const base = Math.min(60_000 * 2 ** Math.max(0, attempts - 1), 30 * 60_000);
+  return base + Math.floor(Math.random() * 15_000);
 }
 
 export async function enqueueJob(kind: string, payload: Record<string, unknown> = {}, dedupeKey?: string) {
@@ -45,12 +56,58 @@ export async function enqueueJob(kind: string, payload: Record<string, unknown> 
   if (error && !error.message.includes("duplicate key")) throw new Error(error.message);
 }
 
+// Re-queue orders that were paid for but never reached the provider (missed
+// trigger, worker crash, exhausted attempts). Idempotent: skips orders that
+// already have a live job.
+async function sweepUnsentOrders(db: Admin): Promise<number> {
+  const cutoff = new Date(Date.now() - 90_000).toISOString();
+  const { data: orders } = await db
+    .from("orders")
+    .select("id")
+    .is("provider_order_id", null)
+    .in("status", ["pending", "processing"])
+    .lt("created_at", cutoff)
+    .order("created_at", { ascending: true })
+    .limit(25);
+
+  let queued = 0;
+  for (const o of orders ?? []) {
+    const { data: live } = await db
+      .from("sync_jobs")
+      .select("id")
+      .eq("kind", "submit_order")
+      .in("status", ["queued", "running"])
+      .contains("payload", { order_id: o.id } as never)
+      .maybeSingle();
+    if (live) continue;
+    const { error } = await db.from("sync_jobs").insert({
+      kind: "submit_order",
+      payload: { order_id: o.id } as never,
+      dedupe_key: null,
+    });
+    if (!error) queued += 1;
+  }
+  return queued;
+}
+
 export async function runSyncCycle(trigger: string): Promise<CycleResult> {
   const db = await admin();
 
   const { data: settings } = await db.from("provider_settings").select("*").limit(1).maybeSingle();
   if (!settings || !settings.api_key) {
     return { status: "skipped", detail: "Clé API SMMGen non configurée", processed: 0, failed: 0 };
+  }
+
+  // Global rate-limit cooldown: back off entirely until the window expires.
+  const cooldown = settings.rate_limited_until ? Date.parse(settings.rate_limited_until) : 0;
+  if (cooldown > Date.now()) {
+    const secs = Math.ceil((cooldown - Date.now()) / 1000);
+    return {
+      status: "skipped",
+      detail: `Fournisseur limité (429) — reprise dans ${secs}s`,
+      processed: 0,
+      failed: 0,
+    };
   }
 
   const { data: locked } = await db.rpc("acquire_sync_lock", {
@@ -76,8 +133,14 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
   let failed = 0;
   const notes: string[] = [];
   let blocked = "";
+  let rateLimited = false;
 
   try {
+    if (!paused) {
+      const swept = await sweepUnsentOrders(db);
+      if (swept) notes.push(`${swept} commande(s) remise(s) en file`);
+    }
+
     const { data: jobs } = await db
       .from("sync_jobs")
       .select("*")
@@ -87,7 +150,7 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
       .limit(jobLimit);
 
     for (const job of jobs ?? []) {
-      if (blocked) break;
+      if (blocked || rateLimited) break;
       // Claim atomically: a concurrent worker loses the update and skips the job.
       const { data: claimed } = await db
         .from("sync_jobs")
@@ -108,17 +171,27 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
         processed += 1;
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
+        const limited = isRateLimit(e);
         failed += 1;
-        const giveUp = job.attempts + 1 >= MAX_ATTEMPTS || isBlockingError(message);
-        const nextRetry = new Date(Date.now() + RETRY_DELAY_MS).toISOString();
+
+        const attempts = job.attempts + 1;
+        const giveUp = !limited && (attempts >= MAX_ATTEMPTS || isBlockingError(message));
+        const delay = limited
+          ? Math.max(e instanceof RateLimitError ? e.retryAfterMs : 60_000, 60_000)
+          : jobBackoffMs(attempts);
+        const nextRetry = new Date(Date.now() + delay).toISOString();
+
         await db
           .from("sync_jobs")
           .update({
             status: giveUp ? "failed" : "queued",
+            // A 429 is not the job's fault: don't burn an attempt.
+            ...(limited ? { attempts: job.attempts } : {}),
             last_error: message.slice(0, 500),
             run_after: nextRetry,
           })
           .eq("id", job.id);
+
         if (job.kind === "submit_order") {
           const orderId = (job.payload as { order_id?: string } | null)?.order_id;
           if (orderId) {
@@ -127,27 +200,40 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
               .update({
                 api_error: message.slice(0, 500),
                 provider_error: message.slice(0, 500),
-                retry_count: job.attempts + 1,
+                retry_count: attempts,
                 next_retry_at: giveUp ? null : nextRetry,
-                ...(giveUp ? { status: "failed" } : {}),
+                // Keep the order pending until it is really sent.
+                status: giveUp ? "failed" : "pending",
               })
               .eq("id", orderId);
           }
         }
-        if (isBlockingError(message)) blocked = message;
+
+        if (limited) {
+          rateLimited = true;
+          notes.push("⏳ limite de débit SMMGen atteinte — reprise automatique");
+        } else if (isBlockingError(message)) {
+          blocked = message;
+        }
       }
     }
 
-    if (!blocked && !paused) {
+    if (!blocked && !rateLimited && !paused) {
       const r = await reconcileOrders(db, api);
       processed += r.updated;
       if (r.error) {
         failed += 1;
-        if (isBlockingError(r.error)) blocked = r.error;
+        if (isRateLimit(r.error)) rateLimited = true;
+        else if (isBlockingError(r.error)) blocked = r.error;
         notes.push(`réconciliation: ${r.error}`);
       } else {
         notes.push(`réconciliation: ${r.checked} vérifiée(s), ${r.updated} corrigée(s)`);
       }
+    }
+
+    if (!blocked && !rateLimited && !paused) {
+      const note = await refreshBalanceCache(db, api, settings);
+      if (note) notes.push(note);
     }
 
     if (blocked) {
@@ -202,7 +288,40 @@ type Settings = {
   ar_per_usd: number;
   markup_percent: number;
   auto_fulfill: boolean;
+  balance_cached_at?: string | null;
+  services_synced_at?: string | null;
 };
+
+// Balance is read from this cache by the admin screens: never live per page load.
+async function refreshBalanceCache(
+  db: Admin,
+  api: ReturnType<typeof smmgen>,
+  settings: Settings,
+): Promise<string> {
+  const last = settings.balance_cached_at ? Date.parse(settings.balance_cached_at) : 0;
+  if (Date.now() - last < BALANCE_TTL_MS) return "";
+  try {
+    const b = await api.balance();
+    await db
+      .from("provider_settings")
+      .update({
+        balance_value: String(b.balance ?? ""),
+        balance_currency: String(b.currency ?? "USD"),
+        balance_error: "",
+        balance_cached_at: new Date().toISOString(),
+        rate_limited_until: null,
+      })
+      .eq("id", settings.id);
+    return `solde mis à jour: ${b.balance} ${b.currency ?? "USD"}`;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    await db
+      .from("provider_settings")
+      .update({ balance_error: message.slice(0, 300), balance_cached_at: new Date().toISOString() })
+      .eq("id", settings.id);
+    return `solde indisponible: ${message.slice(0, 120)}`;
+  }
+}
 
 async function handleJob(
   db: Admin,
@@ -226,6 +345,12 @@ async function handleJob(
 }
 
 async function importServices(db: Admin, api: ReturnType<typeof smmgen>, settings: Settings) {
+  // The catalogue barely changes: skip the (very large) call when it is fresh.
+  const last = settings.services_synced_at ? Date.parse(settings.services_synced_at) : 0;
+  if (Date.now() - last < SERVICES_TTL_MS) {
+    const published = await publishSelected(db, settings);
+    return `catalogue déjà à jour (cache) • ${published}`;
+  }
   const list = (await api.services()) as SmmgenService[];
   const now = new Date().toISOString();
   const rows = list.map((s) => ({
@@ -246,6 +371,7 @@ async function importServices(db: Admin, api: ReturnType<typeof smmgen>, setting
       .upsert(chunk, { onConflict: "provider_service_id", ignoreDuplicates: false });
     if (error) throw new Error(error.message);
   }
+  await db.from("provider_settings").update({ services_synced_at: now }).eq("id", settings.id);
   const published = await publishSelected(db, settings);
   return `import: ${rows.length} service(s) fournisseur • ${published}`;
 }
@@ -301,6 +427,7 @@ async function submitOrder(
 ) {
   const { data: order } = await db.from("orders").select("*").eq("id", orderId).maybeSingle();
   if (!order) throw new Error("Commande introuvable");
+  // Duplicate guard: never send the same order twice.
   if (order.provider_order_id) return `commande ${orderId} déjà envoyée`;
   if (!settings.auto_fulfill) return `envoi automatique désactivé (${orderId})`;
 
@@ -378,28 +505,38 @@ async function reconcileOrders(db: Admin, api: ReturnType<typeof smmgen>) {
   const list = (orders ?? []).filter((o) => o.provider_order_id);
   if (!list.length) return { checked: 0, updated: 0, error: "" };
 
-  try {
-    const statuses = await api.multiStatus(list.map((o) => String(o.provider_order_id)));
-    let updated = 0;
-    for (const order of list) {
-      const key = String(order.provider_order_id);
-      const s = statuses?.[key];
-      if (!s || s.error) continue;
-      const local = mapProviderStatus(s.status);
-      const patch = {
-        provider_status: String(s.status ?? ""),
-        remains: s.remains === undefined ? null : Number(s.remains),
-        start_count: s.start_count === undefined ? null : Number(s.start_count),
-        ...(s.charge === undefined ? {} : { provider_charge: Number(s.charge) }),
-        last_synced_at: new Date().toISOString(),
-        last_sync_at: new Date().toISOString(),
-        ...(local !== order.status ? { status: local } : {}),
-      };
-      await db.from("orders").update(patch).eq("id", order.id);
-      if (local !== order.status) updated += 1;
-    }
-    return { checked: list.length, updated, error: "" };
-  } catch (e) {
-    return { checked: list.length, updated: 0, error: e instanceof Error ? e.message : String(e) };
+  // Batched status checks: up to 100 orders per provider request.
+  const batches: (typeof list)[] = [];
+  for (let i = 0; i < list.length && batches.length < MAX_STATUS_BATCHES; i += STATUS_BATCH_SIZE) {
+    batches.push(list.slice(i, i + STATUS_BATCH_SIZE));
   }
+
+  let updated = 0;
+  let checked = 0;
+  for (const batch of batches) {
+    try {
+      const statuses = await api.multiStatus(batch.map((o) => String(o.provider_order_id)));
+      checked += batch.length;
+      for (const order of batch) {
+        const key = String(order.provider_order_id);
+        const s = statuses?.[key];
+        if (!s || s.error) continue;
+        const local = mapProviderStatus(s.status);
+        const patch = {
+          provider_status: String(s.status ?? ""),
+          remains: s.remains === undefined ? null : Number(s.remains),
+          start_count: s.start_count === undefined ? null : Number(s.start_count),
+          ...(s.charge === undefined ? {} : { provider_charge: Number(s.charge) }),
+          last_synced_at: new Date().toISOString(),
+          last_sync_at: new Date().toISOString(),
+          ...(local !== order.status ? { status: local } : {}),
+        };
+        await db.from("orders").update(patch).eq("id", order.id);
+        if (local !== order.status) updated += 1;
+      }
+    } catch (e) {
+      return { checked, updated, error: e instanceof Error ? e.message : String(e) };
+    }
+  }
+  return { checked, updated, error: "" };
 }
