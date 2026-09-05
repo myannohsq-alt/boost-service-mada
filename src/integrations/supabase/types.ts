@@ -508,12 +508,19 @@ export type Database = {
           api_url: string
           ar_per_usd: number
           auto_fulfill: boolean
+          balance_cached_at: string | null
+          balance_currency: string
+          balance_error: string
+          balance_value: string
           created_at: string
           cron_secret: string
           id: string
           markup_percent: number
           pause_reason: string
           paused: boolean
+          rate_limit_hits: number
+          rate_limited_until: string | null
+          services_synced_at: string | null
           singleton: boolean
           sync_url: string
           updated_at: string
@@ -523,12 +530,19 @@ export type Database = {
           api_url?: string
           ar_per_usd?: number
           auto_fulfill?: boolean
+          balance_cached_at?: string | null
+          balance_currency?: string
+          balance_error?: string
+          balance_value?: string
           created_at?: string
           cron_secret?: string
           id?: string
           markup_percent?: number
           pause_reason?: string
           paused?: boolean
+          rate_limit_hits?: number
+          rate_limited_until?: string | null
+          services_synced_at?: string | null
           singleton?: boolean
           sync_url?: string
           updated_at?: string
@@ -538,12 +552,19 @@ export type Database = {
           api_url?: string
           ar_per_usd?: number
           auto_fulfill?: boolean
+          balance_cached_at?: string | null
+          balance_currency?: string
+          balance_error?: string
+          balance_value?: string
           created_at?: string
           cron_secret?: string
           id?: string
           markup_percent?: number
           pause_reason?: string
           paused?: boolean
+          rate_limit_hits?: number
+          rate_limited_until?: string | null
+          services_synced_at?: string | null
           singleton?: boolean
           sync_url?: string
           updated_at?: string
