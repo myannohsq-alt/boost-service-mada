@@ -68,7 +68,12 @@ export function AdminDebug({ onDone }: { onDone: (msg: string) => void }) {
       </div>
       {stats?.balanceError ? (
         <p className="text-xs text-destructive">Solde indisponible : {stats.balanceError}</p>
+      ) : stats?.balanceAt ? (
+        <p className="text-[11px] text-muted-foreground">
+          Solde mémorisé — mis à jour le {new Date(stats.balanceAt).toLocaleString("fr-FR")}
+        </p>
       ) : null}
+
 
       <div className="bsm-card space-y-3 p-4">
         <h3 className="font-display text-sm font-bold">🧪 Panneau de test</h3>

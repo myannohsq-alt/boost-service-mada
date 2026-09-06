@@ -230,11 +230,23 @@ export const smmgenDebug = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
     try {
-      const { api } = await apiClient();
+      const { api, settings } = await apiClient();
       if (data.test === "connection" || data.test === "balance") {
         const b = await api.balance();
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin
+          .from("provider_settings")
+          .update({
+            balance_value: String(b.balance ?? ""),
+            balance_currency: String(b.currency ?? "USD"),
+            balance_error: "",
+            balance_cached_at: new Date().toISOString(),
+            rate_limited_until: null,
+          })
+          .eq("id", settings.id);
         return { ok: true, detail: `Solde SMMGen : ${b.balance} ${b.currency ?? "USD"}` };
       }
+
       if (data.test === "services") {
         const list = await api.services();
         return { ok: true, detail: `${list.length} service(s) disponibles chez SMMGen` };
@@ -265,18 +277,20 @@ export const getSmmgenStats = createServerFn({ method: "POST" })
         .order("created_at", { ascending: false })
         .limit(20),
     ]);
-    let balance = "";
-    let balanceError = "";
-    try {
-      const { api } = await apiClient();
-      const b = await api.balance();
-      balance = `${b.balance} ${b.currency ?? "USD"}`;
-    } catch (e) {
-      balanceError = e instanceof Error ? e.message : String(e);
-    }
+    // Balance comes from the cached value refreshed by the background worker,
+    // never from a live provider call on page load (429 protection).
+    const { data: s } = await supabaseAdmin
+      .from("provider_settings")
+      .select("balance_value, balance_currency, balance_error, balance_cached_at, rate_limited_until")
+      .limit(1)
+      .maybeSingle();
+    const balance = s?.balance_value ? `${s.balance_value} ${s.balance_currency || "USD"}` : "";
+    const balanceError = balance ? "" : (s?.balance_error ?? "");
     return {
       balance,
       balanceError,
+      balanceAt: s?.balance_cached_at ?? null,
+      rateLimitedUntil: s?.rate_limited_until ?? null,
       imported: imported.count ?? 0,
       mapped: mapped.count ?? 0,
       activeServices: activeSvc.count ?? 0,
@@ -284,6 +298,7 @@ export const getSmmgenStats = createServerFn({ method: "POST" })
       failedOrders: failed.count ?? 0,
       logs: logs.data ?? [],
     };
+
   });
 
 export const listFailedOrders = createServerFn({ method: "POST" })
