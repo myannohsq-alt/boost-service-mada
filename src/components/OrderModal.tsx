@@ -5,6 +5,7 @@ import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { fulfillNow } from "@/lib/sync-user.functions";
+import type { ServiceGroup } from "@/lib/service-groups";
 
 export type ServiceCard = {
   id: string;
@@ -38,17 +39,23 @@ export function ServiceBadge({ badge }: { badge?: string | null | undefined }) {
   );
 }
 
+const QUICK = [100, 500, 1000, 5000];
+
 export function OrderModal({
-  service,
+  group,
   onClose,
   onOrdered,
 }: {
-  service: ServiceCard;
+  group: ServiceGroup;
   onClose: () => void;
   onOrdered?: () => void;
 }) {
   const { lang } = useI18n();
   const { user, profile, refresh } = useAuth();
+  const [optionKey, setOptionKey] = useState(group.options[0]?.key ?? "");
+  const option = group.options.find((o) => o.key === optionKey) ?? group.options[0]!;
+  const service = option.service;
+
   const [quantity, setQuantity] = useState(service.unit);
   const [link, setLink] = useState("");
   const [promo, setPromo] = useState("");
@@ -62,9 +69,9 @@ export function OrderModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const name = lang === "mg" ? service.name_mg : service.name_fr;
+  const name = lang === "mg" ? group.nameMg : group.nameFr;
   const cost = useMemo(
-    () => Math.ceil((quantity / service.unit) * Number(service.price)),
+    () => Math.ceil((Math.max(quantity, 0) / service.unit) * Number(service.price)),
     [quantity, service],
   );
   const balance = Number(profile?.balance ?? 0);
@@ -72,8 +79,8 @@ export function OrderModal({
 
   const submit = async () => {
     setError(null);
-    if (!link.trim()) {
-      setError("⚠️ Le lien est obligatoire.");
+    if (!/^https?:\/\/\S+/i.test(link.trim())) {
+      setError("⚠️ Entrez un lien valide commençant par https://");
       return;
     }
     if (quantity < service.unit) {
@@ -99,7 +106,7 @@ export function OrderModal({
       return;
     }
     toast.success("✅ Commande créée !", {
-      description: `${name} × ${quantity} — envoi automatique au fournisseur…`,
+      description: `${name} × ${quantity} — traitement automatique en cours…`,
     });
     try {
       await fulfillNow({ data: undefined as never });
@@ -113,20 +120,20 @@ export function OrderModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 p-3 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md animate-in slide-in-from-bottom-4 fade-in overflow-hidden rounded-3xl border border-primary/60 bg-card shadow-[0_0_40px_-6px_oklch(0.86_0.26_152_/_0.45)]"
+        className="w-full max-w-md animate-in slide-in-from-bottom-4 fade-in overflow-hidden rounded-t-3xl border border-primary/60 bg-card shadow-[0_0_40px_-6px_var(--color-primary)] sm:rounded-3xl"
       >
-        <div className="max-h-[85vh] overflow-y-auto p-5">
+        <div className="max-h-[88vh] overflow-y-auto p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <ServiceBadge badge={service.badge} />
+              <ServiceBadge badge={group.badge} />
               <h2 className="mt-1 font-display text-lg font-bold">{name}</h2>
               <p className="text-[11px] uppercase tracking-wide text-primary">
-                {service.platform} • {service.category}
+                {group.platform} • {group.category}
               </p>
             </div>
             <button
@@ -138,27 +145,6 @@ export function OrderModal({
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded-xl bg-secondary/60 p-3">
-              <p className="text-muted-foreground">🆔 ID service</p>
-              <p className="mt-0.5 truncate font-mono">{service.id.slice(0, 8)}</p>
-            </div>
-            <div className="rounded-xl bg-secondary/60 p-3">
-              <p className="text-muted-foreground">💵 Prix</p>
-              <p className="mt-0.5 font-semibold text-gold">
-                {service.unit} = {formatAr(Number(service.price))}
-              </p>
-            </div>
-            <div className="rounded-xl bg-secondary/60 p-3">
-              <p className="text-muted-foreground">⏱️ Livraison estimée</p>
-              <p className="mt-0.5 font-semibold">{service.delivery_time || "0-6 h"}</p>
-            </div>
-            <div className="rounded-xl bg-secondary/60 p-3">
-              <p className="text-muted-foreground">💰 Mon solde</p>
-              <p className="mt-0.5 font-semibold text-primary">{formatAr(balance)}</p>
-            </div>
-          </div>
-
           {!user ? (
             <div className="mt-4 text-sm">
               <p>Vous devez être connecté pour commander.</p>
@@ -167,31 +153,73 @@ export function OrderModal({
               </Link>
             </div>
           ) : (
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-4">
+              {group.options.length > 1 ? (
+                <div>
+                  <label className="text-xs text-muted-foreground">🎛️ Option</label>
+                  <div className="mt-1.5 flex flex-wrap gap-2">
+                    {group.options.map((o) => (
+                      <button
+                        key={o.key}
+                        onClick={() => {
+                          setOptionKey(o.key);
+                          setQuantity((q) => Math.max(q, o.service.unit));
+                        }}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
+                          o.key === option.key
+                            ? "border-primary bg-primary/15 text-primary"
+                            : "border-border bg-secondary/60 text-muted-foreground"
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div>
-                <label className="text-xs text-muted-foreground">
-                  🔗 Lien (Facebook / TikTok / Instagram / YouTube)
-                </label>
+                <label className="text-xs text-muted-foreground">🔗 Lien de la publication / du profil</label>
                 <input
                   value={link}
                   maxLength={500}
+                  inputMode="url"
                   onChange={(e) => setLink(e.target.value)}
                   placeholder="https://..."
                   className="bsm-input mt-1"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground">🔢 Quantité</label>
-                  <input
-                    type="number"
-                    min={service.unit}
-                    step={service.unit}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="bsm-input mt-1"
-                  />
+
+              <div>
+                <label className="text-xs text-muted-foreground">
+                  🔢 Quantité (min. {service.unit})
+                </label>
+                <input
+                  type="number"
+                  min={service.unit}
+                  step={service.unit}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="bsm-input mt-1"
+                />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {QUICK.filter((q) => q >= service.unit).map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => setQuantity(q)}
+                      className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
+                        quantity === q
+                          ? "border-gold bg-gold/15 text-gold"
+                          : "border-border bg-secondary/60 text-muted-foreground"
+                      }`}
+                    >
+                      {q.toLocaleString("fr-FR")}
+                    </button>
+                  ))}
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-muted-foreground">🎟️ Code promo</label>
                   <input
@@ -201,7 +229,12 @@ export function OrderModal({
                     className="bsm-input mt-1"
                   />
                 </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">⏱️ Livraison</label>
+                  <p className="bsm-input mt-1 !py-2 text-sm">{group.deliveryTime}</p>
+                </div>
               </div>
+
               <div>
                 <label className="text-xs text-muted-foreground">📝 Notes (optionnel)</label>
                 <textarea
@@ -209,13 +242,19 @@ export function OrderModal({
                   maxLength={500}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Instructions particulières…"
-                  className="bsm-input mt-1 min-h-16"
+                  className="bsm-input mt-1 min-h-14"
                 />
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-gold/40 bg-secondary p-3 text-sm">
-                <span>Total à payer</span>
-                <span className="font-display text-lg font-bold text-gold">{formatAr(cost)}</span>
+              <div className="rounded-2xl border border-gold/40 bg-secondary p-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span>💰 Mon solde</span>
+                  <span className="font-semibold text-primary">{formatAr(balance)}</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
+                  <span>Total à payer</span>
+                  <span className="font-display text-xl font-bold text-gold">{formatAr(cost)}</span>
+                </div>
               </div>
 
               {insufficient ? (
@@ -238,18 +277,16 @@ export function OrderModal({
                 <p className="rounded-lg bg-secondary p-3 text-xs text-gold">{error}</p>
               ) : null}
 
-              <div className="flex gap-2 pt-1">
-                <button
-                  disabled={busy || insufficient}
-                  onClick={submit}
-                  className="bsm-btn bsm-btn-primary flex-1 transition-transform active:scale-95 disabled:opacity-50"
-                >
-                  {busy ? "⏳ Envoi…" : "🚀 Commander maintenant"}
-                </button>
-                <button onClick={onClose} className="bsm-btn bsm-btn-ghost">
-                  Annuler
-                </button>
-              </div>
+              <button
+                disabled={busy || insufficient}
+                onClick={submit}
+                className="bsm-btn bsm-btn-primary w-full !py-4 !text-base font-bold transition-transform active:scale-95 disabled:opacity-50"
+              >
+                {busy ? "⏳ Envoi…" : `🚀 Commander — ${formatAr(cost)}`}
+              </button>
+              <button onClick={onClose} className="bsm-btn bsm-btn-ghost w-full !py-2 !text-xs">
+                Annuler
+              </button>
             </div>
           )}
         </div>
