@@ -1,0 +1,92 @@
+import type { ServiceCard } from "@/components/OrderModal";
+
+export type ServiceOption = {
+  key: string;
+  label: string;
+  service: ServiceCard;
+};
+
+export type ServiceGroup = {
+  key: string;
+  platform: string;
+  category: string;
+  nameFr: string;
+  nameMg: string;
+  note: string | null;
+  badge?: string | null | undefined;
+  deliveryTime: string;
+  options: ServiceOption[];
+  /** cheapest unit price (Ar per single unit) across the group */
+  unitPrice: number;
+};
+
+const PACK_RE = /\s*\((\d+)\s*k\)\s*/i;
+
+function splitName(raw: string): { base: string; option: string } {
+  const clean = raw.replace(PACK_RE, " ").replace(/\s+/g, " ").trim();
+  const idx = clean.search(/[—–-]\s/);
+  if (idx < 0) return { base: clean, option: "" };
+  return { base: clean.slice(0, idx).trim(), option: clean.slice(idx + 1).trim() };
+}
+
+const OPTION_ICONS: { test: RegExp; icon: string }[] = [
+  { test: /invisible|tsy hita/i, icon: "🕶️" },
+  { test: /visible|hita/i, icon: "👁️" },
+  { test: /rapide|speed|fast|haingana/i, icon: "⚡" },
+  { test: /lent|slow|drip/i, icon: "🐢" },
+  { test: /premium|hq|qualit/i, icon: "💎" },
+];
+
+function optionLabel(raw: string): string {
+  const label = raw.replace(/^boost\s+/i, "").trim();
+  const found = OPTION_ICONS.find((o) => o.test.test(label));
+  return `${found ? `${found.icon} ` : ""}${label.charAt(0).toUpperCase()}${label.slice(1)}`;
+}
+
+/**
+ * Turns the flat service list into one orderable product per platform + name,
+ * with the naming variants ("Boost Visible", "Boost Invisible", packs 1K…)
+ * exposed as option buttons instead of separate cards.
+ */
+export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
+  const map = new Map<string, ServiceGroup>();
+
+  for (const s of services) {
+    const fr = splitName(s.name_fr);
+    const mg = splitName(s.name_mg || s.name_fr);
+    const key = `${s.platform}|${fr.base.toLowerCase()}`;
+    const unitPrice = Number(s.price) / Math.max(1, s.unit);
+
+    let group = map.get(key);
+    if (!group) {
+      group = {
+        key,
+        platform: s.platform,
+        category: s.category,
+        nameFr: fr.base,
+        nameMg: mg.base,
+        note: s.note,
+        badge: s.badge ?? null,
+        deliveryTime: s.delivery_time || "0-6 h",
+        options: [],
+        unitPrice,
+      };
+      map.set(key, group);
+    }
+
+    if (!group.badge && s.badge) group.badge = s.badge;
+    if (!group.note && s.note) group.note = s.note;
+    if (unitPrice < group.unitPrice) group.unitPrice = unitPrice;
+
+    const label = fr.option ? optionLabel(fr.option) : "🚀 Standard";
+    const existing = group.options.find((o) => o.key === label);
+    if (!existing) {
+      group.options.push({ key: label, label, service: s });
+    } else if (s.unit < existing.service.unit) {
+      // keep the smallest pack: quantity is free-form anyway
+      existing.service = s;
+    }
+  }
+
+  return [...map.values()];
+}
