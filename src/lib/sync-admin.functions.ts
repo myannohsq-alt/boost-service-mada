@@ -230,11 +230,23 @@ export const smmgenDebug = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as never);
     try {
-      const { api } = await apiClient();
+      const { api, settings } = await apiClient();
       if (data.test === "connection" || data.test === "balance") {
         const b = await api.balance();
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin
+          .from("provider_settings")
+          .update({
+            balance_value: String(b.balance ?? ""),
+            balance_currency: String(b.currency ?? "USD"),
+            balance_error: "",
+            balance_cached_at: new Date().toISOString(),
+            rate_limited_until: null,
+          })
+          .eq("id", settings.id);
         return { ok: true, detail: `Solde SMMGen : ${b.balance} ${b.currency ?? "USD"}` };
       }
+
       if (data.test === "services") {
         const list = await api.services();
         return { ok: true, detail: `${list.length} service(s) disponibles chez SMMGen` };
