@@ -13,6 +13,8 @@ export const Route = createFileRoute("/admin")({
       { title: "Administration — BOOST SERVICE MADA" },
       { name: "description", content: "Espace administrateur : recharges, commandes et contenus." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Administration — BOOST SERVICE MADA" },
       { property: "og:description", content: "Espace réservé aux administrateurs." },
     ],

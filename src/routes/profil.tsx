@@ -14,6 +14,8 @@ export const Route = createFileRoute("/profil")({
         name: "description",
         content: "Consultez votre solde, vos gains de parrainage, vos commandes et vos recharges.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Mon profil — BOOST SERVICE MADA" },
       { property: "og:description", content: "Solde, historique et gains de parrainage." },
     ],

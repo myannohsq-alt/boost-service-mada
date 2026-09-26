@@ -10,6 +10,8 @@ export const Route = createFileRoute("/faq")({
         content:
           "Questions fréquentes : dépôt minimum, recharge, rapidité des services, remboursement et support.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "FAQ — BOOST SERVICE MADA" },
       { property: "og:description", content: "Toutes les réponses à vos questions." },
     ],

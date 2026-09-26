@@ -15,6 +15,8 @@ export const Route = createFileRoute("/parrainage")({
         name: "description",
         content: "Partagez votre lien de parrainage, invitez vos amis et gagnez des récompenses.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Parrainage — BOOST SERVICE MADA" },
       { property: "og:description", content: "Invitez vos amis et gagnez." },
     ],

@@ -14,6 +14,8 @@ export const Route = createFileRoute("/recharge")({
         content:
           "Rechargez votre solde : envoyez l'argent au numéro Mobile Money puis validez avec la référence de transaction.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Recharge — BOOST SERVICE MADA" },
       { property: "og:description", content: "Créditez votre compte en quelques secondes." },
     ],

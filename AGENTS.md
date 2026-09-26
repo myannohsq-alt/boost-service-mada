@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep one `ServiceForm` for all catalogue orders and use `reaction:<key>` in order notes for reaction routing; this preserves the existing order RPC and lets the server select the correct provider product.
+- Treat catalogue pack `unit` as a pricing divisor rather than a universal order minimum; the public minimum is 100 and the backend validates provider limits before charging.

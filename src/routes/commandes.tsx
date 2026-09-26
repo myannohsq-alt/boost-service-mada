@@ -14,6 +14,8 @@ export const Route = createFileRoute("/commandes")({
         name: "description",
         content: "Suivez le statut de vos commandes de boost : en attente, en cours ou terminée.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Mes commandes — BOOST SERVICE MADA" },
       { property: "og:description", content: "Suivi en temps réel de vos commandes." },
     ],

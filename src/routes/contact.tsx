@@ -12,6 +12,8 @@ export const Route = createFileRoute("/contact")({
         content:
           "Contactez le support BOOST SERVICE MADA sur Messenger BOOST & SERVICE ou WhatsApp +261 37 51 410 25.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Contact — BOOST SERVICE MADA" },
       { property: "og:description", content: "Support disponible 24h/24." },
     ],
