@@ -10,10 +10,11 @@
 - [x] Correction des alertes de sécurité (commande visiteurs, réglages internes admin).
 - [x] Simplifier « Reaction amin'ny Commentaire » : lien + nom de la personne + 6 réactions + quantité, 2 000 Ar/100, nom transmis au fournisseur.
 - [x] Menu client limité à RECHARGE, Suivi des commandes, Groupe de discussion, Tutoriel, Déconnexion ; menu admin inchangé ; affichage vérifié.
-- [x] Publication du nouveau menu demandée pour boostmada.app (déploiement en attente).
+- [x] Publication du nouveau menu demandée pour boostmada.app (en ligne).
 
 - [x] Remplacer l’accueil par la connexion épurée et rediriger les membres vers Services ; vérifier sur téléphone et ordinateur.
 - [x] Appliquer le style bleu nuit/orange à la connexion et aux couleurs communes, avec invitation d'installation différée et chat flottant.
 - [ ] Fournir l'APK réel pour activer le téléchargement /boost-service-mada.apk — fichier non fourni.
 - [x] Ajouter le manifeste installable SMM B&S et les icônes 192/512 dérivées du logo fourni ; remplacer le favicon.
 - [x] Remplacer l'ancien appel au téléchargement APK inexistant par l'installation depuis le navigateur.
+- [x] Ajouter icône 512, apple-touch-icon et images de partage (og:image / twitter:image) sur accueil, connexion, à propos, contact, FAQ ; publié et vérifié en ligne.
