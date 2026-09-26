@@ -110,7 +110,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   const visibleNav = user ? nav : nav.filter((n) => n.public);
   const navLabel = (n: (typeof nav)[number]) => {
-    if (n.key === "about" || n.key === "dashboard" || n.key === "group") return n.label;
+    if (n.key === "dashboard" || n.key === "group") return n.label;
     const translated = t(n.key);
     return translated === n.key ? n.label : n.label;
   };
@@ -219,7 +219,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   }}
                   className="mt-2 rounded-lg px-3 py-2 text-left text-sm text-destructive"
                 >
-                  🚪 {t("logout")}
+                  🚪 Hivoaka
                 </button>
               ) : null}
             </div>

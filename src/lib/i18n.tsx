@@ -49,7 +49,7 @@ export const dict: Dict = {
   reference: { mg: "🔢 Référence transaction", fr: "🔢 Référence transaction" },
   amountSent: { mg: "💵 Vola nalefa", fr: "💵 Montant envoyé" },
   validateRecharge: { mg: "✅ Hamarino ny recharge", fr: "✅ Valider la recharge" },
-  pending: { mg: "🟡 Miandry", fr: "🟡 En attente" },
+  pending: { mg: "🟡 Miandry", fr: "🔵 En cours" },
   processing: { mg: "🔵 Am-panaovana", fr: "🔵 En cours" },
   done: { mg: "🟢 Vita", fr: "🟢 Terminée" },
   rejected: { mg: "🔴 Nolavina", fr: "🔴 Refusée" },

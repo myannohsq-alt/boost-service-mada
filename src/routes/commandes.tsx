@@ -24,7 +24,7 @@ export const Route = createFileRoute("/commandes")({
 });
 
 export const STATUS: Record<string, string> = {
-  pending: "🟡 En attente",
+  pending: "🔵 En cours",
   processing: "🔵 En cours",
   done: "🟢 Terminée",
   rejected: "🔴 Refusée",
