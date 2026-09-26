@@ -34,7 +34,6 @@ const platforms = [
   { id: "tiktok", label: "TikTok" },
   { id: "instagram", label: "Instagram" },
   { id: "youtube", label: "YouTube" },
-  { id: "protection", label: "🛡️ Protection" },
 ];
 
 function ServicesPage() {

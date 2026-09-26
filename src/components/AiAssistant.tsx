@@ -14,6 +14,32 @@ export function AiAssistant() {
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    void (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      const { data } = await supabase
+        .from("assistant_messages")
+        .select("role, content")
+        .order("created_at", { ascending: true })
+        .limit(200);
+      if (data) setMsgs(data as Msg[]);
+    })();
+  }, []);
+
+  const save = async (role: Msg["role"], content: string) => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user || !content) return;
+    const { error } = await supabase.from("assistant_messages").insert({ user_id: u.user.id, role, content });
+    if (error) console.error("assistant save", error);
+  };
+
+  const clear = async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (u.user) await supabase.from("assistant_messages").delete().eq("user_id", u.user.id);
+    setMsgs([]);
+  };
+
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, open]);
   useEffect(() => { if (open && !busy) inputRef.current?.focus(); }, [open, busy]);
 
@@ -30,10 +56,11 @@ export function AiAssistant() {
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       if (!token) return setLast("Midira aloha (connexion) vao afaka miresaka amiko 🙏");
+      void save("user", value);
       const res = await fetch("/api/assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next.slice(-20) }),
       });
       if (!res.ok || !res.body) {
         return setLast(res.status === 429 ? "Be loatra ny fangatahana, andramo afaka kelikely 🙏" : "Mifandraisa @ Support 🙏");
@@ -59,6 +86,7 @@ export function AiAssistant() {
         }
       }
       if (!out) setLast("Mifandraisa @ Support 🙏");
+      else void save("assistant", out);
     } catch {
       setLast("Mifandraisa @ Support 🙏");
     } finally {
@@ -71,7 +99,7 @@ export function AiAssistant() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Service IA"
-        className="fixed bottom-5 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-primary/60 bg-card text-xl shadow-[0_8px_24px_-10px_var(--color-primary)] transition active:scale-95"
+        className="fixed bottom-5 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-primary/60 bg-background text-xl shadow-[0_8px_24px_-10px_var(--color-primary)] transition active:scale-95"
       >
         {open ? "✕" : "💬"}
       </button>
@@ -84,6 +112,11 @@ export function AiAssistant() {
               <p className="text-sm font-bold">Service IA</p>
               <p className="text-[10px] opacity-80">{busy ? "Manoratra…" : "En ligne"}</p>
             </div>
+            {msgs.length ? (
+              <button onClick={() => void clear()} disabled={busy} className="ml-auto rounded-full border border-current/40 px-2 py-0.5 text-[10px]">
+                Hamafa
+              </button>
+            ) : null}
           </div>
 
           <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
