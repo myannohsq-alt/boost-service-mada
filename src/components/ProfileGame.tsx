@@ -12,11 +12,11 @@ const SLICES = [
   { label: "10 Ar", color: "#ff7a1a" },
   { label: "20 Ar", color: "#1e4db7" },
   { label: "30 Ar", color: "#ff7a1a" },
-  { label: "100⭐", color: "#1e4db7" },
   { label: "10 Ar", color: "#ff7a1a" },
   { label: "50⭐", color: "#1e4db7" },
-  { label: "20 Ar", color: "#ff7a1a" },
+  { label: "100⭐", color: "#ff7a1a" },
   { label: "150⭐", color: "#1e4db7" },
+  { label: "20 Ar", color: "#ff7a1a" },
 ];
 
 export const level = (pts: number) =>
@@ -163,7 +163,7 @@ export function Wheel() {
         </div>
         <button onClick={() => void spin()} disabled={spinning || tours < 1} className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-primary bg-white text-sm font-black text-[#0a1e4a] disabled:opacity-60">TOUR</button>
       </div>
-      {tours < 1 ? <p className="mt-3 text-xs text-muted-foreground">Revenez demain ou invitez un ami pour +1 tour.</p> : null}
+       <p className="mt-3 text-xs text-muted-foreground">Revenez demain ou invitez un ami pour +1 tour</p>
       {win ? (
         <>
           <Confetti />
@@ -177,6 +177,7 @@ export function Wheel() {
           </div>
         </>
       ) : null}
+       <div className="mt-4 border-t border-border pt-4 text-left"><WheelResults /></div>
     </div>
   );
 }
@@ -196,7 +197,7 @@ export function WheelResults() {
     return () => { void supabase.removeChannel(ch); };
   }, [tab]);
   return (
-    <div className="bsm-card p-4">
+     <div>
       <div className="flex gap-2">
         {(["day", "week"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-full px-3 py-1 text-xs font-semibold ${tab === t ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>{t === "day" ? "Aujourd'hui" : "Semaine"}</button>
@@ -232,12 +233,10 @@ export function SaturdayDraw() {
   const [left, setLeft] = useState(nextSaturday() - Date.now());
   const [all, setAll] = useState(false);
   const [board, setBoard] = useState<any[]>([]);
-  const [demo, setDemo] = useState<any[]>([]);
   const [winners, setWinners] = useState<any[]>([]);
   useEffect(() => { const t = setInterval(() => setLeft(nextSaturday() - Date.now()), 1000); return () => clearInterval(t); }, []);
   useEffect(() => {
     void db.rpc("leaderboard", { _limit: all ? 50 : 8 }).then(({ data }: any) => setBoard(data ?? []));
-    void db.from("demo_profiles").select("*").order("points", { ascending: false }).then(({ data }: any) => setDemo(data ?? []));
     void db.from("saturday_winners").select("*").order("week_date", { ascending: false }).limit(3).then(({ data }: any) => setWinners(data ?? []));
   }, [all]);
   const s = Math.max(0, Math.floor(left / 1000));
@@ -252,40 +251,20 @@ export function SaturdayDraw() {
         <p className="mt-2 text-xs font-bold">300 Ar gratuit pour celui qui a le plus de ⭐</p>
       </div>
       <div className="bsm-card p-4">
-        <p className="font-semibold">📊 Classement</p>
-        <table className="mt-2 w-full text-xs">
-          <tbody>
-            {board.map((r, i) => (
-              <tr key={r.id} className={r.id === user?.id ? "bg-primary/20" : ""}>
-                <td className="py-1.5 pl-1 font-bold">{i + 1}</td>
-                <td><img src={r.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(r.name)}`} alt="" className="h-6 w-6 rounded-full object-cover" /></td>
-                <td className="font-semibold">{r.name}{r.id === user?.id ? " (vous)" : ""}</td>
-                <td className="pr-1 text-right font-bold">{r.points} ⭐</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button onClick={() => setAll(!all)} className="mt-2 text-xs text-primary">{all ? "Réduire" : "Voir tout"}</button>
-      </div>
-      {demo.length ? (
-        <div className="bsm-card p-4">
-          <p className="flex items-center gap-2 font-semibold">Aperçu activité <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">EXEMPLE</span></p>
-          <p className="text-[11px] text-muted-foreground">Profils d'exemple, hors classement et hors tirage.</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {demo.map((d) => (
-              <div key={d.id} className="flex items-center gap-2 rounded-lg bg-secondary/50 p-2 text-xs">
-                <img src={d.avatar_url} alt="" className="h-6 w-6 rounded-full" />
-                <span className="truncate">{d.name}</span>
-                <span className="ml-auto">{d.points}⭐</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-      <div className="bsm-card p-4">
-        <p className="font-semibold">🥇 Gagnants du samedi</p>
+         <p className="font-semibold">🥇 Gagnants du samedi + classement</p>
         {winners.map((w) => <p key={w.id} className="mt-1 text-xs">{new Date(w.week_date).toLocaleDateString("fr-FR")} — <strong>{w.author_name}</strong> · {w.points} ⭐ · {w.gain} Ar</p>)}
         {!winners.length ? <p className="mt-1 text-xs text-muted-foreground">Premier tirage samedi prochain.</p> : null}
+         <table className="mt-3 w-full text-xs"><tbody>
+           {board.map((r, i) => (
+             <tr key={r.id} className={r.id === user?.id ? "bg-primary/20" : ""}>
+               <td className="py-1.5 pl-1 font-bold">{i + 1}</td>
+               <td><img src={r.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(r.name)}`} alt="" className="h-6 w-6 rounded-full object-cover" /></td>
+               <td className="font-semibold">{r.name}{r.id === user?.id ? " (vous)" : ""}</td>
+               <td className="pr-1 text-right font-bold">{r.points} ⭐</td>
+             </tr>
+           ))}
+         </tbody></table>
+         <button onClick={() => setAll(!all)} className="mt-2 text-xs text-primary">{all ? "Réduire" : "Voir tout"}</button>
       </div>
     </div>
   );

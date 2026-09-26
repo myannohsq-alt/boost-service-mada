@@ -111,7 +111,7 @@ function AnnouncementBar() {
   );
 }
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({ children, hideAnnouncement = false }: { children: ReactNode; hideAnnouncement?: boolean }) {
   const { t, lang, setLang } = useI18n();
   const { theme, toggle } = useTheme();
   const { profile, isAdmin, user, loading, refresh } = useAuth();
@@ -186,7 +186,7 @@ export function Layout({ children }: { children: ReactNode }) {
             </button>
           </div>
         </div>
-        <AnnouncementBar />
+        {!hideAnnouncement ? <AnnouncementBar /> : null}
       </header>
 
       {open ? (

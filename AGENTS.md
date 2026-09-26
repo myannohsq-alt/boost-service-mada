@@ -17,3 +17,4 @@
 - Share the login experience between / and /auth; this keeps sign-in, signup, recovery, and post-auth Services navigation consistent without duplicate forms.
 - Keep the dark navy/orange palette in global semantic tokens and reuse the shared login on / and /auth; this keeps every page themed consistently.
 - Keep home-screen installability manifest-only, without an app-shell service worker; the site requires live network access and preview must not serve stale cached code.
+- Keep group text messages in the shared paid chat and local photo/voice entries scoped to their author account; local media cannot be shared across members without server storage.
