@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import type { ServiceGroup } from "@/lib/service-groups";
 import { ServiceForm } from "@/components/ServiceForm";
 import { CommentsAiForm } from "@/components/CommentsAiForm";
+import { CommentReactionForm } from "@/components/CommentReactionForm";
 import { Button } from "@/components/ui/button";
 export { ServiceBadge, BADGES } from "@/components/ServiceBadge";
 
@@ -49,7 +50,9 @@ export function OrderModal({
           <div className="flex justify-end">
             <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Fermer">✕</Button>
           </div>
-          {group.platform === "facebook" && /^commentaires$/i.test(group.nameFr) ? (
+          {group.platform === "facebook" && /réactions sur commentaires/i.test(group.nameFr) ? (
+            <CommentReactionForm group={group} onClose={onClose} onOrdered={onOrdered} />
+          ) : group.platform === "facebook" && /^commentaires$/i.test(group.nameFr) ? (
             <CommentsAiForm onClose={onClose} />
           ) : (
             <ServiceForm group={group} onClose={onClose} onOrdered={onOrdered} />
