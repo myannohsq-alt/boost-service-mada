@@ -95,7 +95,7 @@ export function AiAssistant() {
                   m.role === "assistant" ? "bg-secondary text-foreground" : "ml-auto bg-primary text-primary-foreground"
                 }`}
               >
-                {m.content || <span className="animate-pulse">•••</span>}
+                {m.content.replace(/\*\*/g, "") || <span className="animate-pulse">•••</span>}
               </div>
             ))}
             <div ref={endRef} />
