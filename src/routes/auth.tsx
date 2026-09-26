@@ -42,7 +42,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user) void navigate({ to: "/profil" });
+    if (user) void navigate({ to: "/services" });
   }, [user, navigate]);
 
   const google = async () => {
@@ -81,7 +81,7 @@ function AuthPage() {
         email: mail,
         password,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/services`,
           data: {
             name: `${firstName.trim()} ${lastName.trim()}`,
             first_name: firstName.trim(),
