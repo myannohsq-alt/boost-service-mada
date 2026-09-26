@@ -154,6 +154,7 @@ function CommentsPage() {
     await refresh?.();
     toast.success(`Commande réussie ! Nouveau solde : ${formatAr(Math.max(0, balance - total))}`);
     navigate({ to: "/commandes" });
+    return undefined;
   }
 
   const pill = (active: boolean) =>
