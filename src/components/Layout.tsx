@@ -5,12 +5,10 @@ import logo from "@/assets/logo.png";
 import { useI18n, formatAr } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/useAuth";
-import { AiAssistant } from "@/components/AiAssistant";
 import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
-  { to: "/a-propos", key: "about", label: "ℹ️ À propos", public: true },
   { to: "/services", key: "services", label: "🛒 Services", public: false },
   { to: "/dashboard", key: "dashboard", label: "📊 Tableau de bord", public: false },
   { to: "/commandes", key: "myOrders", label: "📦 Suivi des commandes", public: false },
@@ -18,13 +16,6 @@ const nav = [
   { to: "/groupe", key: "group", label: "👥 Groupe de discussion", public: false },
   { to: "/tutoriel", key: "tutorial", label: "📚 Tutoriel", public: false },
   { to: "/contact", key: "contact", label: "📞 Support", public: true },
-  { to: "/promotions", key: "promotions", label: "🎁 Promotions", public: false },
-  { to: "/parrainage", key: "referral", label: "🎁 Parrainage", public: false },
-  { to: "/actualites", key: "news", label: "📰 Actualités", public: false },
-  { to: "/protection", key: "protection", label: "🛡️ Protection", public: false },
-  { to: "/avis", key: "reviews", label: "⭐ Avis", public: false },
-  { to: "/profil", key: "profile", label: "⚙️ Paramètres", public: false },
-  { to: "/faq", key: "faq", label: "❓ FAQ", public: true },
 ] as const;
 
 const ANNOUNCEMENTS = [
@@ -238,7 +229,6 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <main className="pb-28">{children}</main>
 
-      <AiAssistant />
 
       <div className="fixed bottom-4 right-4 z-30 flex flex-col gap-3">
         <a
