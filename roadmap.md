@@ -1,3 +1,3 @@
-- [x] Unifier le formulaire de commande de tous les services et retirer promo, livraison, notes, options.
-- [x] Associer les cinq réactions à des prestations fournisseur adaptées sans changer les autres commandes.
-- [x] Vérifier les formulaires sur téléphone et ordinateur et contrôler les erreurs.
+- [x] Ajouter le choix visible/invisible uniquement à Reaction Vazah, visible sélectionné par défaut.
+- [x] Appliquer -20 % au montant débité côté serveur pour Invisible et afficher le délai adapté.
+- [x] Vérifier les deux choix sur téléphone, la validation de commande et l'absence du bloc sur Reaction Gasy sans débiter une commande réelle.
