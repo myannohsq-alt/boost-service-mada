@@ -76,17 +76,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "google-site-verification", content: "wSllX6bT4_jun7-zAhcB28IXXjJUN4y-R-WH5BqGVEA" },
-      { title: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux" },
+      { title: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy | boostmada.app" },
       {
         name: "description",
         content:
-          "Plateforme Malagasy de boost réseaux sociaux : réactions, followers, vues, commentaires. Rapide, professionnel, 24h/24.",
+          "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Paiement MVola Orange Money Airtel. Livraison rapide Madagascar.",
       },
-      { name: "author", content: "BOOST SERVICE MADA" },
-      { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux Madagascar" },
-      { property: "og:description", content: "Boost Malagasy • Rapide • Professionnel • 24h/24" },
+      { name: "author", content: "BoostMada" },
+      { property: "og:site_name", content: "BoostMada" },
+      { property: "og:locale", content: "fr_MG" },
+      { property: "og:title", content: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy" },
+      {
+        property: "og:description",
+        content:
+          "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Paiement MVola Orange Money Airtel. Livraison rapide Madagascar.",
+      },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://boostmada.app/" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy" },
+      {
+        name: "twitter:description",
+        content:
+          "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Madagascar.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
