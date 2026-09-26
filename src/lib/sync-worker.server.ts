@@ -471,7 +471,7 @@ async function submitOrder(
     throw new Error(`Quantité hors limites fournisseur (min ${min}, max ${max})`);
   }
 
-  const res = await api.add(providerServiceId, order.target_link, order.quantity, orderId);
+  const res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, order.comments || undefined);
   const providerOrderId = res?.order === undefined || res.order === null ? "" : String(res.order);
   if (!providerOrderId) {
     const msg = "SMMGen n'a retourné aucun identifiant de commande";
