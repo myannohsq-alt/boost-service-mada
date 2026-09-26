@@ -1,0 +1,1 @@
+UPDATE public.services SET price = CASE WHEN unit = 100 THEN 2000 WHEN unit = 1000 THEN 20000 ELSE unit * 20 END WHERE platform = 'facebook' AND (name_fr ~* '^Réactions Gasy( \(1K\))?$' OR name_fr ~* '^Followers Gasy( \(1K\))?$');
