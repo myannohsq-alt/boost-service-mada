@@ -11,3 +11,5 @@
 - [x] Simplifier « Reaction amin'ny Commentaire » : lien + nom de la personne + 6 réactions + quantité, 2 000 Ar/100, nom transmis au fournisseur.
 - [x] Menu client limité à RECHARGE, Suivi des commandes, Groupe de discussion, Tutoriel, Déconnexion ; menu admin inchangé ; affichage vérifié.
 - [x] Publication du nouveau menu demandée pour boostmada.app (déploiement en attente).
+
+- [ ] Remplacer l’accueil par la connexion épurée et rediriger les membres vers Services ; vérifier sur téléphone et ordinateur.
