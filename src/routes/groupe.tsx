@@ -50,7 +50,7 @@ function GroupPage() {
   const [recStart, setRecStart] = useState(0);
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setLocal(loadLocal()); }, []);
+  useEffect(() => { setLocal(user ? loadLocal().filter((m) => m.user_id === user.id && (m.type === "image" || m.type === "vocal")) : []); }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -80,6 +80,7 @@ function GroupPage() {
   };
 
   const send = async () => {
+    if (!user) return;
     if (preview) { addLocal({ type: "image", src: preview }); setPreview(null); return; }
     const value = text.trim();
     if (!value || busy) return;
@@ -96,6 +97,7 @@ function GroupPage() {
     if (!f.type.startsWith("image/")) { toast.error("Choisissez une image"); return; }
     const r = new FileReader();
     r.onload = () => setPreview(String(r.result));
+    r.onerror = () => toast.error("Photo illisible");
     r.readAsDataURL(f);
   };
 
@@ -109,7 +111,8 @@ function GroupPage() {
       r.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
       r.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunks, { type: "audio/webm" });
+         const blob = new Blob(chunks, { type: r.mimeType || "audio/webm" });
+         if (!blob.size) { toast.error("Vocal vide, réessayez"); return; }
         // data URL instead of a blob: URL so the vocal still plays after reloading
         const src = await toDataUrl(blob).catch(() => URL.createObjectURL(blob));
         addLocal({ type: "vocal", src, duration: Math.max(1, Math.round((Date.now() - start) / 1000)) });
