@@ -34,8 +34,8 @@ export const Route = createFileRoute("/api/comments-generate")({
         let body: { count?: number; lang?: string; theme?: string; topic?: string; avoid?: string[] };
         try { body = await request.json(); } catch { return new Response("Bad request", { status: 400 }); }
         const count = Math.min(500, Math.max(1, Math.floor(Number(body.count) || 0)));
-        const lang = LANGS[body.lang ?? ""] ?? LANGS.gasy;
-        const theme = THEMES[body.theme ?? ""] ?? THEMES.custom;
+        const lang = LANGS[body.lang ?? ""] ?? LANGS["gasy"];
+        const theme = THEMES[body.theme ?? ""] ?? THEMES["custom"];
         const topic = String(body.topic ?? "").slice(0, 300) || "(non précisé)";
         const avoid = (body.avoid ?? []).slice(-60).map((s) => String(s).slice(0, 80));
 
