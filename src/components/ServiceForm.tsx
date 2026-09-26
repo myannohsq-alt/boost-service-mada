@@ -32,7 +32,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     undefined,
   )?.service;
   const quantity = Number(quantityText);
-  const min = Math.max(100, service?.unit ?? 100);
+  const min = 100;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
     ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
   const balance = Number(profile?.balance ?? 0);
