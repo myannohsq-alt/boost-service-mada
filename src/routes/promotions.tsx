@@ -11,6 +11,8 @@ export const Route = createFileRoute("/promotions")({
         name: "description",
         content: "Offres spéciales, réductions temporaires et codes promo comme MADA10 et PROMO20.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Promotions — BOOST SERVICE MADA" },
       { property: "og:description", content: "Profitez de nos réductions du moment." },
     ],

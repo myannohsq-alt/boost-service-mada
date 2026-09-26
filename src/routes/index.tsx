@@ -16,6 +16,8 @@ export const Route = createFileRoute("/")({
         content:
           "Réactions, followers, commentaires, partages et vues pour Facebook, TikTok, Instagram et YouTube. Service rapide 24h/24 à Madagascar.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬" },
       {
         property: "og:description",

@@ -14,6 +14,8 @@ export const Route = createFileRoute("/tutoriel")({
         content:
           "Apprenez à créer un compte, faire un dépôt, commander et suivre vos commandes sur BOOST SERVICE MADA.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Tutoriels — BOOST SERVICE MADA" },
       { property: "og:description", content: "Guides pas à pas en Malagasy et Français." },
     ],

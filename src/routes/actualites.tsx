@@ -11,6 +11,8 @@ export const Route = createFileRoute("/actualites")({
         name: "description",
         content: "Nouveautés, informations importantes et mises à jour de la plateforme.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Actualités — BOOST SERVICE MADA" },
       { property: "og:description", content: "Toutes les annonces de la plateforme." },
     ],

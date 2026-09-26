@@ -13,6 +13,8 @@ export const Route = createFileRoute("/avis")({
         name: "description",
         content: "Lisez les avis des clients de BOOST SERVICE MADA et partagez votre expérience.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Avis clients — BOOST SERVICE MADA" },
       { property: "og:description", content: "La parole à nos clients malgaches." },
     ],

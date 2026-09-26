@@ -14,6 +14,8 @@ export const Route = createFileRoute("/dashboard")({
         name: "description",
         content: "Solde, commandes, historique et notifications de votre compte BOOST SERVICE MADA.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Tableau de bord — BOOST SERVICE MADA" },
       { property: "og:description", content: "Suivez votre solde et vos commandes en temps réel." },
     ],

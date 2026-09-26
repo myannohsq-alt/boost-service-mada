@@ -15,6 +15,8 @@ export const Route = createFileRoute("/protection")({
         content:
           "Protégez votre compte Facebook : tutoriel vidéo premium débloqué par un code d'accès unique, 5 000 Ar.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Protection Compte — BOOST SERVICE MADA" },
       { property: "og:description", content: "Sécurisez votre compte avec notre guide premium." },
     ],
