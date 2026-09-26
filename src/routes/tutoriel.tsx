@@ -38,7 +38,15 @@ const BLOCKS: Array<{ match: string[]; video: string; steps: string[] }> = [
     ],
   },
   {
-    match: ["commander", "commande"],
+    match: ["suivi", "mes commandes", "statut"],
+    video: "/videos/suivi.mp4",
+    steps: [
+      "Midira ao amin'ny Mes commandes.",
+      "Jereo ny statut : En cours 🟡 na Terminé 🟢.",
+    ],
+  },
+  {
+    match: ["commander"],
     video: "/videos/commande.mp4",
     steps: [
       "Safidio ny service tianao.",
@@ -47,11 +55,12 @@ const BLOCKS: Array<{ match: string[]; video: string; steps: string[] }> = [
     ],
   },
   {
-    match: ["suivi", "mes commandes", "statut"],
-    video: "/videos/suivi.mp4",
+    match: ["créer un compte", "creer un compte", "inscrire"],
+    video: "/videos/compte.mp4",
     steps: [
-      "Midira ao amin'ny Mes commandes.",
-      "Jereo ny statut : En cours 🟡 na Terminé 🟢.",
+      "Tsindrio HISORATRA ANARANA (Inscription).",
+      "Fenoy ny anarana, ny mailaka ary ny tenimiafina.",
+      "Tsindrio Hiditra dia lasa Services avy hatrany.",
     ],
   },
 ];
