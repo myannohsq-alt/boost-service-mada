@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
 import type { ServiceGroup } from "@/lib/service-groups";
-import { ServiceBadge } from "@/components/OrderModal";
+import { ServiceBadge } from "@/components/ServiceBadge";
 
 const QUICK = [100, 500, 1000, 5000];
 
