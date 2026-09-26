@@ -7,6 +7,11 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/useAuth";
 import { AiAssistant } from "@/components/AiAssistant";
 
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): { ref?: string } =>
     typeof search["ref"] === "string" ? { ref: search["ref"] as string } : {},
@@ -39,14 +44,39 @@ export function AuthPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const onPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as InstallPromptEvent);
+    };
+    const onInstalled = () => {
+      setInstallPrompt(null);
+      setShowNotif(false);
+    };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setShowNotif(true), 3000);
     return () => window.clearTimeout(timer);
   }, []);
 
-  const openApk = () => {
-    document.getElementById("apkBtn")?.click();
+  const installApp = async () => {
+    setShowNotif(false);
+    if (installPrompt) {
+      await installPrompt.prompt();
+      await installPrompt.userChoice;
+      setInstallPrompt(null);
+      return;
+    }
+    setMsg("Pour installer SMM B&S, ouvrez le menu de votre navigateur puis choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».");
   };
 
   useEffect(() => {
@@ -202,10 +232,10 @@ export function AuthPage() {
             </>
           )}
           {mode === "login" && <div className="mt-7 border-t border-border pt-6 text-center">
-            <p className="mb-3 text-sm font-semibold">Installez Boost Service Mada</p>
-            <a id="apkBtn" href="/boost-service-mada.apk" onClick={(event) => { event.preventDefault(); setShowNotif(false); setMsg("L'application sera bientôt disponible au téléchargement."); }} className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 font-bold text-primary-foreground shadow-[0_12px_32px_-8px_var(--color-primary)] transition hover:bg-primary/90">
-              <Smartphone className="h-5 w-5 shrink-0" /> Télécharger l'application <Download className="h-5 w-5 shrink-0" />
-            </a>
+            <p className="mb-3 text-sm font-semibold">Installez SMM B&amp;S</p>
+            <Button type="button" onClick={installApp} className="h-14 w-full rounded-xl bg-primary px-4 font-bold text-primary-foreground shadow-[0_12px_32px_-8px_var(--color-primary)] hover:bg-primary/90">
+              <Smartphone className="h-5 w-5 shrink-0" /> Installer l'application <Download className="h-5 w-5 shrink-0" />
+            </Button>
           </div>}
           <p className="mt-5 text-center text-sm text-muted-foreground sm:mt-8">
             {mode === "login" ? "Pas encore de compte ?" : mode === "signup" ? "Déjà inscrit ?" : "Vous vous souvenez de votre mot de passe ?"}{" "}
@@ -218,8 +248,8 @@ export function AuthPage() {
       {!loading && !user && <AiAssistant orange />}
       {!loading && !user && showNotif && <div id="notif" role="dialog" aria-label="Installer l'application ?" className="fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[360px] -translate-x-1/2 rounded-md border-l-4 border-primary bg-notice-background p-4 text-notice-foreground shadow-2xl sm:bottom-6">
         <div className="flex items-start justify-between gap-2"><h2 className="font-sans text-base font-bold">Installer l'application ?</h2><Button variant="ghost" size="icon" aria-label="Fermer" onClick={() => setShowNotif(false)} className="-mr-2 -mt-2 h-8 w-8 text-notice-foreground"><X className="h-4 w-4" /></Button></div>
-        <p className="mt-1 text-sm">Téléchargez l'APK pour une expérience 2x plus rapide !</p>
-        <div className="mt-4 flex gap-2"><Button onClick={openApk} className="bg-primary text-primary-foreground hover:bg-primary/90">Installer</Button><Button variant="outline" onClick={() => setShowNotif(false)} className="border-border bg-notice-background text-notice-foreground hover:bg-muted">Plus tard</Button></div>
+         <p className="mt-1 text-sm">Ajoutez SMM B&amp;S à votre écran d'accueil.</p>
+         <div className="mt-4 flex gap-2"><Button onClick={installApp} className="bg-primary text-primary-foreground hover:bg-primary/90">Installer</Button><Button variant="outline" onClick={() => setShowNotif(false)} className="border-border bg-notice-background text-notice-foreground hover:bg-muted">Plus tard</Button></div>
       </div>}
     </main>
   );

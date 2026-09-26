@@ -289,7 +289,7 @@ export type Database = {
           admin_note: string | null
           amount: number
           api_error: string
-          comments: string
+          comments: string | null
           created_at: string
           id: string
           last_sync_at: string | null
@@ -316,7 +316,7 @@ export type Database = {
           admin_note?: string | null
           amount: number
           api_error?: string
-          comments?: string
+          comments?: string | null
           created_at?: string
           id?: string
           last_sync_at?: string | null
@@ -343,7 +343,7 @@ export type Database = {
           admin_note?: string | null
           amount?: number
           api_error?: string
-          comments?: string
+          comments?: string | null
           created_at?: string
           id?: string
           last_sync_at?: string | null
