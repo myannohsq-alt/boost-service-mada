@@ -83,7 +83,7 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
     if (!existing) {
       group.options.push({ key: label, label, service: s });
     } else if (s.unit < existing.service.unit) {
-      // keep the smallest pack: quantity is free-form anyway
+      // Keep the smallest pack so a 100-unit order stays available.
       existing.service = s;
     }
   }

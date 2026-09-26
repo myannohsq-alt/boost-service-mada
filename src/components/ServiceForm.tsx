@@ -27,7 +27,10 @@ export function ServiceForm({ group, onClose, onOrdered }: {
   const name = lang === "mg" ? group.nameMg : group.nameFr;
   const needsReaction = isReactionService(group.platform, group.nameFr);
   // Retain the existing service variant for pricing and provider mapping.
-  const service = group.options[0]?.service;
+  const service = group.options.reduce<(typeof group.options)[number] | undefined>(
+    (best, current) => !best || current.service.unit < best.service.unit ? current : best,
+    undefined,
+  )?.service;
   const quantity = Number(quantityText);
   const min = Math.max(100, service?.unit ?? 100);
   const cost = service && Number.isFinite(quantity) && quantity >= 0

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import type React from "react";
-import { Layout, Section } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
 import { OrderModal, type ServiceCard } from "@/components/OrderModal";
 import { formatAr, useI18n } from "@/lib/i18n";
@@ -21,6 +21,8 @@ export const Route = createFileRoute("/services")({
       },
       { property: "og:title", content: "Services & Tarifs — BOOST SERVICE MADA" },
       { property: "og:description", content: "Tous nos services de boost réseaux sociaux en Ariary." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ServicesPage,
