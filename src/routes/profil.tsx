@@ -5,6 +5,7 @@ import { AuthGate } from "@/components/AuthGate";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfileHeader, InviteCard, Wheel, WheelResults, SaturdayDraw } from "@/components/ProfileGame";
 
 export const Route = createFileRoute("/profil")({
   head: () => ({
@@ -50,7 +51,14 @@ function ProfilPage() {
     <Layout>
 
       <Section title="👤 Mon profil">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="mx-auto max-w-xl space-y-4">
+          <ProfileHeader />
+          <InviteCard />
+          <Wheel />
+          <WheelResults />
+          <SaturdayDraw />
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="bsm-card p-4">
             <p className="text-xs text-muted-foreground">👤 Nom</p>
             <p className="font-semibold">{profile?.name || "—"}</p>
