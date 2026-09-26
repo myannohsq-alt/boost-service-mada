@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { Layout } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
+import { AiAssistant } from "@/components/AiAssistant";
 import { OrderModal, type ServiceCard } from "@/components/OrderModal";
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
@@ -120,6 +121,7 @@ function ServicesPage() {
             }}
           />
         ) : null}
+        <AiAssistant />
       </Layout>
     </AuthGate>
   );

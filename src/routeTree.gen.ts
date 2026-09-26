@@ -29,6 +29,7 @@ import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
+import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -131,6 +132,11 @@ const TutorielRoute = TutorielRouteImport.update({
   path: '/tutoriel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSmmgenSyncRoute = ApiPublicSmmgenSyncRouteImport.update({
   id: '/api/public/smmgen-sync',
   path: '/api/public/smmgen-sync',
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesByTo {
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesById {
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRouteTypes {
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/tutoriel'
+    | '/api/assistant'
     | '/api/public/smmgen-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/tutoriel'
+    | '/api/assistant'
     | '/api/public/smmgen-sync'
   id:
     | '__root__'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/tutoriel'
+    | '/api/assistant'
     | '/api/public/smmgen-sync'
   fileRoutesById: FileRoutesById
 }
@@ -300,6 +312,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   TutorielRoute: typeof TutorielRoute
+  ApiAssistantRoute: typeof ApiAssistantRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
 }
 
@@ -445,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorielRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/smmgen-sync': {
       id: '/api/public/smmgen-sync'
       path: '/api/public/smmgen-sync'
@@ -476,6 +496,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   TutorielRoute: TutorielRoute,
+  ApiAssistantRoute: ApiAssistantRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
 }
 export const routeTree = rootRouteImport

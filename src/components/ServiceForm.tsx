@@ -56,7 +56,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     if (needsReaction && !reaction) return setError("Choisissez un type de réaction.");
     if (!Number.isSafeInteger(quantity) || quantity < min)
       return setError(`Quantité minimum : ${min}`);
-    if (insufficient) return setError("Solde insuffisant. Rechargez avant de commander.");
+    if (insufficient) { toast.error("Solde insuffisant, rechargez"); return setError("Solde insuffisant, rechargez"); }
     setBusy(true);
     try {
       const { error: err } = await supabase.rpc("place_order", {
@@ -71,7 +71,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         toast.error("Commande refusée", { description: err.message });
         return;
       }
-      toast.success("Commande créée !", { description: `${name} × ${quantity}` });
+      toast.success(`Commande réussie ! Nouveau solde : ${formatAr(balance - cost)}`, { description: `${name} × ${quantity} — statut : En cours` });
       try { await fulfillNow({ data: undefined as never }); }
       catch { /* The order remains queued for the next cycle. */ }
       await refresh();
