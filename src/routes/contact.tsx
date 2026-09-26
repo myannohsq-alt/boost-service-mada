@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
 import { useAuth } from "@/lib/useAuth";
+import { OPERATORS } from "@/lib/payment-operators";
 
 
 export const Route = createFileRoute("/contact")({
@@ -52,11 +53,14 @@ function ContactPage() {
 
         {user ? (
           <div className="bsm-card mt-4 p-5 text-sm">
-            <p className="font-semibold">📱 Numéros de paiement</p>
+            <p className="font-semibold">📱 Numéros de paiement officiels</p>
             <ul className="mt-2 space-y-1 text-muted-foreground">
-              <li>0375141025 — ROLINE</li>
-              <li>0330296908 — MARODOLINX</li>
-              <li>0386100374 — THÉODORE</li>
+              {OPERATORS.map((o) => (
+                <li key={o.id}>
+                  {o.emoji} {o.label} — <strong className="text-foreground">{o.phone}</strong> —{" "}
+                  {o.owner}
+                </li>
+              ))}
             </ul>
           </div>
         ) : (
