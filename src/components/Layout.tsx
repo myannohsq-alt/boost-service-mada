@@ -315,27 +315,6 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="pb-28">{children}</main>
 
 
-      <div className="fixed bottom-4 right-4 z-30 flex flex-col gap-3">
-        <a
-          href="https://m.me/BOOST-SERVICE"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Messenger"
-          className="bsm-btn bsm-btn-gold !h-12 !w-12 !p-0 text-lg"
-        >
-          💬
-        </a>
-        <a
-          href="https://wa.me/261375141025"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="WhatsApp"
-          className="bsm-btn bsm-btn-ghost !h-12 !w-12 !p-0 text-lg"
-        >
-          📱
-        </a>
-      </div>
-
       <footer className="border-t border-primary/20 bg-card/60 px-4 py-8 text-center text-xs text-muted-foreground">
         <Logo size={40} />
         <p className="mt-3 font-display text-sm font-bold text-foreground">BOOST SERVICE MADA 🇲🇬</p>
