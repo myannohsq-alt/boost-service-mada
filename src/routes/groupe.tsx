@@ -93,7 +93,7 @@ function GroupPage() {
   };
 
   const sendImage = async (f: File) => {
-    if (!f.type.startsWith("image/")) return toast.error("Choisissez une image");
+    if (!f.type.startsWith("image/")) { toast.error("Choisissez une image"); return; }
     const path = await uploadFile(f, "images", f.name.split(".").pop() || "jpg");
     if (path) await post({ _content: "", _type: "image", _media_path: path });
   };

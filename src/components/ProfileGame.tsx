@@ -61,13 +61,13 @@ export function ProfileHeader() {
 
   const upload = async (f: File) => {
     if (!user) return;
-    if (!f.type.startsWith("image/")) return toast.error("Choisissez une image");
+    if (!f.type.startsWith("image/")) { toast.error("Choisissez une image"); return; }
     const r = new FileReader();
     r.onload = () => setPreview(String(r.result));
     r.readAsDataURL(f);
     const path = `${user.id}/avatar-${Date.now()}.${f.name.split(".").pop() || "jpg"}`;
     const { error } = await supabase.storage.from("uploads").upload(path, f, { upsert: true });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     const { data } = await supabase.storage.from("uploads").createSignedUrl(path, 60 * 60 * 24 * 365);
     await supabase.from("profiles").update({ avatar_url: data?.signedUrl ?? "" }).eq("id", user.id);
     toast.success("Photo mise à jour");
@@ -132,7 +132,7 @@ export function Wheel() {
     if (spinning) return;
     setSpinning(true);
     const { data, error } = await db.rpc("spin_wheel");
-    if (error) { setSpinning(false); return toast.error(error.message); }
+    if (error) { setSpinning(false); toast.error(error.message); return; }
     const target = 360 - (data.slice * 45 + 22.5);
     const next = rot - (rot % 360) + 1440 + target;
     setRot(next);
