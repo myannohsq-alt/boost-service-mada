@@ -277,4 +277,94 @@
 @keyframes bsm-dot { 0%,100% { opacity: 1; transform: scale(1);} 50% { opacity: .35; transform: scale(1.6);} }
 @utility animate-dot { animation: bsm-dot 1.4s ease-in-out infinite; }
 
+/* ---------- Opérateurs Mobile Money (couleurs de marque) ---------- */
+@theme {
+  --color-op-mvola: oklch(0.66 0.2 145);
+  --color-op-orange: oklch(0.72 0.19 45);
+  --color-op-airtel: oklch(0.6 0.23 25);
+}
+
+@keyframes bsm-op-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bsm-op-glow {
+  0%, 100% { box-shadow: 0 0 28px -16px var(--op), 0 0 0 1px color-mix(in oklab, var(--op) 45%, transparent) inset; }
+  50% { box-shadow: 0 0 58px -12px var(--op), 0 0 0 1px color-mix(in oklab, var(--op) 70%, transparent) inset; }
+}
+
+@utility bsm-op-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  border: 1px solid color-mix(in oklab, var(--op) 55%, transparent);
+  background-color: oklch(0.16 0.02 270);
+  background-image:
+    radial-gradient(120% 90% at 12% -10%, color-mix(in oklab, var(--op) 26%, transparent) 0%, transparent 62%),
+    radial-gradient(90% 80% at 100% 110%, color-mix(in oklab, var(--op) 14%, transparent) 0%, transparent 60%),
+    linear-gradient(165deg, oklch(0.22 0.025 275) 0%, oklch(0.12 0.02 268) 100%);
+  color: oklch(0.98 0.005 270);
+  animation: bsm-op-in 0.38s ease-out, bsm-op-glow 3.2s ease-in-out infinite;
+}
+
+@utility bsm-op-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background-color: color-mix(in oklab, var(--color-card) 82%, transparent);
+  padding: 0.85rem 0.75rem;
+  text-align: left;
+  transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+@utility bsm-op-tile-active {
+  border-color: color-mix(in oklab, var(--op) 75%, transparent);
+  background-image: linear-gradient(150deg, color-mix(in oklab, var(--op) 20%, transparent), transparent 70%);
+  box-shadow: 0 0 30px -12px var(--op);
+}
+
+@utility bsm-op-mark {
+  display: grid;
+  place-items: center;
+  height: 2.35rem;
+  width: 2.35rem;
+  flex: none;
+  border-radius: 0.8rem;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--op);
+  background-color: color-mix(in oklab, var(--op) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--op) 45%, transparent);
+}
+
+@utility bsm-op-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--op);
+  background-color: color-mix(in oklab, var(--op) 14%, transparent);
+  border: 1px solid color-mix(in oklab, var(--op) 42%, transparent);
+}
+
+@utility bsm-op-number {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(26px, 8.4vw, 36px);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--op);
+  text-shadow: 0 0 26px color-mix(in oklab, var(--op) 55%, transparent);
+}
+
 .data-saver *, .data-saver *::before, .data-saver *::after { animation: none !important; transition: none !important; backdrop-filter: none !important; }
