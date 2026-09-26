@@ -6,6 +6,7 @@ import { useI18n, formatAr } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
@@ -16,6 +17,12 @@ const nav = [
   { to: "/groupe", key: "group", label: "👥 Groupe de discussion", public: false },
   { to: "/tutoriel", key: "tutorial", label: "📚 Tutoriel", public: false },
   { to: "/contact", key: "contact", label: "📞 Support", public: true },
+] as const;
+
+const userNav = [
+  { to: "/commandes", label: "📦 Suivi des commandes" },
+  { to: "/groupe", label: "👥 Groupe de discussion" },
+  { to: "/tutoriel", label: "📚 Tutoriel" },
 ] as const;
 
 const ANNOUNCEMENTS = [
@@ -108,7 +115,31 @@ export function Layout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [spin, setSpin] = useState(false);
 
-  const visibleNav = user ? nav : nav.filter((n) => n.public);
+  const [saver, setSaver] = useState(false);
+  useEffect(() => {
+    const on = window.localStorage.getItem("bsm-data-saver") === "1";
+    setSaver(on);
+    document.documentElement.classList.toggle("data-saver", on);
+  }, []);
+  const toggleSaver = () => {
+    const next = !saver;
+    setSaver(next);
+    window.localStorage.setItem("bsm-data-saver", next ? "1" : "0");
+    document.documentElement.classList.toggle("data-saver", next);
+  };
+  const shareSite = async () => {
+    const url = window.location.origin;
+    const data = { title: "BOOST SERVICE MADA", text: "Boostez vos réseaux sociaux - 100% Gasy", url };
+    try {
+      if (navigator.share) await navigator.share(data);
+      else {
+        await navigator.clipboard.writeText(url);
+        toast.success("Lien copié !");
+      }
+    } catch {
+      /* annulé */
+    }
+  };
   const navLabel = (n: (typeof nav)[number]) => {
     if (n.key === "dashboard" || n.key === "group") return n.label;
     const translated = t(n.key);
@@ -186,31 +217,85 @@ export function Layout({ children }: { children: ReactNode }) {
             className="relative h-full w-72 overflow-y-auto border-r border-primary/30 bg-card p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-4 flex items-center gap-2">
-              <Logo size={32} />
-              <span className="font-display text-sm font-bold">BOOST SERVICE MADA</span>
-            </div>
+            {isAdmin ? (
+              <div className="mb-4 flex items-center gap-2">
+                <Logo size={32} />
+                <span className="font-display text-sm font-bold">BOOST SERVICE MADA</span>
+              </div>
+            ) : (
+              <Link
+                to={user ? "/profil" : "/auth"}
+                onClick={() => setOpen(false)}
+                className="mb-4 flex items-center gap-3 rounded-xl border border-border bg-secondary/50 p-3"
+              >
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Avatar" className="h-10 w-10 rounded-full object-cover" />
+                ) : (
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[image:var(--gradient-neon)] text-sm font-bold text-primary-foreground">
+                    {initials.charAt(0)}
+                  </span>
+                )}
+                <div className="min-w-0 leading-tight">
+                  <p className="truncate text-sm font-semibold">{user ? profile?.name || "Profil" : "Se connecter"}</p>
+                  <p className="text-xs font-bold bsm-neon-text">{formatAr(profile?.balance ?? 0)}</p>
+                </div>
+              </Link>
+            )}
             <div className="flex flex-col gap-1">
-              {visibleNav.map((n) => (
-                <Link
-                  key={n.to}
-                  to={n.to}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  activeProps={{ className: "bg-secondary text-foreground" }}
-                >
-                  {navLabel(n)}
-                </Link>
-              ))}
               {isAdmin ? (
-                <Link
-                  to="/admin"
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-2 text-sm font-semibold text-gold"
-                >
-                  {t("admin")}
-                </Link>
-              ) : null}
+                <>
+                  {nav.map((n) => (
+                    <Link
+                      key={n.to}
+                      to={n.to}
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                      activeProps={{ className: "bg-secondary text-foreground" }}
+                    >
+                      {navLabel(n)}
+                    </Link>
+                  ))}
+                  <Link
+                    to="/admin"
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-semibold text-gold"
+                  >
+                    🛡️ {t("admin")}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {userNav.map((n) => (
+                    <Link
+                      key={n.to}
+                      to={user ? n.to : "/auth"}
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                      activeProps={{ className: "bg-secondary text-foreground" }}
+                    >
+                      {n.label}
+                    </Link>
+                  ))}
+                  <button onClick={shareSite} className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground">
+                    📤 Partager le site à un(e) ami(e)
+                  </button>
+                  <button
+                    onClick={toggleSaver}
+                    className="flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  >
+                    <span>📶 Économiser des données</span>
+                    <span className={`relative h-5 w-9 rounded-full transition-colors ${saver ? "bg-primary" : "bg-border"}`}>
+                      <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-all ${saver ? "left-[18px]" : "left-0.5"}`} />
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => toast.info("L'application APK sera bientôt disponible 📱")}
+                    className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  >
+                    📲 Télécharger l'APK
+                  </button>
+                </>
+              )}
               {user ? (
                 <button
                   onClick={async () => {

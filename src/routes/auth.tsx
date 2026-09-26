@@ -42,7 +42,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user) void navigate({ to: "/profil" });
+    if (user) void navigate({ to: "/services" });
   }, [user, navigate]);
 
   const google = async () => {
