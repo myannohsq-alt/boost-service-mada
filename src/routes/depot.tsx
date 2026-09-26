@@ -51,7 +51,7 @@ function DepotPage() {
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
 
-  const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0];
+  const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0]!;
 
   useEffect(
     () => () => {
