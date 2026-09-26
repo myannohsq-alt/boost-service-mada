@@ -215,7 +215,7 @@ export function AuthPage() {
           </p>
         </section>
       )}
-      {!loading && !user && <AiAssistant />}
+      {!loading && !user && <AiAssistant orange />}
       {!loading && !user && showNotif && <div id="notif" role="dialog" aria-label="Installer l'application ?" className="fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[360px] -translate-x-1/2 rounded-md border-l-4 border-primary bg-notice-background p-4 text-notice-foreground shadow-2xl sm:bottom-6">
         <div className="flex items-start justify-between gap-2"><h2 className="font-sans text-base font-bold">Installer l'application ?</h2><Button variant="ghost" size="icon" aria-label="Fermer" onClick={() => setShowNotif(false)} className="-mr-2 -mt-2 h-8 w-8 text-notice-foreground"><X className="h-4 w-4" /></Button></div>
         <p className="mt-1 text-sm">Téléchargez l'APK pour une expérience 2x plus rapide !</p>
