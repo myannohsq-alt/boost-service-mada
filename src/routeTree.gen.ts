@@ -29,6 +29,7 @@ import { Route as ProtectionRouteImport } from './routes/protection'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SuiviCommentairesRouteImport } from './routes/suivi-commentaires'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-generate'
@@ -134,6 +135,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuiviCommentairesRoute = SuiviCommentairesRouteImport.update({
+  id: '/suivi-commentaires',
+  path: '/suivi-commentaires',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TutorielRoute = TutorielRouteImport.update({
   id: '/tutoriel',
   path: '/tutoriel',
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/reset-password'
     | '/services'
+    | '/suivi-commentaires'
     | '/tutoriel'
     | '/api/assistant'
     | '/api/comments-generate'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/reset-password'
     | '/services'
+    | '/suivi-commentaires'
     | '/tutoriel'
     | '/api/assistant'
     | '/api/comments-generate'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/reset-password'
     | '/services'
+    | '/suivi-commentaires'
     | '/tutoriel'
     | '/api/assistant'
     | '/api/comments-generate'
@@ -336,6 +348,7 @@ export interface RootRouteChildren {
   RechargeRoute: typeof RechargeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
+  SuiviCommentairesRoute: typeof SuiviCommentairesRoute
   TutorielRoute: typeof TutorielRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
   ApiCommentsGenerateRoute: typeof ApiCommentsGenerateRoute
@@ -484,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/suivi-commentaires': {
+      id: '/suivi-commentaires'
+      path: '/suivi-commentaires'
+      fullPath: '/suivi-commentaires'
+      preLoaderRoute: typeof SuiviCommentairesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tutoriel': {
       id: '/tutoriel'
       path: '/tutoriel'
@@ -536,6 +556,7 @@ const rootRouteChildren: RootRouteChildren = {
   RechargeRoute: RechargeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
+  SuiviCommentairesRoute: SuiviCommentairesRoute,
   TutorielRoute: TutorielRoute,
   ApiAssistantRoute: ApiAssistantRoute,
   ApiCommentsGenerateRoute: ApiCommentsGenerateRoute,
