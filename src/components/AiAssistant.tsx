@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { MessageCircle, X } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 const WELCOME = "Salama tompoko 👋 Izaho no Service IA. Anontanio aho momba ny prix, commande, délai, recharge na tutoriel.";
 const QUICK = ["Ohatrinona ny followers ?", "Ahoana no manao commande ?", "Ahoana no mi-recharge ?", "Tutoriel"];
 
-export function AiAssistant() {
+export function AiAssistant({ orange = false }: { orange?: boolean }) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -96,13 +98,13 @@ export function AiAssistant() {
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setOpen((o) => !o)}
         aria-label="Service IA"
-        className="fixed bottom-5 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-primary/60 bg-background text-xl shadow-[0_8px_24px_-10px_var(--color-primary)] transition active:scale-95"
+        className={`fixed bottom-5 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-primary/60 shadow-[0_8px_24px_-10px_var(--color-primary)] transition active:scale-95 ${orange ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-background text-foreground hover:bg-secondary"}`}
       >
-        {open ? "✕" : "💬"}
-      </button>
+        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+      </Button>
 
       {open ? (
         <div className="fixed bottom-20 right-3 z-50 flex h-[70vh] max-h-[540px] w-[min(92vw,360px)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">

@@ -6,7 +6,7 @@
 
 /*
  * BOOST SERVICE MADA — Design system
- * Noir Premium / Vert Néon / Or Premium
+ * Deep navy / vivid orange
  */
 
 @theme inline {
@@ -80,23 +80,27 @@
     ),
     radial-gradient(90% 80% at 90% 10%, oklch(0.84 0.16 90 / 0.18) 0%, transparent 55%);
   --gradient-neon: linear-gradient(100deg, oklch(0.72 0.19 50), oklch(0.82 0.17 80));
+  --auth-input: #2c3645;
+  --brand-mark: #2a3441;
+  --notice-background: #ffffff;
+  --notice-foreground: #1b2433;
 }
 
 .dark {
-  --background: oklch(0.15 0.03 270);
+  --background: #0a1931;
   --foreground: oklch(0.98 0.005 270);
-  --card: oklch(0.2 0.025 275);
+  --card: #10223e;
   --card-foreground: oklch(0.98 0.005 270);
-  --popover: oklch(0.2 0.025 275);
+  --popover: #10223e;
   --popover-foreground: oklch(0.98 0.005 270);
-  --primary: oklch(0.72 0.19 50);
+  --primary: #ff6b00;
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.23 0.03 275);
+  --secondary: #152a52;
   --secondary-foreground: oklch(0.95 0.006 270);
-  --muted: oklch(0.23 0.03 275);
+  --muted: #152a52;
   --muted-foreground: oklch(0.66 0.03 275);
-  --accent: oklch(0.3 0.08 55);
-  --accent-foreground: oklch(0.85 0.16 70);
+  --accent: #203653;
+  --accent-foreground: oklch(0.98 0.005 270);
   --gold: oklch(0.82 0.17 80);
   --gold-foreground: oklch(0.18 0.03 80);
   --destructive: oklch(0.65 0.23 25);
@@ -104,13 +108,24 @@
   --success: oklch(0.7 0.15 163);
   --warning: oklch(0.83 0.16 85);
   --info: oklch(0.62 0.19 260);
-  --border: oklch(0.27 0.04 275);
-  --input: oklch(0.3 0.04 275);
-  --ring: oklch(0.72 0.19 50);
+  --border: #2b405e;
+  --input: #2c3645;
+  --ring: #ff6b00;
 
-  --surface-glow: none;
-  --gradient-hero: radial-gradient(90% 60% at 10% -10%, oklch(0.72 0.19 50 / 0.12) 0%, transparent 60%);
-  --gradient-neon: linear-gradient(100deg, oklch(0.72 0.19 50), oklch(0.82 0.17 80));
+  --surface-glow: 0 16px 44px -30px #ff6b00;
+  --gradient-hero: radial-gradient(90% 60% at 10% -10%, #152a52 0%, transparent 65%);
+  --gradient-neon: linear-gradient(105deg, #ff6b00, #ff8c1a);
+  --auth-input: #2c3645;
+  --brand-mark: #2a3441;
+  --notice-background: #ffffff;
+  --notice-foreground: #1b2433;
+}
+
+@theme inline {
+  --color-auth-input: var(--auth-input);
+  --color-brand-mark: var(--brand-mark);
+  --color-notice-background: var(--notice-background);
+  --color-notice-foreground: var(--notice-foreground);
 }
 
 @layer base {
@@ -134,7 +149,7 @@
   h3,
   .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
 }
 
@@ -171,7 +186,7 @@
 @utility bsm-btn-primary {
   background-image: var(--gradient-neon);
   color: var(--color-primary-foreground);
-  box-shadow: 0 12px 30px -14px var(--color-primary);
+  box-shadow: 0 12px 30px -10px color-mix(in oklab, var(--color-primary) 65%, transparent);
 }
 
 @utility bsm-btn-gold {

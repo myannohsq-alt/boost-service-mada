@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Zap } from "lucide-react";
+import { Zap, Mail, LockKeyhole, Smartphone, Download, Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/useAuth";
+import { AiAssistant } from "@/components/AiAssistant";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): { ref?: string } =>
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 type Mode = "login" | "signup" | "forgot";
-const inputClass = "mt-1.5 h-12 w-full rounded-lg border border-border bg-secondary px-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary sm:mt-2 sm:h-13";
+const inputClass = "mt-2 h-14 w-full rounded-xl border border-border bg-auth-input px-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -37,6 +38,16 @@ export function AuthPage() {
   const [refCode, setRefCode] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [showNotif, setShowNotif] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowNotif(true), 3000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const openApk = () => {
+    document.getElementById("apkBtn")?.click();
+  };
 
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get("ref");
@@ -115,23 +126,23 @@ export function AuthPage() {
   };
 
   return (
-    <main className="dark flex min-h-screen items-start justify-center bg-background px-6 py-6 text-foreground sm:items-center sm:py-12">
+    <main className="dark relative flex min-h-screen items-start justify-center overflow-hidden bg-background px-5 py-10 text-foreground sm:items-center sm:py-12">
       {loading || user ? (
         <span className="text-sm text-muted-foreground">Chargement…</span>
       ) : (
-        <section className="w-full max-w-sm" aria-label="Connexion BoostMada">
-          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[image:var(--gradient-neon)] text-primary-foreground shadow-lg shadow-primary/20 sm:mb-9 sm:h-14 sm:w-14">
-            <Zap aria-hidden="true" className="h-7 w-7 fill-current" />
+        <section className="relative z-10 w-full max-w-[400px]" aria-label="Connexion BoostMada">
+          <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-mark text-primary shadow-[0_0_28px_-4px_var(--color-primary)]">
+            <Zap aria-hidden="true" className="h-8 w-8 fill-current" />
           </div>
-          <h1 className="font-sans text-2xl font-bold leading-tight sm:text-4xl">
+          <h1 className="font-sans text-[28px] font-bold leading-tight sm:text-3xl">
             BOOST SERVICE MADA
-            <span className="mt-1.5 block text-lg font-semibold sm:mt-2 sm:text-2xl">Boostez vos réseaux sociaux à Madagascar</span>
+            <span className="mt-2 block text-xl font-semibold leading-snug">Boostez vos réseaux sociaux à Madagascar</span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:mt-4">
+          <p className="mt-3 text-sm text-muted-foreground">
             {mode === "signup" ? "Créez votre compte" : mode === "forgot" ? "Réinitialisez votre mot de passe" : "Connectez-vous à votre compte"}
           </p>
 
-          <form onSubmit={submit} className="mt-6 space-y-4 sm:mt-9 sm:space-y-5">
+          <form onSubmit={submit} className="mt-7 space-y-4">
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
                 <label className="block text-sm font-medium">Nom
@@ -143,11 +154,13 @@ export function AuthPage() {
               </div>
             )}
             <label className="block text-sm font-medium">Email
-              <input required value={email} type="email" inputMode="email" autoComplete="email" maxLength={120} placeholder="vous@email.com" onChange={(e) => setEmail(e.target.value)} className={inputClass} />
+              <span className="relative block"><Mail aria-hidden="true" className="pointer-events-none absolute left-4 top-6 h-5 w-5 text-muted-foreground" />
+              <input required value={email} type="email" inputMode="email" autoComplete="email" maxLength={120} placeholder="vous@email.com" onChange={(e) => setEmail(e.target.value)} className={`${inputClass} pl-12`} /></span>
             </label>
             {mode !== "forgot" && (
               <label className="block text-sm font-medium">Mot de passe
-                <input required type="password" value={password} minLength={6} maxLength={72} autoComplete={mode === "signup" ? "new-password" : "current-password"} placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} className={inputClass} />
+                <span className="relative block"><LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-4 top-6 h-5 w-5 text-muted-foreground" />
+                <input required type="password" value={password} minLength={6} maxLength={72} autoComplete={mode === "signup" ? "new-password" : "current-password"} placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} className={`${inputClass} pl-12`} /></span>
               </label>
             )}
             {mode === "signup" && (
@@ -159,22 +172,24 @@ export function AuthPage() {
               </>
             )}
             {msg && <p role="status" className="rounded-md bg-secondary p-3 text-sm">{msg}</p>}
-            <Button disabled={busy} type="submit" size="lg" className="h-12 w-full bg-[image:var(--gradient-neon)] text-base font-bold text-primary-foreground hover:opacity-90 sm:h-13">
+            <Button disabled={busy} type="submit" size="lg" className="h-14 w-full rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-[0_12px_32px_-8px_var(--color-primary)] hover:bg-primary/90">
               {busy ? "Veuillez patienter…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}
             </Button>
           </form>
 
           {mode === "login" && (
-            <Button variant="link" onClick={() => changeMode("forgot")} className="mt-2 h-auto w-full text-primary sm:mt-3">
+            <Button variant="link" onClick={() => changeMode("forgot")} className="mt-3 h-auto w-full justify-end px-0 text-primary">
               Mot de passe oublié ?
             </Button>
           )}
           {mode !== "forgot" && (
             <>
-              <div className="my-4 flex items-center gap-4 text-xs font-medium text-muted-foreground sm:my-7">
+              <div className="my-5 flex items-center gap-4 text-xs font-medium text-muted-foreground">
                 <span className="h-px flex-1 bg-border" />OU<span className="h-px flex-1 bg-border" />
               </div>
-              <Button type="button" variant="outline" disabled={busy} onClick={google} className="h-11 w-full border-border bg-secondary text-foreground hover:bg-muted hover:text-foreground sm:h-12">
+              <div className="relative pt-3">
+              <span className="absolute right-3 top-0 z-10 flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold text-primary-foreground"><Star className="h-3 w-3 fill-current" /> RECOMMANDÉ</span>
+              <Button type="button" variant="outline" disabled={busy} onClick={google} className="h-14 w-full rounded-xl border-primary bg-auth-input text-foreground shadow-[0_0_18px_-9px_var(--color-primary)] hover:bg-secondary hover:text-foreground">
                 <svg viewBox="0 0 48 48" aria-hidden="true" className="h-5 w-5">
                   <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z" />
                   <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
@@ -183,8 +198,15 @@ export function AuthPage() {
                 </svg>
                 Continuer avec Google
               </Button>
+              </div>
             </>
           )}
+          {mode === "login" && <div className="mt-7 border-t border-border pt-6 text-center">
+            <p className="mb-3 text-sm font-semibold">Installez Boost Service Mada</p>
+            <a id="apkBtn" href="/boost-service-mada.apk" onClick={(event) => { event.preventDefault(); setShowNotif(false); setMsg("L'application sera bientôt disponible au téléchargement."); }} className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 font-bold text-primary-foreground shadow-[0_12px_32px_-8px_var(--color-primary)] transition hover:bg-primary/90">
+              <Smartphone className="h-5 w-5 shrink-0" /> Télécharger l'application <Download className="h-5 w-5 shrink-0" />
+            </a>
+          </div>}
           <p className="mt-5 text-center text-sm text-muted-foreground sm:mt-8">
             {mode === "login" ? "Pas encore de compte ?" : mode === "signup" ? "Déjà inscrit ?" : "Vous vous souvenez de votre mot de passe ?"}{" "}
             <Button variant="link" onClick={() => changeMode(mode === "login" ? "signup" : "login")} className="h-auto p-0 font-semibold text-primary">
@@ -193,6 +215,12 @@ export function AuthPage() {
           </p>
         </section>
       )}
+      {!loading && !user && <AiAssistant orange />}
+      {!loading && !user && showNotif && <div id="notif" role="dialog" aria-label="Installer l'application ?" className="fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[360px] -translate-x-1/2 rounded-md border-l-4 border-primary bg-notice-background p-4 text-notice-foreground shadow-2xl sm:bottom-6">
+        <div className="flex items-start justify-between gap-2"><h2 className="font-sans text-base font-bold">Installer l'application ?</h2><Button variant="ghost" size="icon" aria-label="Fermer" onClick={() => setShowNotif(false)} className="-mr-2 -mt-2 h-8 w-8 text-notice-foreground"><X className="h-4 w-4" /></Button></div>
+        <p className="mt-1 text-sm">Téléchargez l'APK pour une expérience 2x plus rapide !</p>
+        <div className="mt-4 flex gap-2"><Button onClick={openApk} className="bg-primary text-primary-foreground hover:bg-primary/90">Installer</Button><Button variant="outline" onClick={() => setShowNotif(false)} className="border-border bg-notice-background text-notice-foreground hover:bg-muted">Plus tard</Button></div>
+      </div>}
     </main>
   );
 }

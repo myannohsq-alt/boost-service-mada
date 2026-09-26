@@ -85,8 +85,8 @@ function LiveClock() {
 
 export function BrandMark() {
   return (
-    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[image:var(--gradient-neon)] text-lg text-primary-foreground shadow-[0_6px_18px_-8px_var(--color-primary)]">
-      ⚡
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-brand-mark text-primary shadow-[0_0_18px_-4px_var(--color-primary)]">
+      <span aria-hidden="true">⚡</span>
     </span>
   );
 }
