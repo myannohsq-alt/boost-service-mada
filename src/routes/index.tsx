@@ -10,18 +10,22 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux Madagascar" },
+      { title: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy | boostmada.app" },
       {
         name: "description",
         content:
-          "Réactions, followers, commentaires, partages et vues pour Facebook, TikTok, Instagram et YouTube. Service rapide 24h/24 à Madagascar.",
+          "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Paiement MVola Orange Money Airtel. Livraison rapide Madagascar.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux Madagascar" },
+      { property: "og:url", content: "https://boostmada.app/" },
+      { property: "og:site_name", content: "BoostMada" },
+      { property: "og:locale", content: "fr_MG" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy" },
       {
         property: "og:description",
-        content: "Plateforme Malagasy de boost réseaux sociaux. Rapide, professionnel, 24h/24.",
+        content:
+          "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Paiement MVola Orange Money Airtel. Livraison rapide Madagascar.",
       },
     ],
   }),
