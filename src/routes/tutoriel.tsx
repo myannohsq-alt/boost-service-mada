@@ -88,6 +88,7 @@ function VideoPlayer({ src }: { src: string }) {
       }}
     >
       <source src={src} type="video/mp4" />
+      <source src={src.replace(/\.mp4$/, ".webm")} type="video/webm" />
       Tsy afaka mamaky ity horonantsary ity ny navigateur-nao.
     </video>
   );
