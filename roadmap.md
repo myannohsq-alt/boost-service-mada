@@ -3,4 +3,4 @@
 - [x] Vérifier les deux choix sur téléphone, la validation de commande et l'absence du bloc sur Reaction Gasy sans débiter une commande réelle.
 - [x] Mettre Réactions Gasy et Followers Gasy à 20 Ar/unité sans modifier les autres tarifs.
 - [x] Réunir les deux offres dans une seule carte Facebook Gasy avec choix du type et réactions conditionnelles.
-- [ ] Vérifier en navigateur le prix et les deux choix sans passer de commande réelle.
+- [x] Vérifier en navigateur le prix et les deux choix sans passer de commande réelle.
