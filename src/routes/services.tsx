@@ -7,6 +7,7 @@ import { OrderModal, ServiceBadge, type ServiceCard } from "@/components/OrderMo
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { buildServiceGroups, type ServiceGroup } from "@/lib/service-groups";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -37,7 +38,7 @@ function ServicesPage() {
   const { profile } = useAuth();
   const qc = useQueryClient();
   const [platform, setPlatform] = useState("facebook");
-  const [selected, setSelected] = useState<ServiceCard | null>(null);
+  const [selected, setSelected] = useState<ServiceGroup | null>(null);
 
   const { data: services } = useQuery({
     queryKey: ["services"],
@@ -52,7 +53,7 @@ function ServicesPage() {
   });
 
   const list = useMemo(
-    () => (services ?? []).filter((s) => s.platform === platform),
+    () => buildServiceGroups((services ?? []).filter((s) => s.platform === platform)),
     [services, platform],
   );
 
@@ -81,24 +82,26 @@ function ServicesPage() {
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {list.map((s) => (
+            {list.map((g) => (
               <button
-                key={s.id}
-                onClick={() => setSelected(s)}
+                key={g.key}
+                onClick={() => setSelected(g)}
                 className="bsm-card group p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_0_28px_-8px_var(--color-primary)] active:scale-[0.98]"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px] uppercase tracking-wide text-primary">{s.category}</p>
-                  <ServiceBadge badge={s.badge} />
+                  <p className="text-[11px] uppercase tracking-wide text-primary">{g.category}</p>
+                  <ServiceBadge badge={g.badge} />
                 </div>
-                <p className="mt-1 font-semibold">{lang === "mg" ? s.name_mg : s.name_fr}</p>
+                <p className="mt-1 font-semibold">{lang === "mg" ? g.nameMg : g.nameFr}</p>
                 <p className="mt-1 text-sm text-gold">
-                  {s.unit} = {formatAr(Number(s.price))}
+                  1000 = {formatAr(Math.ceil(g.unitPrice * 1000))}
                 </p>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  ⏱️ {s.delivery_time || "0-6 h"}
-                </p>
-                {s.note ? <p className="mt-1 text-xs text-muted-foreground">{s.note}</p> : null}
+                {g.options.length > 1 ? (
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {g.options.length} options : {g.options.map((o) => o.label).join(" · ")}
+                  </p>
+                ) : null}
+                <p className="mt-1 text-[11px] text-muted-foreground">⏱️ {g.deliveryTime}</p>
                 <span className="bsm-btn bsm-btn-primary mt-3 block w-full !py-2 text-center !text-xs">
                   🚀 Commander
                 </span>
@@ -112,7 +115,7 @@ function ServicesPage() {
 
         {selected ? (
           <OrderModal
-            service={selected}
+            group={selected}
             onClose={() => setSelected(null)}
             onOrdered={() => {
               void qc.invalidateQueries({ queryKey: ["my-orders"] });
