@@ -15,7 +15,7 @@ const QUICK = [100, 500, 1000, 5000];
 export function ServiceForm({ group, onClose, onOrdered }: {
   group: ServiceGroup;
   onClose: () => void;
-  onOrdered?: () => void;
+  onOrdered?: (() => void) | undefined;
 }) {
   const { lang } = useI18n();
   const { user, profile, refresh } = useAuth();

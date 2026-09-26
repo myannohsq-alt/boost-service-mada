@@ -5,7 +5,7 @@ export const BADGES: Record<string, { label: string; className: string }> = {
   new: { label: "🆕 Nouveau", className: "bg-secondary text-foreground border-border" },
 };
 
-export function ServiceBadge({ badge }: { badge?: string | null }) {
+export function ServiceBadge({ badge }: { badge?: string | null | undefined }) {
   const b = badge ? BADGES[badge] : undefined;
   if (!b) return null;
   return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${b.className}`}>{b.label}</span>;
