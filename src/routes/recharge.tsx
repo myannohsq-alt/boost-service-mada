@@ -66,7 +66,10 @@ function RechargePage() {
         <div className="grid gap-3 sm:grid-cols-3">
           {NUMBERS.map((n) => (
             <div key={n.phone} className="bsm-card p-4 text-center">
-              <p className="font-display text-lg font-bold text-primary">{n.phone}</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                {n.label}
+              </p>
+              <p className="mt-1 font-display text-lg font-bold text-primary">{n.phone}</p>
               <p className="text-xs text-muted-foreground">{n.owner}</p>
             </div>
           ))}
