@@ -17,6 +17,8 @@ export const Route = createFileRoute("/a-propos")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
+      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
     ],
   }),
   component: AboutPage,

@@ -17,6 +17,8 @@ export const Route = createFileRoute("/contact")({
       { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Contact — BOOST SERVICE MADA" },
       { property: "og:description", content: "Support disponible 24h/24." },
+      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
+      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
     ],
   }),
   component: ContactPage,
