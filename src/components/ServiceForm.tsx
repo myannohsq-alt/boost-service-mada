@@ -41,7 +41,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
   const quantity = Number(quantityText);
   const min = 100;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
-    ? Math.ceil(quantity / service.unit * Number(service.price) * (hasVisibility && visibility === "invisible" ? 0.8 : 1)) : 0;
+    ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
   const balance = Number(profile?.balance ?? 0);
   const insufficient = cost > balance;
 
@@ -102,11 +102,11 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         <div className="mt-2 grid grid-cols-2 gap-2">
           <Button type="button" variant="outline" aria-pressed={visibility === "invisible"} onClick={() => setVisibility("invisible")}
             className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "invisible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            <span>Invisible (LENT) • tsy miena 🔥</span><span className="text-[11px]">−20 % · livraison lente</span>
+            <span>Invisible (LENT) • tsy miena 🔥</span>
           </Button>
           <Button type="button" variant="outline" aria-pressed={visibility === "visible"} onClick={() => setVisibility("visible")}
             className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "visible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            <span>Réaction visible 🚩 • (rapid)</span><span className="text-[11px]">23 min estimées</span>
+            <span>Réaction visible 🚩 • (rapid)</span>
           </Button>
         </div>
       </fieldset>}
