@@ -1,63 +1,69 @@
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-type Msg = { role: "ai" | "me"; text: string };
+type Msg = { role: "user" | "assistant"; content: string };
 
-const WELCOME =
-  "🤖 Salama! Izaho no Service IA an'ny BOOST SERVICE MADA. Anontanio aho momba ny dépôt, commande, servisy na tutoriel.";
-
-const QUICK = [
-  { label: "💰 Ahoana no hanaovana dépôt ?", key: "depot" },
-  { label: "📦 Ahoana no hanaovana commande ?", key: "commande" },
-  { label: "📚 Tutoriel", key: "tutoriel" },
-  { label: "📞 Support", key: "support" },
-];
-
-const ANSWERS: Record<string, string> = {
-  depot:
-    "💰 Fomba fanaovana dépôt :\n1️⃣ Mandehana ao amin'ny pejy « Dépôt / Recharge ».\n2️⃣ Fidio ny operateur : Orange Money, MVola na Airtel Money.\n3️⃣ Alefaso ny vola amin'ilay numéro aseho (1 000 Ar farafahakeliny).\n4️⃣ Soraty ny montant, ny numéro nandefasanao ary ny référence/Trans ID tao amin'ny SMS.\n5️⃣ Tsindrio « Envoyer la demande ». Hovalidena ao anatin'ny fotoana fohy ny solde-nao.",
-  commande:
-    "📦 Fomba fanaovana commande :\n1️⃣ Ataovy dépôt aloha mba hisy solde.\n2️⃣ Mandehana ao amin'ny « Services » ary fidio ny plateforme (Facebook, TikTok, Instagram, YouTube).\n3️⃣ Tsindrio ny carte servisy — hisokatra popup.\n4️⃣ Apetraho ny lien sy ny quantité, hita avy hatrany ny total.\n5️⃣ Tsindrio « Commander Maintenant ». Araho ao amin'ny « Mes commandes » ny statut.",
-  tutoriel:
-    "📚 Misy tutoriel feno ao amin'ny pejy « Tutoriels » : video sy toro-hevitra mba hampiasa tsara ny sehatra. Midira ao izay ijerena tuto 😎",
-  support:
-    "📞 Support : Messenger BOOST & SERVICE na WhatsApp +261 37 51 410 25. Afaka manoratra ao amin'ny « Groupe de discussion » koa ianao.",
-  solde:
-    "💳 Ny solde-nao dia hita eo ambony amin'ny header sy ao amin'ny Tableau de bord. Miakatra izy rehefa lany validation ny dépôt.",
-  compte:
-    "👤 Ny kaonty : afaka mijery commandes, solde, historique sy notifications ao amin'ny « Tableau de bord » ianao.",
-  prix: "🏷️ Ny vidiny rehetra dia aseho amin'ny Ariary ao amin'ny pejy Services, arakaraka ny quantité.",
-};
-
-function reply(input: string): string {
-  const q = input.toLowerCase();
-  if (/(depot|dépôt|recharge|vola|payer|mvola|orange|airtel)/.test(q)) return ANSWERS['depot']!;
-  if (/(commande|order|commander|boost|followers|likes)/.test(q)) return ANSWERS['commande']!;
-  if (/(tuto|video|hianatra)/.test(q)) return ANSWERS['tutoriel']!;
-  if (/(support|contact|olana|aide|help)/.test(q)) return ANSWERS['support']!;
-  if (/(solde|balance)/.test(q)) return ANSWERS['solde']!;
-  if (/(compte|kaonty|profil)/.test(q)) return ANSWERS['compte']!;
-  if (/(prix|vidiny|tarif)/.test(q)) return ANSWERS['prix']!;
-  if (/(salama|bonjour|hello|salut|manao ahoana)/.test(q))
-    return "👋 Salama tompoko! Inona no azoko anampiana anao androany ?";
-  return "🤔 Tsy azoko tsara ny fanontaniana. Andramo ireto bokotra haingana ireto na soraty hoe « dépôt », « commande », « tutoriel » na « support ».";
-}
+const WELCOME = "Salama tompoko 👋 Izaho no Service IA. Anontanio aho momba ny prix, commande, délai, recharge na tutoriel.";
+const QUICK = ["Ohatrinona ny followers ?", "Ahoana no manao commande ?", "Ahoana no mi-recharge ?", "Tutoriel"];
 
 export function AiAssistant() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [msgs, setMsgs] = useState<Msg[]>([{ role: "ai", text: WELCOME }]);
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [busy, setBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [msgs, open]);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, open]);
+  useEffect(() => { if (open && !busy) inputRef.current?.focus(); }, [open, busy]);
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     const value = text.trim();
-    if (!value) return;
-    setMsgs((m) => [...m, { role: "me", text: value }]);
+    if (!value || busy) return;
+    const next: Msg[] = [...msgs, { role: "user", content: value }];
+    setMsgs([...next, { role: "assistant", content: "" }]);
     setInput("");
-    window.setTimeout(() => setMsgs((m) => [...m, { role: "ai", text: reply(value) }]), 350);
+    setBusy(true);
+    const setLast = (content: string) =>
+      setMsgs((m) => [...m.slice(0, -1), { role: "assistant", content }]);
+    try {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) return setLast("Midira aloha (connexion) vao afaka miresaka amiko 🙏");
+      const res = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ messages: next }),
+      });
+      if (!res.ok || !res.body) {
+        return setLast(res.status === 429 ? "Be loatra ny fangatahana, andramo afaka kelikely 🙏" : "Mifandraisa @ Support 🙏");
+      }
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "", out = "";
+      for (;;) {
+        const { done, value: chunk } = await reader.read();
+        if (done) break;
+        buf += dec.decode(chunk, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data:")) continue;
+          try {
+            const ev = JSON.parse(line.slice(5).trim());
+            if (ev.type === "response.output_text.delta" && typeof ev.delta === "string") {
+              out += ev.delta;
+              setLast(out);
+            }
+          } catch { /* ignore keep-alives */ }
+        }
+      }
+      if (!out) setLast("Mifandraisa @ Support 🙏");
+    } catch {
+      setLast("Mifandraisa @ Support 🙏");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -65,67 +71,59 @@ export function AiAssistant() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Service IA"
-        className="bsm-btn bsm-btn-primary animate-pulse-ring fixed bottom-24 right-4 z-40 !h-14 !w-14 !p-0 text-2xl"
+        className="fixed bottom-5 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-primary/60 bg-card text-xl shadow-[0_8px_24px_-10px_var(--color-primary)] transition active:scale-95"
       >
-        🤖
+        {open ? "✕" : "💬"}
       </button>
 
       {open ? (
-        <div className="fixed bottom-40 right-3 z-50 flex h-[70vh] max-h-[560px] w-[min(92vw,360px)] animate-slide-up flex-col overflow-hidden rounded-3xl bsm-glass">
-          <div className="flex items-center justify-between gap-2 border-b border-primary/30 bg-card/80 px-4 py-3">
-            <p className="font-display text-sm font-bold">
-              🤖 <span className="bsm-neon-text">Service IA</span>
-            </p>
-            <button onClick={() => setOpen(false)} className="text-sm text-muted-foreground">
-              ✕
-            </button>
+        <div className="fixed bottom-20 right-3 z-50 flex h-[70vh] max-h-[540px] w-[min(92vw,360px)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+          <div className="flex items-center gap-2 border-b border-border bg-[image:var(--gradient-neon)] px-4 py-3 text-primary-foreground">
+            <span className="text-lg">💬</span>
+            <div className="leading-tight">
+              <p className="text-sm font-bold">Service IA</p>
+              <p className="text-[10px] opacity-80">{busy ? "Manoratra…" : "En ligne"}</p>
+            </div>
           </div>
 
           <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+            <div className="max-w-[85%] rounded-2xl bg-secondary px-3 py-2 text-xs leading-relaxed">{WELCOME}</div>
             {msgs.map((m, i) => (
               <div
                 key={i}
                 className={`max-w-[85%] whitespace-pre-line rounded-2xl px-3 py-2 text-xs leading-relaxed ${
-                  m.role === "ai"
-                    ? "bg-secondary text-foreground"
-                    : "ml-auto bg-primary text-primary-foreground"
+                  m.role === "assistant" ? "bg-secondary text-foreground" : "ml-auto bg-primary text-primary-foreground"
                 }`}
               >
-                {m.text}
+                {m.content || <span className="animate-pulse">•••</span>}
               </div>
             ))}
             <div ref={endRef} />
           </div>
 
-          <div className="flex flex-wrap gap-1.5 border-t border-primary/20 px-3 py-2">
-            {QUICK.map((q) => (
-              <button
-                key={q.key}
-                onClick={() => send(q.label)}
-                className="rounded-full border border-primary/40 bg-card/70 px-2.5 py-1 text-[10px] font-medium transition-colors hover:bg-primary/15"
-              >
-                {q.label}
-              </button>
-            ))}
-          </div>
+          {!msgs.length ? (
+            <div className="flex flex-wrap gap-1.5 border-t border-border px-3 py-2">
+              {QUICK.map((q) => (
+                <button key={q} onClick={() => void send(q)} className="rounded-full border border-primary/40 px-2.5 py-1 text-[10px]">
+                  {q}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              send(input);
-            }}
-            className="flex items-center gap-2 border-t border-primary/20 px-3 py-2"
+            onSubmit={(e) => { e.preventDefault(); void send(input); }}
+            className="flex items-center gap-2 border-t border-border px-3 py-2"
           >
             <input
+              ref={inputRef}
               value={input}
-              maxLength={300}
+              maxLength={500}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Soraty eto ny fanontanianao…"
               className="bsm-input !py-2 !text-xs"
             />
-            <button type="submit" className="bsm-btn bsm-btn-primary !px-3 !py-2 !text-xs">
-              ➤
-            </button>
+            <button type="submit" disabled={busy} className="bsm-btn bsm-btn-primary !px-3 !py-2 !text-xs">➤</button>
           </form>
         </div>
       ) : null}
