@@ -1,346 +1,133 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Layout, Section } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
 import { useAuth } from "@/lib/useAuth";
+import { formatAr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/groupe")({
   head: () => ({
     meta: [
-      { title: "Groupe de discussion — BOOST SERVICE MADA" },
-      {
-        name: "description",
-        content:
-          "Espace communautaire BOOST SERVICE MADA : questions, astuces, entraide et annonces entre membres malagasy.",
-      },
+      { title: "Groupe MADA — Chat BOOST SERVICE MADA" },
+      { name: "description", content: "Chat communautaire en temps réel des membres BOOST SERVICE MADA — 1 Ar par message." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "Groupe de discussion — BOOST SERVICE MADA" },
-      { property: "og:description", content: "Échangez avec les autres membres de la plateforme." },
+      { property: "og:title", content: "Groupe MADA — Chat BOOST SERVICE MADA" },
+      { property: "og:description", content: "Discutez en direct avec la communauté, 1 Ar par message." },
     ],
   }),
   component: GroupPage,
 });
 
-const CATEGORIES = [
-  { id: "general", label: "💬 Général" },
-  { id: "question", label: "❓ Questions" },
-  { id: "astuce", label: "💡 Astuces" },
-  { id: "annonce", label: "📢 Annonces" },
-];
-
-const EMOJIS = ["👍", "❤️", "🔥"];
-
-type Post = {
-  id: string;
-  user_id: string;
-  author_name: string;
-  category: string;
-  content: string;
-  pinned: boolean;
-  locked: boolean;
-  created_at: string;
-};
-
-type Comment = {
-  id: string;
-  post_id: string;
-  user_id: string;
-  author_name: string;
-  content: string;
-  created_at: string;
-};
-
-type Reaction = { id: string; post_id: string; user_id: string; emoji: string };
+type ChatMsg = { id: string; user_id: string; author_name: string; content: string; created_at: string };
 
 function GroupPage() {
-  const { user, profile, isAdmin } = useAuth();
-  const qc = useQueryClient();
-  const [cat, setCat] = useState("all");
-  const [content, setContent] = useState("");
-  const [postCat, setPostCat] = useState("general");
+  const { user, profile, isAdmin, refresh } = useAuth();
+  const [msgs, setMsgs] = useState<ChatMsg[]>([]);
+  const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [bal, setBal] = useState<number | null>(null);
+  const endRef = useRef<HTMLDivElement>(null);
+  const balance = bal ?? Number(profile?.balance ?? 0);
 
-  const { data } = useQuery({
-    queryKey: ["community"],
-    queryFn: async () => {
-      const [posts, comments, reactions] = await Promise.all([
-        supabase
-          .from("community_posts")
-          .select("*")
-          .order("pinned", { ascending: false })
-          .order("created_at", { ascending: false })
-          .limit(100),
-        supabase.from("community_comments").select("*").order("created_at"),
-        supabase.from("community_reactions").select("*"),
-      ]);
-      return {
-        posts: (posts.data ?? []) as Post[],
-        comments: (comments.data ?? []) as Comment[],
-        reactions: (reactions.data ?? []) as Reaction[],
-      };
-    },
-  });
+  useEffect(() => { setBal(null); }, [profile?.balance]);
 
-  const refetch = () => qc.invalidateQueries({ queryKey: ["community"] });
-  const authorName = profile?.name || profile?.email || "Membre";
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    void supabase
+      .from("chat_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200)
+      .then(({ data }) => { if (alive) setMsgs(((data ?? []) as ChatMsg[]).reverse()); });
+    const ch = supabase
+      .channel("chat_messages_live")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (p) => {
+        const m = p.new as ChatMsg;
+        setMsgs((cur) => (cur.some((x) => x.id === m.id) ? cur : [...cur, m]));
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "chat_messages" }, (p) => {
+        const id = (p.old as { id?: string }).id;
+        setMsgs((cur) => cur.filter((x) => x.id !== id));
+      })
+      .subscribe();
+    return () => { alive = false; void supabase.removeChannel(ch); };
+  }, [user]);
 
-  const posts = useMemo(
-    () => (data?.posts ?? []).filter((p) => cat === "all" || p.category === cat),
-    [data, cat],
-  );
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs]);
 
-  const publish = async () => {
-    if (content.trim().length < 3) { toast.error("Écrivez un message plus long."); return; }
+  const send = async () => {
+    const value = text.trim();
+    if (!value || busy) return;
+    if (balance < 1) { toast.error("Solde insuffisant, rechargez"); return; }
     setBusy(true);
-    const { error } = await supabase.from("community_posts").insert({
-      user_id: user!.id,
-      author_name: authorName,
-      category: postCat,
-      content: content.trim(),
-    });
+    const { data, error } = await supabase.rpc("send_chat_message" as never, { _content: value } as never);
     setBusy(false);
-    if (error) { toast.error(`❌ ${error.message}`); return; }
-    setContent("");
-    toast.success("✅ Publication envoyée");
-    await refetch();
-  };
-
-  const react = async (postId: string, emoji: string) => {
-    const mine = (data?.reactions ?? []).find(
-      (r) => r.post_id === postId && r.user_id === user!.id && r.emoji === emoji,
-    );
-    if (mine) await supabase.from("community_reactions").delete().eq("id", mine.id);
-    else
-      await supabase
-        .from("community_reactions")
-        .insert({ post_id: postId, user_id: user!.id, emoji });
-    await refetch();
-  };
-
-  const moderate = async (post: Post, values: Partial<Post>) => {
-    const { error } = await supabase.from("community_posts").update(values).eq("id", post.id);
-    if (error) { toast.error(`❌ ${error.message}`); return; }
-    await refetch();
+    if (error) { toast.error(error.message.includes("Solde") ? "Solde insuffisant, rechargez" : error.message); return; }
+    setText("");
+    setBal(Number(data));
+    void refresh();
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase.from("community_posts").delete().eq("id", id);
-    if (error) { toast.error(`❌ ${error.message}`); return; }
-    toast.success("🗑️ Publication supprimée");
-    await refetch();
+    const { error } = await supabase.from("chat_messages").delete().eq("id", id);
+    if (error) toast.error(error.message);
   };
 
   return (
     <AuthGate>
       <Layout>
-        <Section
-          title="👥 Groupe de discussion"
-          subtitle="Posez vos questions, partagez vos astuces et échangez avec la communauté."
-        >
-          <div className="bsm-card space-y-3 p-5">
-            <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setPostCat(c.id)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                    postCat === c.id ? "bg-primary text-primary-foreground" : "bg-secondary"
-                  }`}
-                >
-                  {c.label}
-                </button>
-              ))}
+        <section className="mx-auto flex h-[calc(100dvh-110px)] w-full max-w-3xl flex-col px-2 py-2">
+          <div className="flex items-center justify-between gap-2 rounded-t-2xl border border-border bg-card px-4 py-3">
+            <div className="min-w-0">
+              <h1 className="truncate text-sm font-bold">👥 Groupe MADA - 1 Ar par message</h1>
+              <p className="text-[10px] text-muted-foreground">Temps réel · {msgs.length} messages</p>
             </div>
-            <textarea
-              value={content}
-              maxLength={1000}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Soraty eto ny hafatrao…"
-              className="bsm-input min-h-24"
+            <span className="shrink-0 rounded-full border border-border bg-background px-2.5 py-1 text-[11px]">
+              Solde <strong className="bsm-neon-text">{formatAr(balance)}</strong>
+            </span>
+          </div>
+
+          <div className="flex-1 space-y-2 overflow-y-auto border-x border-border bg-background/60 px-3 py-3">
+            {msgs.map((m) => {
+              const mine = m.user_id === user?.id;
+              return (
+                <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-card border border-border"}`}>
+                    {!mine ? <p className="text-[10px] font-bold text-primary">{m.author_name}</p> : null}
+                    <p className="whitespace-pre-wrap break-words">{m.content}</p>
+                    <p className={`mt-0.5 flex items-center justify-end gap-2 text-[9px] ${mine ? "opacity-75" : "text-muted-foreground"}`}>
+                      {isAdmin ? <button onClick={() => void remove(m.id)} className="underline">suppr.</button> : null}
+                      {new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+            {!msgs.length ? <p className="pt-10 text-center text-xs text-muted-foreground">Tsy mbola misy message. Manorata voalohany ! 👋</p> : null}
+            <div ref={endRef} />
+          </div>
+
+          <form
+            onSubmit={(e) => { e.preventDefault(); void send(); }}
+            className="flex items-center gap-2 rounded-b-2xl border border-border bg-card px-3 py-2"
+          >
+            <input
+              value={text}
+              maxLength={500}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Message… (1 Ar)"
+              className="bsm-input !py-2 !text-sm"
             />
-            <button
-              disabled={busy}
-              onClick={() => void publish()}
-              className="bsm-btn bsm-btn-primary disabled:opacity-50"
-            >
-              {busy ? "Envoi…" : "🚀 Publier"}
+            <button type="submit" disabled={busy || !text.trim()} className="bsm-btn bsm-btn-primary !px-4 !py-2 !text-sm">
+              Envoyer
             </button>
-          </div>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            {[{ id: "all", label: "🌐 Tout" }, ...CATEGORIES].map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setCat(c.id)}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                  cat === c.id ? "bg-gold text-background" : "bg-secondary"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-4 space-y-3">
-            {posts.map((p) => (
-              <PostCard
-                key={p.id}
-                post={p}
-                comments={(data?.comments ?? []).filter((c) => c.post_id === p.id)}
-                reactions={(data?.reactions ?? []).filter((r) => r.post_id === p.id)}
-                userId={user!.id}
-                authorName={authorName}
-                isAdmin={isAdmin}
-                onReact={react}
-                onModerate={moderate}
-                onDelete={remove}
-                onRefetch={refetch}
-              />
-            ))}
-            {!posts.length ? (
-              <p className="text-sm text-muted-foreground">Aucune publication pour le moment.</p>
-            ) : null}
-          </div>
-        </Section>
+          </form>
+        </section>
       </Layout>
     </AuthGate>
-  );
-}
-
-function PostCard({
-  post,
-  comments,
-  reactions,
-  userId,
-  authorName,
-  isAdmin,
-  onReact,
-  onModerate,
-  onDelete,
-  onRefetch,
-}: {
-  post: Post;
-  comments: Comment[];
-  reactions: Reaction[];
-  userId: string;
-  authorName: string;
-  isAdmin: boolean;
-  onReact: (postId: string, emoji: string) => Promise<void>;
-  onModerate: (post: Post, values: Partial<Post>) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
-  onRefetch: () => Promise<unknown>;
-}) {
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState("");
-
-  const send = async () => {
-    if (text.trim().length < 2) return;
-    const { error } = await supabase.from("community_comments").insert({
-      post_id: post.id,
-      user_id: userId,
-      author_name: authorName,
-      content: text.trim(),
-    });
-    if (error) { toast.error(`❌ ${error.message}`); return; }
-    setText("");
-    await onRefetch();
-  };
-
-  const category = CATEGORIES.find((c) => c.id === post.category)?.label ?? post.category;
-
-  return (
-    <article className="bsm-card p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-primary">
-          {category}
-        </span>
-        {post.pinned ? <span className="text-xs text-gold">📌 Épinglé</span> : null}
-        {post.locked ? <span className="text-xs text-muted-foreground">🔒 Verrouillé</span> : null}
-        <span className="ml-auto text-[11px] text-muted-foreground">
-          {new Date(post.created_at).toLocaleString("fr-FR")}
-        </span>
-      </div>
-
-      <p className="mt-2 text-sm font-semibold">{post.author_name}</p>
-      <p className="mt-1 whitespace-pre-wrap text-sm text-foreground/90">{post.content}</p>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {EMOJIS.map((e) => {
-          const count = reactions.filter((r) => r.emoji === e).length;
-          const mine = reactions.some((r) => r.emoji === e && r.user_id === userId);
-          return (
-            <button
-              key={e}
-              onClick={() => void onReact(post.id, e)}
-              className={`rounded-full border px-3 py-1 text-xs transition-transform active:scale-95 ${
-                mine ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary"
-              }`}
-            >
-              {e} {count}
-            </button>
-          );
-        })}
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-full border border-border bg-secondary px-3 py-1 text-xs"
-        >
-          💬 {comments.length}
-        </button>
-
-        {isAdmin ? (
-          <div className="ml-auto flex gap-2">
-            <button
-              onClick={() => void onModerate(post, { pinned: !post.pinned })}
-              className="rounded-full bg-secondary px-3 py-1 text-xs"
-            >
-              📌 {post.pinned ? "Désépingler" : "Épingler"}
-            </button>
-            <button
-              onClick={() => void onModerate(post, { locked: !post.locked })}
-              className="rounded-full bg-secondary px-3 py-1 text-xs"
-            >
-              🔒 {post.locked ? "Déverrouiller" : "Verrouiller"}
-            </button>
-            <button
-              onClick={() => void onDelete(post.id)}
-              className="rounded-full bg-destructive px-3 py-1 text-xs text-destructive-foreground"
-            >
-              🗑️
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      {open ? (
-        <div className="mt-3 space-y-2 border-t border-border pt-3">
-          {comments.map((c) => (
-            <div key={c.id} className="rounded-lg bg-secondary p-3">
-              <p className="text-xs font-semibold">{c.author_name}</p>
-              <p className="text-sm text-foreground/90">{c.content}</p>
-            </div>
-          ))}
-          {post.locked ? (
-            <p className="text-xs text-muted-foreground">🔒 Les commentaires sont fermés.</p>
-          ) : (
-            <div className="flex gap-2">
-              <input
-                value={text}
-                maxLength={500}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Votre commentaire…"
-                className="bsm-input flex-1"
-              />
-              <button onClick={() => void send()} className="bsm-btn bsm-btn-primary !px-4 !py-2 !text-xs">
-                Envoyer
-              </button>
-            </div>
-          )}
-        </div>
-      ) : null}
-    </article>
   );
 }
