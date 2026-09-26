@@ -57,61 +57,55 @@ function ServicesPage() {
     [services, platform],
   );
 
+  const times = useDynamicTimes(list);
+
   return (
     <AuthGate>
       <Layout>
-        <Section
-          title="🛒 Services & Tarifs"
-          subtitle="Prix en Ariary. Le solde est débité automatiquement à la commande."
-        >
-          <div className="flex flex-wrap items-center gap-2">
+        <section className="mx-auto w-full max-w-5xl px-3 py-4">
+          <div className="flex items-end justify-between gap-2">
+            <div className="min-w-0">
+              <h1 className="truncate text-lg font-bold">Services</h1>
+              <p className="text-[11px] text-muted-foreground">Boostez vos réseaux sociaux — 100% Gasy 🇲🇬</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-border bg-card px-2.5 py-1 text-[11px]">
+              Solde <span className="font-bold bsm-neon-text">{formatAr(profile?.balance ?? 0)}</span>
+            </span>
+          </div>
+
+          <div className="-mx-3 mt-3 flex gap-2 overflow-x-auto px-3 pb-1">
             {platforms.map((p) => (
               <button
                 key={p.id}
                 onClick={() => setPlatform(p.id)}
-                className={`bsm-btn !py-1.5 !text-xs transition-transform active:scale-95 ${
-                  platform === p.id ? "bsm-btn-primary" : "bsm-btn-ghost"
+                className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition active:scale-95 ${
+                  platform === p.id
+                    ? "bg-[image:var(--gradient-neon)] text-primary-foreground"
+                    : "border border-border bg-card text-muted-foreground"
                 }`}
               >
                 {p.label}
               </button>
             ))}
-            <span className="ml-auto rounded-full bg-secondary px-3 py-1.5 text-xs">
-              💰 Solde : <span className="font-bold text-primary">{formatAr(profile?.balance ?? 0)}</span>
-            </span>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {list.map((g) => (
-              <button
+          <div className="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
+            {list.map((g, i) => (
+              <ServiceTile
                 key={g.key}
+                group={g}
+                id={idFor(services ?? [], g)}
+                name={lang === "mg" ? g.nameMg : g.nameFr}
+                time={times[g.key] ?? formatMinutes(baseMinutes(g.deliveryTime))}
+                chosen={chosenPct(g.key, i)}
                 onClick={() => setSelected(g)}
-                className="bsm-card group p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_0_28px_-8px_var(--color-primary)] active:scale-[0.98]"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px] uppercase tracking-wide text-primary">{g.category}</p>
-                  <ServiceBadge badge={g.badge} />
-                </div>
-                <p className="mt-1 font-semibold">{lang === "mg" ? g.nameMg : g.nameFr}</p>
-                <p className="mt-1 text-sm text-gold">
-                  1000 = {formatAr(Math.ceil(g.unitPrice * 1000))}
-                </p>
-                {g.options.length > 1 ? (
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    {g.options.length} options : {g.options.map((o) => o.label).join(" · ")}
-                  </p>
-                ) : null}
-                <p className="mt-1 text-[11px] text-muted-foreground">⏱️ {g.deliveryTime}</p>
-                <span className="bsm-btn bsm-btn-primary mt-3 block w-full !py-2 text-center !text-xs">
-                  🚀 Commander
-                </span>
-              </button>
+              />
             ))}
             {!list.length ? (
-              <p className="text-sm text-muted-foreground">Aucun service pour cette plateforme.</p>
+              <p className="col-span-2 text-sm text-muted-foreground">Aucun service pour cette plateforme.</p>
             ) : null}
           </div>
-        </Section>
+        </section>
 
         {selected ? (
           <OrderModal
