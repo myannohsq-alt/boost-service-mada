@@ -200,11 +200,13 @@ export function smmgen(apiUrl: string, apiKey: string) {
   return {
     services: () => call<SmmgenService[]>(apiUrl, apiKey, { action: "services" }),
     balance: () => call<{ balance: string; currency: string }>(apiUrl, apiKey, { action: "balance" }),
-    add: (service: string, link: string, quantity: number, orderId?: string) =>
+    add: (service: string, link: string, quantity: number, orderId?: string, comments?: string) =>
       call<{ order: number | string; charge?: string | number }>(
         apiUrl,
         apiKey,
-        { action: "add", service, link, quantity: String(quantity) },
+        comments
+          ? { action: "add", service, link, comments }
+          : { action: "add", service, link, quantity: String(quantity) },
         { orderId },
       ),
     status: (order: string) => call<SmmgenStatus>(apiUrl, apiKey, { action: "status", order }),

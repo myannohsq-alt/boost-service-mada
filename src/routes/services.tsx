@@ -56,7 +56,7 @@ function ServicesPage() {
   });
 
   const list = useMemo(
-    () => buildServiceGroups((services ?? []).filter((s) => s.platform === platform)),
+    () => buildServiceGroups((services ?? []).filter((s) => s.platform === platform && s.name_fr !== "Commentaires Gasy IA")),
     [services, platform],
   );
 

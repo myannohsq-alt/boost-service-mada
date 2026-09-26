@@ -289,6 +289,7 @@ export type Database = {
           admin_note: string | null
           amount: number
           api_error: string
+          comments: string
           created_at: string
           id: string
           last_sync_at: string | null
@@ -315,6 +316,7 @@ export type Database = {
           admin_note?: string | null
           amount: number
           api_error?: string
+          comments?: string
           created_at?: string
           id?: string
           last_sync_at?: string | null
@@ -341,6 +343,7 @@ export type Database = {
           admin_note?: string | null
           amount?: number
           api_error?: string
+          comments?: string
           created_at?: string
           id?: string
           last_sync_at?: string | null
@@ -905,6 +908,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      place_comment_order: {
+        Args: { _comments: string; _link: string }
+        Returns: string
       }
       place_order: {
         Args: {

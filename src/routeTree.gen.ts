@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as CommandesRouteImport } from './routes/commandes'
+import { Route as CommentairesRouteImport } from './routes/commentaires'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepotRouteImport } from './routes/depot'
@@ -30,6 +31,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
+import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-generate'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +67,11 @@ const AvisRoute = AvisRouteImport.update({
 const CommandesRoute = CommandesRouteImport.update({
   id: '/commandes',
   path: '/commandes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommentairesRoute = CommentairesRouteImport.update({
+  id: '/commentaires',
+  path: '/commentaires',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -137,6 +144,11 @@ const ApiAssistantRoute = ApiAssistantRouteImport.update({
   path: '/api/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCommentsGenerateRoute = ApiCommentsGenerateRouteImport.update({
+  id: '/api/comments-generate',
+  path: '/api/comments-generate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSmmgenSyncRoute = ApiPublicSmmgenSyncRouteImport.update({
   id: '/api/public/smmgen-sync',
   path: '/api/public/smmgen-sync',
@@ -151,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
+  '/commentaires': typeof CommentairesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
@@ -165,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesByTo {
@@ -175,6 +189,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
+  '/commentaires': typeof CommentairesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
@@ -189,6 +204,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesById {
@@ -200,6 +216,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
+  '/commentaires': typeof CommentairesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
@@ -214,6 +231,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRouteTypes {
@@ -226,6 +244,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/avis'
     | '/commandes'
+    | '/commentaires'
     | '/contact'
     | '/dashboard'
     | '/depot'
@@ -240,6 +259,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/tutoriel'
     | '/api/assistant'
+    | '/api/comments-generate'
     | '/api/public/smmgen-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -250,6 +270,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/avis'
     | '/commandes'
+    | '/commentaires'
     | '/contact'
     | '/dashboard'
     | '/depot'
@@ -264,6 +285,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/tutoriel'
     | '/api/assistant'
+    | '/api/comments-generate'
     | '/api/public/smmgen-sync'
   id:
     | '__root__'
@@ -274,6 +296,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/avis'
     | '/commandes'
+    | '/commentaires'
     | '/contact'
     | '/dashboard'
     | '/depot'
@@ -288,6 +311,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/tutoriel'
     | '/api/assistant'
+    | '/api/comments-generate'
     | '/api/public/smmgen-sync'
   fileRoutesById: FileRoutesById
 }
@@ -299,6 +323,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   AvisRoute: typeof AvisRoute
   CommandesRoute: typeof CommandesRoute
+  CommentairesRoute: typeof CommentairesRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DepotRoute: typeof DepotRoute
@@ -313,6 +338,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   TutorielRoute: typeof TutorielRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
+  ApiCommentsGenerateRoute: typeof ApiCommentsGenerateRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
 }
 
@@ -365,6 +391,13 @@ declare module '@tanstack/react-router' {
       path: '/commandes'
       fullPath: '/commandes'
       preLoaderRoute: typeof CommandesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commentaires': {
+      id: '/commentaires'
+      path: '/commentaires'
+      fullPath: '/commentaires'
+      preLoaderRoute: typeof CommentairesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -465,6 +498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/comments-generate': {
+      id: '/api/comments-generate'
+      path: '/api/comments-generate'
+      fullPath: '/api/comments-generate'
+      preLoaderRoute: typeof ApiCommentsGenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/smmgen-sync': {
       id: '/api/public/smmgen-sync'
       path: '/api/public/smmgen-sync'
@@ -483,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   AvisRoute: AvisRoute,
   CommandesRoute: CommandesRoute,
+  CommentairesRoute: CommentairesRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DepotRoute: DepotRoute,
@@ -497,6 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   TutorielRoute: TutorielRoute,
   ApiAssistantRoute: ApiAssistantRoute,
+  ApiCommentsGenerateRoute: ApiCommentsGenerateRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
 }
 export const routeTree = rootRouteImport

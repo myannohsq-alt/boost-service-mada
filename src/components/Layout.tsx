@@ -14,12 +14,14 @@ const nav = [
   { to: "/dashboard", key: "dashboard", label: "📊 Tableau de bord", public: false },
   { to: "/commandes", key: "myOrders", label: "📦 Suivi des commandes", public: false },
   { to: "/depot", key: "depositNav", label: "💰 Dépôt / Recharge", public: false },
+  { to: "/commentaires", key: "comments", label: "✨ Commentaires IA", public: false },
   { to: "/groupe", key: "group", label: "👥 Groupe de discussion", public: false },
   { to: "/tutoriel", key: "tutorial", label: "📚 Tutoriel", public: false },
   { to: "/contact", key: "contact", label: "📞 Support", public: true },
 ] as const;
 
 const userNav = [
+  { to: "/commentaires", label: "✨ Commentaires IA" },
   { to: "/commandes", label: "📦 Suivi des commandes" },
   { to: "/groupe", label: "👥 Groupe de discussion" },
   { to: "/tutoriel", label: "📚 Tutoriel" },
