@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
-import { ProfileHeader, InviteCard, Wheel, WheelResults, SaturdayDraw } from "@/components/ProfileGame";
+import { ProfileHeader, InviteCard, Wheel, SaturdayDraw } from "@/components/ProfileGame";
 
 export const Route = createFileRoute("/profil")({
   head: () => ({
@@ -25,10 +25,7 @@ function ProfilPage() {
           <div className="mx-auto max-w-xl space-y-4">
             <ProfileHeader />
             <InviteCard />
-            <div>
-              <Wheel />
-              <div className="mt-2"><WheelResults /></div>
-            </div>
+            <Wheel />
             <SaturdayDraw />
           </div>
         </Section>

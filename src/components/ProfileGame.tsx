@@ -177,6 +177,7 @@ export function Wheel() {
           </div>
         </>
       ) : null}
+       <div className="mt-4 border-t border-border pt-4 text-left"><WheelResults /></div>
     </div>
   );
 }
@@ -196,7 +197,7 @@ export function WheelResults() {
     return () => { void supabase.removeChannel(ch); };
   }, [tab]);
   return (
-    <div className="bsm-card p-4">
+     <div>
       <div className="flex gap-2">
         {(["day", "week"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-full px-3 py-1 text-xs font-semibold ${tab === t ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>{t === "day" ? "Aujourd'hui" : "Semaine"}</button>
