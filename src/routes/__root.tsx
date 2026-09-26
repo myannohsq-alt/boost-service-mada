@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Plateforme Malagasy de boost réseaux sociaux : réactions, followers, vues, commentaires. Rapide, professionnel, 24h/24.",
       },
       { name: "author", content: "BOOST SERVICE MADA" },
-      { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬" },
+      { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux Madagascar" },
       { property: "og:description", content: "Boost Malagasy • Rapide • Professionnel • 24h/24" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

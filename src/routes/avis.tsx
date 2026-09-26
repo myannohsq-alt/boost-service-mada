@@ -59,7 +59,7 @@ function ReviewsPage() {
             <>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <button key={n} onClick={() => setRating(n)} className="text-2xl">
+                  <button key={n} type="button" aria-label={`Noter ${n} étoile${n > 1 ? "s" : ""} sur 5`} onClick={() => setRating(n)} className="text-2xl">
                     {n <= rating ? "⭐" : "☆"}
                   </button>
                 ))}
