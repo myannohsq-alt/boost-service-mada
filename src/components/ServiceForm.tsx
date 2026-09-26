@@ -21,20 +21,27 @@ export function ServiceForm({ group, onClose, onOrdered }: {
   const { user, profile, refresh } = useAuth();
   const [link, setLink] = useState("");
   const [reaction, setReaction] = useState<ReactionKey | null>(null);
+  const [visibility, setVisibility] = useState<"visible" | "invisible">("visible");
   const [quantityText, setQuantityText] = useState("100");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const name = lang === "mg" ? group.nameMg : group.nameFr;
   const needsReaction = isReactionService(group.platform, group.nameFr);
+  const hasVisibility = needsReaction && /vazah/i.test(group.nameFr);
   // Retain the existing service variant for pricing and provider mapping.
-  const service = group.options.reduce<(typeof group.options)[number] | undefined>(
+  const matchingOptions = hasVisibility
+    ? group.options.filter((option) => visibility === "invisible"
+      ? /invisible|tsy hita/i.test(option.service.name_fr)
+      : /visible|hita/i.test(option.service.name_fr) && !/invisible|tsy hita/i.test(option.service.name_fr))
+    : group.options;
+  const service = matchingOptions.reduce<(typeof group.options)[number] | undefined>(
     (best, current) => !best || current.service.unit < best.service.unit ? current : best,
     undefined,
   )?.service;
   const quantity = Number(quantityText);
   const min = 100;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
-    ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
+    ? Math.ceil(quantity / service.unit * Number(service.price) * (hasVisibility && visibility === "invisible" ? 0.8 : 1)) : 0;
   const balance = Number(profile?.balance ?? 0);
   const insufficient = cost > balance;
 
@@ -57,7 +64,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         _quantity: quantity,
         _link: url.toString(),
         _promo: "",
-        _note: needsReaction ? `reaction:${reaction}` : "",
+        _note: needsReaction ? `reaction:${reaction}${hasVisibility && visibility === "invisible" ? ";visibility:invisible" : ""}` : "",
       });
       if (err) {
         setError(err.message);
@@ -90,6 +97,19 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         <label htmlFor="service-link" className="text-xs text-muted-foreground">Lien de la publication / du profil</label>
         <input id="service-link" type="url" value={link} maxLength={500} inputMode="url" onChange={e => setLink(e.target.value)} placeholder="https://..." className="bsm-input mt-1" />
       </div>
+      {hasVisibility && <fieldset>
+        <legend className="text-xs text-muted-foreground">Type de Visibilité</legend>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Button type="button" variant="outline" aria-pressed={visibility === "invisible"} onClick={() => setVisibility("invisible")}
+            className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "invisible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+            <span>Invisible (LENT) • tsy miena 🔥</span><span className="text-[11px]">−20 % · livraison lente</span>
+          </Button>
+          <Button type="button" variant="outline" aria-pressed={visibility === "visible"} onClick={() => setVisibility("visible")}
+            className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "visible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+            <span>Réaction visible 🚩 • (rapid)</span><span className="text-[11px]">23 min estimées</span>
+          </Button>
+        </div>
+      </fieldset>}
       {needsReaction && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de réaction <span aria-hidden="true">*</span></legend>
         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">

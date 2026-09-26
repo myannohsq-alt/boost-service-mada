@@ -11,3 +11,4 @@
 
 - Keep one `ServiceForm` for all catalogue orders and use `reaction:<key>` in order notes for reaction routing; this preserves the existing order RPC and lets the server select the correct provider product.
 - Treat catalogue pack `unit` as a pricing divisor rather than a universal order minimum; the public minimum is 100 and the backend validates provider limits before charging.
+- Only Réactions Vazaha exposes visibility: the invisible selection appends `;visibility:invisible` to `reaction:<key>` and discounts the charged price by 20% in `place_order`; visible retains the existing note format for backward compatibility.

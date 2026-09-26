@@ -444,7 +444,7 @@ async function submitOrder(
   let providerServiceId = service?.provider_service_id;
   let min = service?.provider_min ?? 1;
   let max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
-  const reactionNote = /^reaction:([a-z-]+)$/.exec(order.notes ?? "");
+  const reactionNote = /^reaction:([a-z-]+)(?:;visibility:invisible)?$/.exec(order.notes ?? "");
   if (service && isReactionService(service.platform, service.name_fr) && reactionNote) {
     providerServiceId = reactionProviderId(reactionNote[1] ?? "", service.name_fr);
     if (!providerServiceId) throw new Error("Type de réaction invalide");
