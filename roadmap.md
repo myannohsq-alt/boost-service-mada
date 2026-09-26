@@ -1,0 +1,3 @@
+- [ ] Unifier le formulaire de commande de tous les services et retirer promo, livraison, notes, options.
+- [ ] Associer les cinq réactions à des prestations fournisseur adaptées sans changer les autres commandes.
+- [ ] Vérifier les formulaires sur téléphone et ordinateur et contrôler les erreurs.
