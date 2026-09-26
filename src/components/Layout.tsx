@@ -6,7 +6,7 @@ import { useI18n, formatAr } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
@@ -22,11 +22,10 @@ const nav = [
 ] as const;
 
 const userNav = [
-  { to: "/commentaires", label: "✨ Générateur de commentaires IA" },
-  { to: "/suivi-commentaires", label: "💬 Suivi des commentaires" },
-  { to: "/commandes", label: "📦 Suivi des commandes" },
-  { to: "/groupe", label: "👥 Groupe de discussion" },
-  { to: "/tutoriel", label: "📚 Tutoriel" },
+  { to: "/depot", icon: "💰", label: "RECHARGE" },
+  { to: "/commandes", icon: "📦", label: "Suivi des commandes" },
+  { to: "/groupe", icon: "👥", label: "Groupe de discussion" },
+  { to: "/tutoriel", icon: "📚", label: "Tutoriel" },
 ] as const;
 
 const ANNOUNCEMENTS = [
@@ -114,36 +113,11 @@ function AnnouncementBar() {
 export function Layout({ children }: { children: ReactNode }) {
   const { t, lang, setLang } = useI18n();
   const { theme, toggle } = useTheme();
-  const { profile, isAdmin, user, refresh } = useAuth();
+  const { profile, isAdmin, user, loading, refresh } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [spin, setSpin] = useState(false);
 
-  const [saver, setSaver] = useState(false);
-  useEffect(() => {
-    const on = window.localStorage.getItem("bsm-data-saver") === "1";
-    setSaver(on);
-    document.documentElement.classList.toggle("data-saver", on);
-  }, []);
-  const toggleSaver = () => {
-    const next = !saver;
-    setSaver(next);
-    window.localStorage.setItem("bsm-data-saver", next ? "1" : "0");
-    document.documentElement.classList.toggle("data-saver", next);
-  };
-  const shareSite = async () => {
-    const url = window.location.origin;
-    const data = { title: "BOOST SERVICE MADA", text: "Boostez vos réseaux sociaux - 100% Gasy", url };
-    try {
-      if (navigator.share) await navigator.share(data);
-      else {
-        await navigator.clipboard.writeText(url);
-        toast.success("Lien copié !");
-      }
-    } catch {
-      /* annulé */
-    }
-  };
   const navLabel = (n: (typeof nav)[number]) => {
     if (n.key === "dashboard" || n.key === "group") return n.label;
     const translated = t(n.key);
@@ -218,34 +192,20 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="fixed inset-0 z-50 flex" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" />
           <aside
-            className="relative h-full w-72 overflow-y-auto border-r border-primary/30 bg-card p-4"
+             aria-label="Menu principal"
+             className="dark relative h-full w-72 max-w-[85vw] overflow-y-auto border-r border-border bg-background p-4 text-foreground shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {isAdmin ? (
-              <div className="mb-4 flex items-center gap-2">
-                <Logo size={32} />
-                <span className="font-display text-sm font-bold">BOOST SERVICE MADA</span>
-              </div>
-            ) : (
-              <Link
-                to={user ? "/profil" : "/auth"}
-                onClick={() => setOpen(false)}
-                className="mb-4 flex items-center gap-3 rounded-xl border border-border bg-secondary/50 p-3"
-              >
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Avatar" className="h-10 w-10 rounded-full object-cover" />
-                ) : (
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[image:var(--gradient-neon)] text-sm font-bold text-primary-foreground">
-                    {initials.charAt(0)}
-                  </span>
-                )}
-                <div className="min-w-0 leading-tight">
-                  <p className="truncate text-sm font-semibold">{user ? profile?.name || "Profil" : "Se connecter"}</p>
-                  <p className="text-xs font-bold bsm-neon-text">{formatAr(profile?.balance ?? 0)}</p>
-                </div>
-              </Link>
-            )}
-            <div className="flex flex-col gap-1">
+             <div className="mb-6 flex items-center justify-between gap-2 border-b border-border pb-4">
+               <div className="flex min-w-0 items-center gap-2">
+                 <Logo size={32} />
+                 <span className="truncate font-display text-sm font-bold">BOOST SERVICE MADA</span>
+               </div>
+               <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Fermer le menu" className="shrink-0 text-xl">×</Button>
+             </div>
+             <nav aria-label="Navigation principale" className="flex flex-col gap-1">
+               {loading ? null : (
+                 <>
               {isAdmin ? (
                 <>
                   {nav.map((n) => (
@@ -274,44 +234,31 @@ export function Layout({ children }: { children: ReactNode }) {
                       key={n.to}
                       to={user ? n.to : "/auth"}
                       onClick={() => setOpen(false)}
-                      className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                      activeProps={{ className: "bg-secondary text-foreground" }}
+                       className="flex min-h-14 items-center gap-4 rounded-md px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                       activeProps={{ className: "bg-secondary text-primary" }}
                     >
-                      {n.label}
+                       <span aria-hidden="true" className="w-8 text-center text-2xl leading-none">{n.icon}</span>
+                       <span>{n.label}</span>
                     </Link>
                   ))}
-                  <button onClick={shareSite} className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground">
-                    📤 Partager le site à un(e) ami(e)
-                  </button>
-                  <button
-                    onClick={toggleSaver}
-                    className="flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  >
-                    <span>📶 Économiser des données</span>
-                    <span className={`relative h-5 w-9 rounded-full transition-colors ${saver ? "bg-primary" : "bg-border"}`}>
-                      <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-all ${saver ? "left-[18px]" : "left-0.5"}`} />
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => toast.info("L'application APK sera bientôt disponible 📱")}
-                    className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  >
-                    📲 Télécharger l'APK
-                  </button>
                 </>
               )}
               {user ? (
-                <button
+                 <Button
+                   variant="ghost"
                   onClick={async () => {
                     await supabase.auth.signOut();
                     setOpen(false);
                   }}
-                  className="mt-2 rounded-lg px-3 py-2 text-left text-sm text-destructive"
+                   className={isAdmin ? "mt-2 justify-start text-destructive" : "mt-1 min-h-14 justify-start gap-4 px-3 text-sm font-semibold text-foreground hover:bg-secondary"}
                 >
-                  🚪 Hivoaka
-                </button>
+                   <span aria-hidden="true" className={isAdmin ? "" : "w-8 text-center text-2xl leading-none"}>🚪</span>
+                   {isAdmin ? "Hivoaka" : "Déconnexion (Hivoaka)"}
+                 </Button>
               ) : null}
-            </div>
+                 </>
+               )}
+             </nav>
           </aside>
         </div>
       ) : null}
