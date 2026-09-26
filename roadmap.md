@@ -13,3 +13,5 @@
 - [x] Publication du nouveau menu demandée pour boostmada.app (déploiement en attente).
 
 - [x] Remplacer l’accueil par la connexion épurée et rediriger les membres vers Services ; vérifier sur téléphone et ordinateur.
+- [x] Appliquer le style bleu nuit/orange à la connexion et aux couleurs communes, avec invitation d'installation différée et chat flottant.
+- [ ] Fournir l'APK réel pour activer le téléchargement /boost-service-mada.apk — fichier non fourni.
