@@ -2,6 +2,7 @@
 // Bounded batches, single-flight lock, idempotent progress, rate-limit aware
 // backoff, and a circuit breaker for terminal provider errors.
 import { smmgen, mapProviderStatus, isRateLimit, RateLimitError, type SmmgenService } from "./smmgen.server";
+import { isReactionService, reactionProviderId } from "./reaction-options";
 
 const LOCK_NAME = "smmgen-worker";
 const LOCK_SECONDS = 240;
@@ -434,13 +435,27 @@ async function submitOrder(
   const { data: service } = order.service_id
     ? await db
         .from("services")
-        .select("provider_service_id, provider_min, provider_max")
+        .select("provider_service_id, provider_min, provider_max, platform, name_fr")
         .eq("id", order.service_id)
         .maybeSingle()
     : { data: null };
 
   // --- mapping + input validation before touching the provider ---
-  const providerServiceId = service?.provider_service_id;
+  let providerServiceId = service?.provider_service_id;
+  let min = service?.provider_min ?? 1;
+  let max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
+  const reactionNote = /^reaction:([a-z-]+)$/.exec(order.notes ?? "");
+  if (service && isReactionService(service.platform, service.name_fr) && reactionNote) {
+    providerServiceId = reactionProviderId(reactionNote[1] ?? "", service.name_fr);
+    if (!providerServiceId) throw new Error("Type de réaction invalide");
+    const { data: matched } = await db.from("provider_services")
+      .select("min_qty, max_qty")
+      .eq("provider_service_id", providerServiceId)
+      .maybeSingle();
+    if (!matched) throw new Error("Réaction indisponible chez le fournisseur");
+    min = matched.min_qty;
+    max = matched.max_qty;
+  }
   if (!providerServiceId) {
     const msg = "Service non lié à SMMGen (mapping manquant)";
     await db
@@ -452,8 +467,6 @@ async function submitOrder(
   if (!/^https?:\/\//i.test(order.target_link ?? "")) {
     throw new Error("Lien invalide : il doit commencer par http(s)://");
   }
-  const min = service?.provider_min ?? 1;
-  const max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
   if (order.quantity < min || order.quantity > max) {
     throw new Error(`Quantité hors limites fournisseur (min ${min}, max ${max})`);
   }
