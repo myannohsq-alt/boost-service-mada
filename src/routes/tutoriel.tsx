@@ -38,7 +38,7 @@ const BLOCKS: Array<{ match: string[]; video: string; steps: string[] }> = [
     ],
   },
   {
-    match: ["suivi", "mes commandes", "statut"],
+    match: ["suiv", "mes commandes", "statut"],
     video: "/videos/suivi.mp4",
     steps: [
       "Midira ao amin'ny Mes commandes.",
