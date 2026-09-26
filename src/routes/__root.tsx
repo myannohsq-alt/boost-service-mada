@@ -75,6 +75,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "wSllX6bT4_jun7-zAhcB28IXXjJUN4y-R-WH5BqGVEA" },
       { title: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux" },
       {
         name: "description",
