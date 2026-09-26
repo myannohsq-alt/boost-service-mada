@@ -20,6 +20,8 @@ export type ServiceGroup = {
   unitPrice: number;
 };
 
+export const FACEBOOK_GASY_KEY = "facebook|facebook gasy";
+
 const PACK_RE = /\s*\((\d+)\s*k\)\s*/i;
 
 function splitName(raw: string): { base: string; option: string } {
@@ -54,7 +56,8 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
   for (const s of services) {
     const fr = splitName(s.name_fr);
     const mg = splitName(s.name_mg || s.name_fr);
-    const key = `${s.platform}|${fr.base.toLowerCase()}`;
+    const facebookGasy = s.platform.toLowerCase() === "facebook" && /^(réactions|followers) gasy$/i.test(fr.base);
+    const key = facebookGasy ? FACEBOOK_GASY_KEY : `${s.platform}|${fr.base.toLowerCase()}`;
     const unitPrice = Number(s.price) / Math.max(1, s.unit);
 
     let group = map.get(key);
@@ -62,9 +65,9 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
       group = {
         key,
         platform: s.platform,
-        category: s.category,
-        nameFr: fr.base,
-        nameMg: mg.base,
+        category: facebookGasy ? "Facebook Gasy" : s.category,
+        nameFr: facebookGasy ? "Facebook Gasy 🇲🇬" : fr.base,
+        nameMg: facebookGasy ? "Facebook Gasy 🇲🇬" : mg.base,
         note: s.note,
         badge: s.badge ?? null,
         deliveryTime: s.delivery_time || "0-6 h",
@@ -78,7 +81,9 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
     if (!group.note && s.note) group.note = s.note;
     if (unitPrice < group.unitPrice) group.unitPrice = unitPrice;
 
-    const label = fr.option ? optionLabel(fr.option) : "🚀 Standard";
+    const label = facebookGasy
+      ? (/^réactions/i.test(fr.base) ? "Réaction Gasy" : "Followers Gasy")
+      : fr.option ? optionLabel(fr.option) : "🚀 Standard";
     const existing = group.options.find((o) => o.key === label);
     if (!existing) {
       group.options.push({ key: label, label, service: s });

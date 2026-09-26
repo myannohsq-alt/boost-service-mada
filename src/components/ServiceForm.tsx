@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
-import type { ServiceGroup } from "@/lib/service-groups";
+import { FACEBOOK_GASY_KEY, type ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
 
 const QUICK = [100, 500, 1000, 5000];
@@ -22,18 +22,20 @@ export function ServiceForm({ group, onClose, onOrdered }: {
   const [link, setLink] = useState("");
   const [reaction, setReaction] = useState<ReactionKey | null>(null);
   const [visibility, setVisibility] = useState<"visible" | "invisible">("visible");
+  const [gasyType, setGasyType] = useState<"Réaction Gasy" | "Followers Gasy">("Réaction Gasy");
   const [quantityText, setQuantityText] = useState("100");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const name = lang === "mg" ? group.nameMg : group.nameFr;
-  const needsReaction = isReactionService(group.platform, group.nameFr);
+  const isFacebookGasy = group.key === FACEBOOK_GASY_KEY;
+  const needsReaction = isFacebookGasy ? gasyType === "Réaction Gasy" : isReactionService(group.platform, group.nameFr);
   const hasVisibility = needsReaction && /vazah/i.test(group.nameFr);
   // Retain the existing service variant for pricing and provider mapping.
   const matchingOptions = hasVisibility
     ? group.options.filter((option) => visibility === "invisible"
       ? /invisible|tsy hita/i.test(option.service.name_fr)
       : /visible|hita/i.test(option.service.name_fr) && !/invisible|tsy hita/i.test(option.service.name_fr))
-    : group.options;
+    : isFacebookGasy ? group.options.filter((option) => option.key === gasyType) : group.options;
   const service = matchingOptions.reduce<(typeof group.options)[number] | undefined>(
     (best, current) => !best || current.service.unit < best.service.unit ? current : best,
     undefined,
@@ -71,7 +73,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         toast.error("Commande refusée", { description: err.message });
         return;
       }
-      toast.success(`Commande réussie ! Nouveau solde : ${formatAr(balance - cost)}`, { description: `${name} × ${quantity} — statut : En cours` });
+       toast.success(`Commande réussie ! Nouveau solde : ${formatAr(balance - cost)}`, { description: `${isFacebookGasy ? gasyType : name} × ${quantity} — statut : En cours` });
       try { await fulfillNow({ data: undefined as never }); }
       catch { /* The order remains queued for the next cycle. */ }
       await refresh();
@@ -97,6 +99,16 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         <label htmlFor="service-link" className="text-xs text-muted-foreground">Lien de la publication / du profil</label>
         <input id="service-link" type="url" value={link} maxLength={500} inputMode="url" onChange={e => setLink(e.target.value)} placeholder="https://..." className="bsm-input mt-1" />
       </div>
+      {isFacebookGasy && <fieldset>
+        <legend className="text-xs text-muted-foreground">Choix du type</legend>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {(["Réaction Gasy", "Followers Gasy"] as const).map(type => <Button key={type} type="button" variant="outline"
+            aria-pressed={gasyType === type} onClick={() => { setGasyType(type); setError(null); }}
+            className={`h-12 min-w-0 whitespace-normal px-2 text-center text-xs ${gasyType === type ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+            {type}
+          </Button>)}
+        </div>
+      </fieldset>}
       {hasVisibility && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de Visibilité</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
@@ -113,7 +125,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {needsReaction && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de réaction <span aria-hidden="true">*</span></legend>
         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {REACTIONS.map(item => <Button key={item.key} type="button" variant="outline"
+           {(isFacebookGasy ? REACTIONS.filter(item => item.key !== "photo-love") : REACTIONS).map(item => <Button key={item.key} type="button" variant="outline"
             aria-pressed={reaction === item.key}
             onClick={() => setReaction(item.key)}
             className={`h-10 min-w-0 px-2 text-xs ${reaction === item.key ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
