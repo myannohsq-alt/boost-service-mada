@@ -15,3 +15,5 @@
 - [x] Remplacer l’accueil par la connexion épurée et rediriger les membres vers Services ; vérifier sur téléphone et ordinateur.
 - [x] Appliquer le style bleu nuit/orange à la connexion et aux couleurs communes, avec invitation d'installation différée et chat flottant.
 - [ ] Fournir l'APK réel pour activer le téléchargement /boost-service-mada.apk — fichier non fourni.
+- [x] Ajouter le manifeste installable SMM B&S et les icônes 192/512 dérivées du logo fourni ; remplacer le favicon.
+- [x] Remplacer l'ancien appel au téléchargement APK inexistant par l'installation depuis le navigateur.

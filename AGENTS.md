@@ -16,3 +16,4 @@
 - Keep the client sidebar navigation in Layout separate from the full admin navigation; clients need exactly five menu actions while admins retain their complete menu.
 - Share the login experience between / and /auth; this keeps sign-in, signup, recovery, and post-auth Services navigation consistent without duplicate forms.
 - Keep the dark navy/orange palette in global semantic tokens and reuse the shared login on / and /auth; this keeps every page themed consistently.
+- Keep home-screen installability manifest-only, without an app-shell service worker; the site requires live network access and preview must not serve stale cached code.
