@@ -9,7 +9,7 @@ import { fulfillNow } from "@/lib/sync-user.functions";
 const QTY = [100, 500, 1000, 2000];
 const MAX = 2000;
 const PRICE = 20;
-const BATCH = 500;
+const BATCH = 200;
 
 async function generateBatch(
   count: number,
