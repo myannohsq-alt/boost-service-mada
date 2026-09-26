@@ -7,6 +7,7 @@ import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Wallet, Package, UsersRound, BookOpen, LogOut } from "lucide-react";
 
 const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
@@ -22,10 +23,10 @@ const nav = [
 ] as const;
 
 const userNav = [
-  { to: "/depot", icon: "💰", label: "RECHARGE" },
-  { to: "/commandes", icon: "📦", label: "Suivi des commandes" },
-  { to: "/groupe", icon: "👥", label: "Groupe de discussion" },
-  { to: "/tutoriel", icon: "📚", label: "Tutoriel" },
+  { to: "/depot", icon: Wallet, label: "RECHARGE" },
+  { to: "/commandes", icon: Package, label: "Suivi des commandes" },
+  { to: "/groupe", icon: UsersRound, label: "Groupe de discussion" },
+  { to: "/tutoriel", icon: BookOpen, label: "Tutoriel" },
 ] as const;
 
 const ANNOUNCEMENTS = [
@@ -237,7 +238,7 @@ export function Layout({ children }: { children: ReactNode }) {
                        className="flex min-h-14 items-center gap-4 rounded-md px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                        activeProps={{ className: "bg-secondary text-primary" }}
                     >
-                       <span aria-hidden="true" className="w-8 text-center text-2xl leading-none">{n.icon}</span>
+                       <n.icon aria-hidden="true" className="h-7 w-8 shrink-0 text-primary" strokeWidth={1.8} />
                        <span>{n.label}</span>
                     </Link>
                   ))}
@@ -252,7 +253,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   }}
                    className={isAdmin ? "mt-2 justify-start text-destructive" : "mt-1 min-h-14 justify-start gap-4 px-3 text-sm font-semibold text-foreground hover:bg-secondary"}
                 >
-                   <span aria-hidden="true" className={isAdmin ? "" : "w-8 text-center text-2xl leading-none"}>🚪</span>
+                   {isAdmin ? <span aria-hidden="true">🚪</span> : <LogOut aria-hidden="true" className="h-7 w-8 shrink-0 text-primary" strokeWidth={1.8} />}
                    {isAdmin ? "Hivoaka" : "Déconnexion (Hivoaka)"}
                  </Button>
               ) : null}
