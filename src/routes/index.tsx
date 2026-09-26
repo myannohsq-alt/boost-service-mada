@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬" },
+      { property: "og:title", content: "BOOST SERVICE MADA 🇲🇬 — Boost réseaux sociaux Madagascar" },
       {
         property: "og:description",
         content: "Plateforme Malagasy de boost réseaux sociaux. Rapide, professionnel, 24h/24.",
@@ -73,6 +73,7 @@ function Index() {
         <h1 className="mt-5 font-display text-3xl font-extrabold sm:text-5xl">
           🚀 <span className="bsm-neon-text">BOOST SERVICE</span>{" "}
           <span className="text-gold">MADA</span>
+          <span className="mt-2 block text-base font-semibold text-foreground/90 sm:text-xl">Boost réseaux sociaux à Madagascar</span>
         </h1>
         <p className="mt-3 text-base font-medium text-foreground/90">{t("heroSubtitle")}</p>
         <p className="mt-1 text-xs text-muted-foreground">{t("slogan")}</p>
@@ -117,10 +118,10 @@ function Index() {
       <section className="mx-auto w-full max-w-5xl px-4">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {[
-            { label: t("users"), value: Math.max(stats?.users ?? 0, 6289), icon: "👥" },
-            { label: t("ordersDelivered"), value: Math.max(stats?.orders ?? 0, 1023), icon: "📦" },
-            { label: t("servicesAvailable"), value: Math.max(stats?.services ?? 0, 50), icon: "🚀" },
-            { label: t("clientReviews"), value: Math.max(stats?.reviews ?? 0, 1089), icon: "⭐" },
+            { label: t("users"), value: stats?.users ?? 0, icon: "👥" },
+            { label: t("ordersDelivered"), value: stats?.orders ?? 0, icon: "📦" },
+            { label: t("servicesAvailable"), value: stats?.services ?? 0, icon: "🚀" },
+            { label: t("clientReviews"), value: stats?.reviews ?? 0, icon: "⭐" },
           ].map((s) => (
             <div key={s.label} className="bsm-card p-4 text-center">
               <p className="font-display text-2xl font-bold text-primary">
