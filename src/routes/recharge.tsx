@@ -4,6 +4,7 @@ import { Layout, Section } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { OPERATORS } from "@/lib/payment-operators";
 
 export const Route = createFileRoute("/recharge")({
   head: () => ({
@@ -23,11 +24,11 @@ export const Route = createFileRoute("/recharge")({
   component: RechargePage,
 });
 
-export const NUMBERS = [
-  { phone: "0375141025", owner: "ROLINE" },
-  { phone: "0330296908", owner: "MARODOLINX" },
-  { phone: "0386100374", owner: "THÉODORE" },
-];
+export const NUMBERS = OPERATORS.map((o) => ({
+  phone: o.phone,
+  owner: o.owner,
+  label: `${o.emoji} ${o.label}`,
+}));
 
 function RechargePage() {
   const { user } = useAuth();
