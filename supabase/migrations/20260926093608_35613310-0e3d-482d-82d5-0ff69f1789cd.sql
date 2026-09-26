@@ -1,0 +1,1 @@
+UPDATE public.services SET price = CASE WHEN unit = 1000 THEN 20000 ELSE unit * 20 END WHERE platform = 'facebook' AND name_fr IN ('Commentaires', 'Commentaires (1K)');
