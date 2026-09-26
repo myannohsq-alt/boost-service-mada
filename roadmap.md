@@ -4,3 +4,7 @@
 - [x] Mettre Réactions Gasy et Followers Gasy à 20 Ar/unité sans modifier les autres tarifs.
 - [x] Réunir les deux offres dans une seule carte Facebook Gasy avec choix du type et réactions conditionnelles.
 - [x] Vérifier en navigateur le prix et les deux choix sans passer de commande réelle.
+- [ ] Vraie commande 100 commentaires Gasy — bloquée : solde 1 998 Ar < 2 000 Ar.
+- [x] Page Suivi des commentaires.
+- [x] Page dédiée Générateur de commentaires IA dans le menu.
+- [x] Correction des alertes de sécurité (commande visiteurs, réglages internes admin).
