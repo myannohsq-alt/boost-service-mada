@@ -117,21 +117,30 @@ export type Database = {
           author_name: string
           content: string
           created_at: string
+          duration: number | null
           id: string
+          media_path: string | null
+          type: string
           user_id: string
         }
         Insert: {
           author_name?: string
           content: string
           created_at?: string
+          duration?: number | null
           id?: string
+          media_path?: string | null
+          type?: string
           user_id: string
         }
         Update: {
           author_name?: string
           content?: string
           created_at?: string
+          duration?: number | null
           id?: string
+          media_path?: string | null
+          type?: string
           user_id?: string
         }
         Relationships: []
@@ -235,6 +244,59 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      demo_messages: {
+        Row: {
+          content: string
+          created_at: string
+          demo_profile_id: string
+          id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          demo_profile_id: string
+          id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          demo_profile_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_messages_demo_profile_id_fkey"
+            columns: ["demo_profile_id"]
+            isOneToOne: false
+            referencedRelation: "demo_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demo_profiles: {
+        Row: {
+          avatar_url: string
+          created_at: string
+          id: string
+          name: string
+          points: number
+        }
+        Insert: {
+          avatar_url: string
+          created_at?: string
+          id?: string
+          name: string
+          points?: number
+        }
+        Update: {
+          avatar_url?: string
+          created_at?: string
+          id?: string
+          name?: string
+          points?: number
+        }
+        Relationships: []
       }
       news: {
         Row: {
@@ -383,11 +445,14 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_spin_date: string | null
           name: string
           phone: string
+          points: number
           referral_code: string
           referral_earnings: number
           referred_by: string | null
+          tours_restants: number
         }
         Insert: {
           avatar_url?: string
@@ -395,11 +460,14 @@ export type Database = {
           created_at?: string
           email?: string
           id: string
+          last_spin_date?: string | null
           name?: string
           phone?: string
+          points?: number
           referral_code: string
           referral_earnings?: number
           referred_by?: string | null
+          tours_restants?: number
         }
         Update: {
           avatar_url?: string
@@ -407,11 +475,14 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_spin_date?: string | null
           name?: string
           phone?: string
+          points?: number
           referral_code?: string
           referral_earnings?: number
           referred_by?: string | null
+          tours_restants?: number
         }
         Relationships: []
       }
@@ -685,6 +756,36 @@ export type Database = {
         }
         Relationships: []
       }
+      saturday_winners: {
+        Row: {
+          author_name: string
+          created_at: string
+          gain: number
+          id: string
+          points: number
+          user_id: string
+          week_date: string
+        }
+        Insert: {
+          author_name?: string
+          created_at?: string
+          gain?: number
+          id?: string
+          points?: number
+          user_id: string
+          week_date: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          gain?: number
+          id?: string
+          points?: number
+          user_id?: string
+          week_date?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean
@@ -892,6 +993,36 @@ export type Database = {
         }
         Relationships: []
       }
+      wheel_history: {
+        Row: {
+          author_name: string
+          avatar_url: string
+          created_at: string
+          id: string
+          type: string
+          user_id: string
+          valeur: number
+        }
+        Insert: {
+          author_name?: string
+          avatar_url?: string
+          created_at?: string
+          id?: string
+          type: string
+          user_id: string
+          valeur: number
+        }
+        Update: {
+          author_name?: string
+          avatar_url?: string
+          created_at?: string
+          id?: string
+          type?: string
+          user_id?: string
+          valeur?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -908,6 +1039,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      invited_count: { Args: never; Returns: number }
+      leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_url: string
+          id: string
+          name: string
+          points: number
+        }[]
       }
       place_comment_order: {
         Args: { _comments: string; _link: string }
@@ -929,7 +1070,16 @@ export type Database = {
         Returns: undefined
       }
       release_sync_lock: { Args: { _name: string }; Returns: undefined }
-      send_chat_message: { Args: { _content: string }; Returns: number }
+      send_chat_message: {
+        Args: {
+          _content: string
+          _duration?: number
+          _media_path?: string
+          _type?: string
+        }
+        Returns: string
+      }
+      spin_wheel: { Args: never; Returns: Json }
       trigger_smmgen_sync: { Args: never; Returns: undefined }
     }
     Enums: {
