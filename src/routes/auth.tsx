@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Zap, Mail, LockKeyhole, Smartphone, Download, Star, X } from "lucide-react";
+import { Mail, LockKeyhole, Download, Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 type Mode = "login" | "signup" | "forgot";
-const inputClass = "mt-2 h-14 w-full rounded-xl border border-border bg-auth-input px-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/30";
+const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-border bg-auth-input px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-auth-primary focus:ring-2 focus:ring-auth-primary/30";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ export function AuthPage() {
       setInstallPrompt(null);
       return;
     }
-    setMsg("Pour installer SMM B&S, ouvrez le menu de votre navigateur puis choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».");
+    setMsg("⋮ menu > Installer l'application (ou Ajouter à l'écran d'accueil sur iPhone).");
   };
 
   useEffect(() => {
@@ -158,23 +158,22 @@ export function AuthPage() {
   };
 
   return (
-    <main className="dark relative flex min-h-screen items-start justify-center overflow-hidden bg-background px-5 py-10 text-foreground sm:items-center sm:py-12">
+    <main className="dark relative flex min-h-screen items-start justify-center bg-background px-4 py-8 text-foreground sm:items-center sm:py-10">
       {loading || user ? (
         <span className="text-sm text-muted-foreground">Chargement…</span>
       ) : (
         <section className="relative z-10 w-full max-w-[400px]" aria-label="Connexion BoostMada">
-          <div className="mb-7 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-mark text-primary shadow-[0_0_28px_-4px_var(--color-primary)]">
-            <Zap aria-hidden="true" className="h-8 w-8 fill-current" />
-          </div>
-          <h1 className="font-sans text-[28px] font-bold leading-tight sm:text-3xl">
+          <div className="rounded-[20px] border border-border bg-card p-6 shadow-[0_18px_48px_-24px_var(--color-background)]">
+          <img src="/icon-192.png" alt="SMM B&S" width={48} height={48} className="mx-auto h-12 w-12 object-contain" />
+          <h1 className="mt-3 text-center font-sans text-[20px] font-bold uppercase leading-tight tracking-[3px] text-foreground">
             BOOST SERVICE MADA
-            <span className="mt-2 block text-xl font-semibold leading-snug">Boostez vos réseaux sociaux à Madagascar</span>
           </h1>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-center text-[13px] text-auth-subtitle">Boostez vos réseaux sociaux</p>
+          <p className="mt-3 text-center text-[13px] text-muted-foreground">
             {mode === "signup" ? "Créez votre compte" : mode === "forgot" ? "Réinitialisez votre mot de passe" : "Connectez-vous à votre compte"}
           </p>
 
-          <form onSubmit={submit} className="mt-7 space-y-4">
+          <form onSubmit={submit} className="mt-5 space-y-3.5">
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
                 <label className="block text-sm font-medium">Nom
@@ -186,12 +185,12 @@ export function AuthPage() {
               </div>
             )}
             <label className="block text-sm font-medium">Email
-              <span className="relative block"><Mail aria-hidden="true" className="pointer-events-none absolute left-4 top-6 h-5 w-5 text-muted-foreground" />
+              <span className="relative block"><Mail aria-hidden="true" className="pointer-events-none absolute left-4 top-4 h-5 w-5 text-muted-foreground" />
               <input required value={email} type="email" inputMode="email" autoComplete="email" maxLength={120} placeholder="vous@email.com" onChange={(e) => setEmail(e.target.value)} className={`${inputClass} pl-12`} /></span>
             </label>
             {mode !== "forgot" && (
               <label className="block text-sm font-medium">Mot de passe
-                <span className="relative block"><LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-4 top-6 h-5 w-5 text-muted-foreground" />
+                <span className="relative block"><LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-4 top-4 h-5 w-5 text-muted-foreground" />
                 <input required type="password" value={password} minLength={6} maxLength={72} autoComplete={mode === "signup" ? "new-password" : "current-password"} placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} className={`${inputClass} pl-12`} /></span>
               </label>
             )}
@@ -204,24 +203,24 @@ export function AuthPage() {
               </>
             )}
             {msg && <p role="status" className="rounded-md bg-secondary p-3 text-sm">{msg}</p>}
-            <Button disabled={busy} type="submit" size="lg" className="h-14 w-full rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-[0_12px_32px_-8px_var(--color-primary)] hover:bg-primary/90">
-              {busy ? "Veuillez patienter…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}
+            <Button disabled={busy} type="submit" className="auth-primary-button mt-1 h-11 w-full rounded-xl text-sm font-bold uppercase hover:opacity-90">
+              {busy ? "Veuillez patienter…" : mode === "login" ? "Se connecter" : mode === "signup" ? "S'inscrire" : "Envoyer le lien"}
             </Button>
           </form>
 
           {mode === "login" && (
-            <Button variant="link" onClick={() => changeMode("forgot")} className="mt-3 h-auto w-full justify-end px-0 text-primary">
+            <Button variant="link" onClick={() => changeMode("forgot")} className="mt-2 h-auto w-full justify-end px-0 text-auth-primary">
               Mot de passe oublié ?
             </Button>
           )}
           {mode !== "forgot" && (
             <>
-              <div className="my-5 flex items-center gap-4 text-xs font-medium text-muted-foreground">
+               <div className="my-4 flex items-center gap-4 text-xs font-medium text-muted-foreground">
                 <span className="h-px flex-1 bg-border" />OU<span className="h-px flex-1 bg-border" />
               </div>
               <div className="relative pt-3">
-              <span className="absolute right-3 top-0 z-10 flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold text-primary-foreground"><Star className="h-3 w-3 fill-current" /> RECOMMANDÉ</span>
-              <Button type="button" variant="outline" disabled={busy} onClick={google} className="h-14 w-full rounded-xl border-primary bg-auth-input text-foreground shadow-[0_0_18px_-9px_var(--color-primary)] hover:bg-secondary hover:text-foreground">
+               <span className="absolute right-3 top-0 z-10 flex items-center gap-1 rounded-full bg-auth-primary px-2.5 py-1 text-[10px] font-bold text-primary-foreground"><Star className="h-3 w-3 fill-current" /> RECOMMANDÉ</span>
+               <Button type="button" variant="outline" disabled={busy} onClick={google} className="h-11 w-full rounded-xl border-auth-primary bg-auth-input text-foreground shadow-[0_0_18px_-9px_var(--auth-primary)] hover:bg-secondary hover:text-foreground">
                 <svg viewBox="0 0 48 48" aria-hidden="true" className="h-5 w-5">
                   <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z" />
                   <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
@@ -233,21 +232,25 @@ export function AuthPage() {
               </div>
             </>
           )}
-          {mode === "login" && <div className="mt-7 border-t border-border pt-6 text-center">
-            <p className="mb-3 text-sm font-semibold">Installez SMM B&amp;S</p>
-            <Button type="button" onClick={installApp} className="h-14 w-full rounded-xl bg-primary px-4 font-bold text-primary-foreground shadow-[0_12px_32px_-8px_var(--color-primary)] hover:bg-primary/90">
-              <Smartphone className="h-5 w-5 shrink-0" /> Installer l'application <Download className="h-5 w-5 shrink-0" />
-            </Button>
-          </div>}
-          <p className="mt-5 text-center text-sm text-muted-foreground sm:mt-8">
+           <p className="mt-4 text-center text-sm text-muted-foreground">
             {mode === "login" ? "Pas encore de compte ?" : mode === "signup" ? "Déjà inscrit ?" : "Vous vous souvenez de votre mot de passe ?"}{" "}
-            <Button variant="link" onClick={() => changeMode(mode === "login" ? "signup" : "login")} className="h-auto p-0 font-semibold text-primary">
+             <Button variant="link" onClick={() => changeMode(mode === "login" ? "signup" : "login")} className="h-auto p-0 font-semibold text-auth-primary">
               {mode === "login" ? "S'inscrire" : "Se connecter"}
             </Button>
           </p>
+          </div>
+          <div className="mt-4 rounded-[20px] border border-dashed border-auth-dash bg-card/50 p-4">
+            <div className="flex items-center gap-3">
+              <img src="/icon-192.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
+              <div><p className="text-sm font-semibold">Installer l'application</p><p className="text-xs text-auth-subtitle">Disponible Android</p></div>
+            </div>
+            <Button type="button" variant="outline" onClick={installApp} className="mt-3 h-11 w-full rounded-xl border-auth-primary bg-transparent text-sm font-bold text-auth-primary hover:bg-auth-primary/10 hover:text-auth-primary">
+              <Download className="h-4 w-4" /> TÉLÉCHARGER APK
+            </Button>
+          </div>
         </section>
       )}
-      {!loading && !user && <AiAssistant orange />}
+       {!loading && !user && <AiAssistant orange />}
       {!loading && !user && showNotif && <div id="notif" role="dialog" aria-label="Installer l'application ?" className="fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[360px] -translate-x-1/2 rounded-md border-l-4 border-primary bg-notice-background p-4 text-notice-foreground shadow-2xl sm:bottom-6">
         <div className="flex items-start justify-between gap-2"><h2 className="font-sans text-base font-bold">Installer l'application ?</h2><Button variant="ghost" size="icon" aria-label="Fermer" onClick={() => setShowNotif(false)} className="-mr-2 -mt-2 h-8 w-8 text-notice-foreground"><X className="h-4 w-4" /></Button></div>
          <p className="mt-1 text-sm">Ajoutez SMM B&amp;S à votre écran d'accueil.</p>

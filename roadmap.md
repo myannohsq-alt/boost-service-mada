@@ -18,3 +18,4 @@
 - [x] Ajouter le manifeste installable SMM B&S et les icônes 192/512 dérivées du logo fourni ; remplacer le favicon.
 - [x] Remplacer l'ancien appel au téléchargement APK inexistant par l'installation depuis le navigateur.
 - [x] Ajouter icône 512, apple-touch-icon et images de partage (og:image / twitter:image) sur accueil, connexion, à propos, contact, FAQ ; publié et vérifié en ligne.
+- [x] Rafraîchir uniquement la connexion et l'inscription : carte compacte, orange franc, icônes SMM B&S intactes et encart installation navigateur ; vérifier mobile et ordinateur.
