@@ -49,6 +49,7 @@ function GroupPage() {
   const [rec, setRec] = useState<MediaRecorder | null>(null);
   const [recStart, setRecStart] = useState(0);
   const endRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setLocal(user ? loadLocal().filter((m) => m.user_id === user.id && (m.type === "image" || m.type === "vocal")) : []); }, [user?.id]);
 
@@ -72,7 +73,9 @@ function GroupPage() {
   }, [user]);
 
   const all = [...msgs, ...local].sort((a, b) => a.created_at.localeCompare(b.created_at));
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [all.length]);
+  useEffect(() => {
+    if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  }, [all.length]);
 
   const addLocal = (m: Partial<ChatMsg>) => {
     const msg: ChatMsg = { id: `local-${Date.now()}`, user_id: user?.id ?? "", author_name: profile?.name || "Moi", content: "", created_at: new Date().toISOString(), ...m };
@@ -143,7 +146,7 @@ function GroupPage() {
             </span>
           </div>
 
-          <div className="flex-1 space-y-2 overflow-y-auto border-x border-border bg-background/60 px-3 py-3">
+           <div ref={messagesRef} className="flex-1 space-y-2 overflow-y-auto border-x border-border bg-background/60 px-3 py-3">
             {all.map((m) => {
               const mine = m.user_id === user?.id;
               return (
