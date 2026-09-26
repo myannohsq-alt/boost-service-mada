@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as CommandesRouteImport } from './routes/commandes'
+import { Route as CommentairesRouteImport } from './routes/commentaires'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepotRouteImport } from './routes/depot'
@@ -66,6 +67,11 @@ const AvisRoute = AvisRouteImport.update({
 const CommandesRoute = CommandesRouteImport.update({
   id: '/commandes',
   path: '/commandes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommentairesRoute = CommentairesRouteImport.update({
+  id: '/commentaires',
+  path: '/commentaires',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
+  '/commentaires': typeof CommentairesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
+  '/commentaires': typeof CommentairesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
+  '/commentaires': typeof CommentairesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/avis'
     | '/commandes'
+    | '/commentaires'
     | '/contact'
     | '/dashboard'
     | '/depot'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/avis'
     | '/commandes'
+    | '/commentaires'
     | '/contact'
     | '/dashboard'
     | '/depot'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/avis'
     | '/commandes'
+    | '/commentaires'
     | '/contact'
     | '/dashboard'
     | '/depot'
@@ -311,6 +323,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   AvisRoute: typeof AvisRoute
   CommandesRoute: typeof CommandesRoute
+  CommentairesRoute: typeof CommentairesRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DepotRoute: typeof DepotRoute
@@ -378,6 +391,13 @@ declare module '@tanstack/react-router' {
       path: '/commandes'
       fullPath: '/commandes'
       preLoaderRoute: typeof CommandesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commentaires': {
+      id: '/commentaires'
+      path: '/commentaires'
+      fullPath: '/commentaires'
+      preLoaderRoute: typeof CommentairesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   AvisRoute: AvisRoute,
   CommandesRoute: CommandesRoute,
+  CommentairesRoute: CommentairesRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DepotRoute: DepotRoute,
