@@ -13,3 +13,4 @@
 - Treat catalogue pack `unit` as a pricing divisor rather than a universal order minimum; the public minimum is 100 and the backend validates provider limits before charging.
 - Only Réactions Vazaha exposes visibility: invisible appends `;visibility:invisible` to `reaction:<key>`; both choices retain the same price for consistent billing.
 - Keep Facebook Gasy as one catalogue card with two underlying orderable services; the selected service ID preserves distinct reaction/follower provider routing and server-side pricing.
+- Keep the client sidebar navigation in Layout separate from the full admin navigation; clients need exactly five menu actions while admins retain their complete menu.
