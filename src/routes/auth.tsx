@@ -23,7 +23,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 type Mode = "login" | "signup" | "forgot";
-const inputClass = "mt-2 h-13 w-full rounded-lg border border-border bg-secondary px-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary";
+const inputClass = "mt-1.5 h-12 w-full rounded-lg border border-border bg-secondary px-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary sm:mt-2 sm:h-13";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -115,23 +115,23 @@ export function AuthPage() {
   };
 
   return (
-    <main className="dark flex min-h-screen items-center justify-center bg-background px-6 py-12 text-foreground">
+    <main className="dark flex min-h-screen items-start justify-center bg-background px-6 py-6 text-foreground sm:items-center sm:py-12">
       {loading || user ? (
         <span className="text-sm text-muted-foreground">Chargement…</span>
       ) : (
         <section className="w-full max-w-sm" aria-label="Connexion BoostMada">
-          <div className="mb-9 flex h-14 w-14 items-center justify-center rounded-xl bg-[image:var(--gradient-neon)] text-primary-foreground shadow-lg shadow-primary/20">
+          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[image:var(--gradient-neon)] text-primary-foreground shadow-lg shadow-primary/20 sm:mb-9 sm:h-14 sm:w-14">
             <Zap aria-hidden="true" className="h-7 w-7 fill-current" />
           </div>
-          <h1 className="font-sans text-3xl font-bold leading-tight sm:text-4xl">
+          <h1 className="font-sans text-2xl font-bold leading-tight sm:text-4xl">
             BOOST SERVICE MADA
-            <span className="mt-2 block text-xl font-semibold sm:text-2xl">Boostez vos réseaux sociaux à Madagascar</span>
+            <span className="mt-1.5 block text-lg font-semibold sm:mt-2 sm:text-2xl">Boostez vos réseaux sociaux à Madagascar</span>
           </h1>
-          <p className="mt-4 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-muted-foreground sm:mt-4">
             {mode === "signup" ? "Créez votre compte" : mode === "forgot" ? "Réinitialisez votre mot de passe" : "Connectez-vous à votre compte"}
           </p>
 
-          <form onSubmit={submit} className="mt-9 space-y-5">
+          <form onSubmit={submit} className="mt-6 space-y-4 sm:mt-9 sm:space-y-5">
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
                 <label className="block text-sm font-medium">Nom
@@ -159,22 +159,22 @@ export function AuthPage() {
               </>
             )}
             {msg && <p role="status" className="rounded-md bg-secondary p-3 text-sm">{msg}</p>}
-            <Button disabled={busy} type="submit" size="lg" className="h-13 w-full bg-[image:var(--gradient-neon)] text-base font-bold text-primary-foreground hover:opacity-90">
+            <Button disabled={busy} type="submit" size="lg" className="h-12 w-full bg-[image:var(--gradient-neon)] text-base font-bold text-primary-foreground hover:opacity-90 sm:h-13">
               {busy ? "Veuillez patienter…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}
             </Button>
           </form>
 
           {mode === "login" && (
-            <Button variant="link" onClick={() => changeMode("forgot")} className="mt-3 h-auto w-full text-primary">
+            <Button variant="link" onClick={() => changeMode("forgot")} className="mt-2 h-auto w-full text-primary sm:mt-3">
               Mot de passe oublié ?
             </Button>
           )}
           {mode !== "forgot" && (
             <>
-              <div className="my-7 flex items-center gap-4 text-xs font-medium text-muted-foreground">
+              <div className="my-4 flex items-center gap-4 text-xs font-medium text-muted-foreground sm:my-7">
                 <span className="h-px flex-1 bg-border" />OU<span className="h-px flex-1 bg-border" />
               </div>
-              <Button type="button" variant="outline" disabled={busy} onClick={google} className="h-12 w-full border-border bg-secondary text-foreground hover:bg-muted hover:text-foreground">
+              <Button type="button" variant="outline" disabled={busy} onClick={google} className="h-11 w-full border-border bg-secondary text-foreground hover:bg-muted hover:text-foreground sm:h-12">
                 <svg viewBox="0 0 48 48" aria-hidden="true" className="h-5 w-5">
                   <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z" />
                   <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
@@ -185,7 +185,7 @@ export function AuthPage() {
               </Button>
             </>
           )}
-          <p className="mt-8 text-center text-sm text-muted-foreground">
+          <p className="mt-5 text-center text-sm text-muted-foreground sm:mt-8">
             {mode === "login" ? "Pas encore de compte ?" : mode === "signup" ? "Déjà inscrit ?" : "Vous vous souvenez de votre mot de passe ?"}{" "}
             <Button variant="link" onClick={() => changeMode(mode === "login" ? "signup" : "login")} className="h-auto p-0 font-semibold text-primary">
               {mode === "login" ? "S'inscrire" : "Se connecter"}

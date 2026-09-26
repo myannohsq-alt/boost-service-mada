@@ -12,4 +12,4 @@
 - [x] Menu client limité à RECHARGE, Suivi des commandes, Groupe de discussion, Tutoriel, Déconnexion ; menu admin inchangé ; affichage vérifié.
 - [x] Publication du nouveau menu demandée pour boostmada.app (déploiement en attente).
 
-- [ ] Remplacer l’accueil par la connexion épurée et rediriger les membres vers Services ; vérifier sur téléphone et ordinateur.
+- [x] Remplacer l’accueil par la connexion épurée et rediriger les membres vers Services ; vérifier sur téléphone et ordinateur.
