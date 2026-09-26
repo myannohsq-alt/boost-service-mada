@@ -88,6 +88,30 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       community_comments: {
         Row: {
           author_name: string
@@ -874,6 +898,7 @@ export type Database = {
         Returns: undefined
       }
       release_sync_lock: { Args: { _name: string }; Returns: undefined }
+      send_chat_message: { Args: { _content: string }; Returns: number }
       trigger_smmgen_sync: { Args: never; Returns: undefined }
     }
     Enums: {
