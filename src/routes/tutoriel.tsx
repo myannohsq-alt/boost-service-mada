@@ -70,7 +70,13 @@ function VideoPlayer({ src }: { src: string }) {
       preload="metadata"
       title="Tutoriel BOOST SERVICE MADA"
       className="mt-3 block"
-      style={{ width: "100%", borderRadius: "12px", background: "#0a1930" }}
+      style={{
+        width: "100%",
+        borderRadius: "12px",
+        background: "#0a1930",
+        aspectRatio: "16 / 9",
+        objectFit: "contain",
+      }}
     >
       <source src={src} type="video/mp4" />
       Tsy afaka mamaky ity horonantsary ity ny navigateur-nao.
