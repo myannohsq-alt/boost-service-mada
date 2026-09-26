@@ -1,3 +1,3 @@
-- [ ] Ajouter le choix visible/invisible uniquement à Reaction Vazah, visible sélectionné par défaut.
-- [ ] Appliquer -20 % au montant débité côté serveur pour Invisible et afficher le délai adapté.
-- [ ] Vérifier les deux choix sur téléphone, la commande et l'absence du bloc sur Reaction Gasy.
+- [x] Ajouter le choix visible/invisible uniquement à Reaction Vazah, visible sélectionné par défaut.
+- [x] Appliquer -20 % au montant débité côté serveur pour Invisible et afficher le délai adapté.
+- [x] Vérifier les deux choix sur téléphone, la validation de commande et l'absence du bloc sur Reaction Gasy sans débiter une commande réelle.
