@@ -75,8 +75,16 @@ function LiveClock() {
     return () => window.clearInterval(id);
   }, []);
   return (
-    <span className="hidden items-center gap-1 rounded-full border border-primary/40 bg-card/70 px-3 py-1.5 font-display text-xs font-bold text-primary sm:inline-flex">
-      🕒 {now ? now.toLocaleTimeString("fr-FR") : "--:--:--"}
+    <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold tabular-nums text-foreground">
+      {now ? now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "--:--"}
+    </span>
+  );
+}
+
+export function BrandMark() {
+  return (
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[image:var(--gradient-neon)] text-lg text-primary-foreground shadow-[0_6px_18px_-8px_var(--color-primary)]">
+      ⚡
     </span>
   );
 }
@@ -126,74 +134,55 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bsm-hero">
-      <header className="sticky top-0 z-40 border-b border-primary/25 bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-3 py-2.5 sm:px-4">
-          <button
-            aria-label="Menu"
-            onClick={() => setOpen(true)}
-            className="bsm-btn bsm-btn-ghost !px-3 !py-2"
-          >
-            ☰
-          </button>
-
+      <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 py-2">
           {user ? (
-            <div className="flex min-w-0 items-center gap-2">
+            <Link to="/profil" className="flex min-w-0 items-center gap-2">
               {profile?.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt="Avatar"
-                  className="h-9 w-9 shrink-0 rounded-full border border-primary/50 object-cover"
-                />
+                <img src={profile.avatar_url} alt="Avatar" className="h-8 w-8 shrink-0 rounded-full object-cover" />
               ) : (
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/50 bg-secondary font-display text-[11px] font-bold text-primary">
-                  {initials}
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[image:var(--gradient-neon)] text-xs font-bold text-primary-foreground">
+                  {initials.charAt(0)}
                 </span>
               )}
               <div className="min-w-0 leading-tight">
-                <p className="truncate text-xs font-semibold">{profile?.name || "Membre"}</p>
-                <p className="font-display text-[11px] font-bold text-primary">
-                  💰 {formatAr(profile?.balance ?? 0)}
-                </p>
+                <p className="truncate text-[11px] text-muted-foreground">{profile?.name || "Membre"}</p>
+                <p className="truncate text-xs font-bold bsm-neon-text">{formatAr(profile?.balance ?? 0)}</p>
               </div>
-            </div>
+            </Link>
           ) : (
-            <Link to="/" className="flex items-center gap-2">
-              <Logo size={32} />
-              <span className="font-display text-xs font-bold leading-tight sm:text-sm">
-                <span className="bsm-neon-text">BOOST</span> SERVICE{" "}
-                <span className="text-gold">MADA</span> 🇲🇬
-              </span>
+            <Link to="/" className="flex min-w-0 items-center gap-2">
+              <BrandMark />
+              <span className="truncate text-[13px] font-bold sm:text-base">BOOST SERVICE MADA</span>
             </Link>
           )}
 
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="flex justify-center">
+            {user ? (
+              <Link to="/" className="flex items-center gap-2">
+                <BrandMark />
+                <span className="hidden text-base font-bold md:inline">BOOST SERVICE MADA</span>
+              </Link>
+            ) : null}
             <LiveClock />
-            <button
-              onClick={doRefresh}
-              aria-label="Actualiser"
-              className={`bsm-btn bsm-btn-ghost !px-3 !py-1.5 !text-xs ${spin ? "animate-spin" : ""}`}
-            >
-              🔄
-            </button>
-            <button
-              onClick={() => setLang(lang === "mg" ? "fr" : "mg")}
-              className="bsm-btn bsm-btn-ghost hidden !px-3 !py-1.5 !text-xs sm:inline-flex"
-              aria-label="Langue"
-            >
+          </div>
+
+          <div className="flex items-center justify-end gap-1.5">
+            <button onClick={doRefresh} aria-label="Actualiser" className={`hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex ${spin ? "animate-spin" : ""}`}>🔄</button>
+            <button onClick={() => setLang(lang === "mg" ? "fr" : "mg")} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Langue">
               {lang === "mg" ? "🇲🇬" : "🇫🇷"}
             </button>
-            <button
-              onClick={toggle}
-              className="bsm-btn bsm-btn-ghost hidden !px-3 !py-1.5 !text-xs sm:inline-flex"
-              aria-label="Thème"
-            >
+            <button onClick={toggle} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Thème">
               {theme === "dark" ? "🌙" : "☀️"}
             </button>
             {!user ? (
-              <Link to="/auth" className="bsm-btn bsm-btn-primary !px-3 !py-1.5 !text-xs">
+              <Link to="/auth" className="rounded-full border border-primary/60 px-3 py-1.5 text-xs font-semibold text-primary">
                 {t("login")}
               </Link>
             ) : null}
+            <button aria-label="Menu" onClick={() => setOpen(true)} className="flex h-9 w-9 items-center justify-center rounded-xl bg-[image:var(--gradient-neon)] text-primary-foreground">
+              ☰
+            </button>
           </div>
         </div>
         <AnnouncementBar />
