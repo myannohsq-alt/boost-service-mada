@@ -19,3 +19,5 @@
 - [x] Remplacer l'ancien appel au téléchargement APK inexistant par l'installation depuis le navigateur.
 - [x] Ajouter icône 512, apple-touch-icon et images de partage (og:image / twitter:image) sur accueil, connexion, à propos, contact, FAQ ; publié et vérifié en ligne.
 - [x] Rafraîchir uniquement la connexion et l'inscription : carte compacte, orange franc, icônes SMM B&S intactes et encart installation navigateur ; vérifier mobile et ordinateur.
+- [ ] Épurer Mon Profil en cinq blocs sans exemples ni historiques ; retirer le bandeau INFO sur ce profil.
+- [ ] Vérifier que le groupe n'affiche que des clients réels, facture 1 Ar au texte et conserve photo/vocal localement de façon lisible.
