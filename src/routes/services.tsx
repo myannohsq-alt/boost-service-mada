@@ -246,6 +246,9 @@ function ServiceTile({
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-dot" />⚡ RAPIDE
             </Badge>
           )}
+          {group.options.some((o) => /GARANTI/i.test(o.service.note ?? "")) ? (
+            <Badge className="bg-success/15 text-success">🛡️ STABLE</Badge>
+          ) : null}
           {gasy ? <Badge className="bg-secondary text-foreground">🇲🇬 GASY</Badge> : null}
         </div>
       </div>
