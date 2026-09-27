@@ -137,13 +137,14 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
   const [balanceFlash, setBalanceFlash] = useState(false);
   const prevBalance = useRef<number | null>(null);
   useEffect(() => {
-    if (prevBalance.current !== null && balance !== prevBalance.current) {
-      setBalanceFlash(true);
-      const timer = window.setTimeout(() => setBalanceFlash(false), 1200);
+    if (prevBalance.current === null || balance === prevBalance.current) {
       prevBalance.current = balance;
-      return () => window.clearTimeout(timer);
+      return undefined;
     }
     prevBalance.current = balance;
+    setBalanceFlash(true);
+    const timer = window.setTimeout(() => setBalanceFlash(false), 1200);
+    return () => window.clearTimeout(timer);
   }, [balance]);
 
   return (
