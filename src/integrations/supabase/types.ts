@@ -245,59 +245,6 @@ export type Database = {
           },
         ]
       }
-      demo_messages: {
-        Row: {
-          content: string
-          created_at: string
-          demo_profile_id: string
-          id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          demo_profile_id: string
-          id?: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          demo_profile_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "demo_messages_demo_profile_id_fkey"
-            columns: ["demo_profile_id"]
-            isOneToOne: false
-            referencedRelation: "demo_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      demo_profiles: {
-        Row: {
-          avatar_url: string
-          created_at: string
-          id: string
-          name: string
-          points: number
-        }
-        Insert: {
-          avatar_url: string
-          created_at?: string
-          id?: string
-          name: string
-          points?: number
-        }
-        Update: {
-          avatar_url?: string
-          created_at?: string
-          id?: string
-          name?: string
-          points?: number
-        }
-        Relationships: []
-      }
       news: {
         Row: {
           content: string
@@ -1065,6 +1012,27 @@ export type Database = {
         Returns: string
       }
       public_stats: { Args: never; Returns: Json }
+      recent_saturday_winners: {
+        Args: { _limit?: number }
+        Returns: {
+          author_name: string
+          gain: number
+          id: string
+          points: number
+          week_date: string
+        }[]
+      }
+      recent_wheel_wins: {
+        Args: { _limit?: number; _since: string }
+        Returns: {
+          author_name: string
+          avatar_url: string
+          created_at: string
+          id: string
+          type: string
+          valeur: number
+        }[]
+      }
       reject_recharge: {
         Args: { _reason?: string; _recharge_id: string }
         Returns: undefined

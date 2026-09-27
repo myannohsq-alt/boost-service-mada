@@ -192,9 +192,7 @@ export function WheelResults() {
   const [rows, setRows] = useState<any[]>([]);
   useEffect(() => {
     const since = new Date(Date.now() - (tab === "day" ? 1 : 7) * 86400e3).toISOString();
-    void db.from("wheel_history").select("*").gte("created_at", since).order("created_at", { ascending: false }).limit(15).then(({ data }: any) => setRows(data ?? []));
-    const ch = supabase.channel(`wheel_${tab}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "wheel_history" }, (p) => setRows((c) => [p.new, ...c].slice(0, 15))).subscribe();
-    return () => { void supabase.removeChannel(ch); };
+    void db.rpc("recent_wheel_wins", { _since: since, _limit: 15 }).then(({ data }: any) => setRows(data ?? []));
   }, [tab]);
   return (
      <div>
@@ -237,7 +235,7 @@ export function SaturdayDraw() {
   useEffect(() => { const t = setInterval(() => setLeft(nextSaturday() - Date.now()), 1000); return () => clearInterval(t); }, []);
   useEffect(() => {
     void db.rpc("leaderboard", { _limit: all ? 50 : 8 }).then(({ data }: any) => setBoard(data ?? []));
-    void db.from("saturday_winners").select("*").order("week_date", { ascending: false }).limit(3).then(({ data }: any) => setWinners(data ?? []));
+    void db.rpc("recent_saturday_winners", { _limit: 3 }).then(({ data }: any) => setWinners(data ?? []));
   }, [all]);
   const s = Math.max(0, Math.floor(left / 1000));
   const parts = [["j", Math.floor(s / 86400)], ["h", Math.floor((s % 86400) / 3600)], ["min", Math.floor((s % 3600) / 60)], ["s", s % 60]] as const;
