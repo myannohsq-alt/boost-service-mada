@@ -18,3 +18,4 @@
 - Keep the dark navy/orange palette in global semantic tokens and reuse the shared login on / and /auth; this keeps every page themed consistently.
 - Keep home-screen installability manifest-only, without an app-shell service worker; the site requires live network access and preview must not serve stale cached code.
 - Keep group text messages in the shared paid chat and local photo/voice entries scoped to their author account; local media cannot be shared across members without server storage.
+- Ship every recorded tutorial clip as `/public/videos/<name>.mp4` (H.264) plus a same-named `.webm` (VP9) and list both `<source>` tags; MP4 covers Safari/Android while the test Chromium cannot decode H.264, so WebM is what proves playback in browser checks.
