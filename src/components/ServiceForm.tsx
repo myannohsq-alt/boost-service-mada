@@ -58,7 +58,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     if (needsReaction && !reaction) return setError("Choisissez un type de réaction.");
     if (!Number.isSafeInteger(quantity) || quantity < min)
       return setError(`Quantité minimum : ${min}`);
-    if (insufficient) { toast.error("Solde insuffisant, rechargez"); return setError("Solde insuffisant, rechargez"); }
+    if (insufficient) { toast.error("Solde insuffisant, veuillez recharger"); return setError("Solde insuffisant, veuillez recharger. Jereo ny commandes ao amin'ny compte-nao"); }
     setBusy(true);
     try {
       const { error: err } = await supabase.rpc("place_order", {
@@ -148,7 +148,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         <div className="flex items-center justify-between gap-2"><span>Mon solde</span><strong className="text-primary">{formatAr(balance)}</strong></div>
         <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2"><span>Total à payer</span><strong className="text-lg text-primary">{formatAr(cost)}</strong></div>
       </div>
-      {insufficient && <p className="text-xs text-destructive">Solde insuffisant. <Link to="/recharge" className="underline">Recharger</Link></p>}
+      {insufficient && <p className="text-xs text-destructive">Solde insuffisant, veuillez recharger. <Link to="/depot" className="underline">Recharger</Link></p>}
       {error && <p role="alert" className="rounded-md bg-secondary p-2 text-xs text-destructive">{error}</p>}
       <div className="space-y-2">
         <Button type="button" disabled={busy || insufficient || !service} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">

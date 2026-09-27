@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import logo from "@/assets/logo.png";
 import { useI18n, formatAr } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
@@ -133,6 +133,20 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
 
   const initials = (profile?.name || profile?.email || "BSM").slice(0, 2).toUpperCase();
 
+  const balance = Number(profile?.balance ?? 0);
+  const [balanceFlash, setBalanceFlash] = useState(false);
+  const prevBalance = useRef<number | null>(null);
+  useEffect(() => {
+    if (prevBalance.current === null || balance === prevBalance.current) {
+      prevBalance.current = balance;
+      return undefined;
+    }
+    prevBalance.current = balance;
+    setBalanceFlash(true);
+    const timer = window.setTimeout(() => setBalanceFlash(false), 1200);
+    return () => window.clearTimeout(timer);
+  }, [balance]);
+
   return (
     <div className="min-h-screen bsm-hero">
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl">
@@ -148,7 +162,7 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
               )}
               <div className="min-w-0 leading-tight">
                 <p className="truncate text-[11px] text-muted-foreground">{profile?.name || "Membre"}</p>
-                <p className="truncate text-xs font-bold bsm-neon-text">{formatAr(profile?.balance ?? 0)}</p>
+                <p className={`truncate text-xs font-bold bsm-neon-text ${balanceFlash ? "bsm-balance-flash" : ""}`}>{formatAr(profile?.balance ?? 0)}</p>
               </div>
             </Link>
           ) : (
