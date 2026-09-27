@@ -152,21 +152,56 @@ function formatMinutes(m: number): string {
   return r > 0 ? `${h}h ${r}m` : `${h}h`;
 }
 
+function getRandomTime(): string {
+  // Random between 15 min and 1h20min (80 min)
+  const m = 15 + Math.floor(Math.random() * 66);
+  return formatMinutes(m);
+}
+
+const TIMES_KEY = "bsm_dynamic_times";
+const TIMES_TS_KEY = "bsm_dynamic_times_ts";
+const TWO_HOURS = 2 * 60 * 60 * 1000;
+
 function useDynamicTimes(list: ServiceGroup[]) {
   const [times, setTimes] = useState<Record<string, string>>({});
+
   useEffect(() => {
-    const update = () => {
+    if (!list.length) return;
+
+    const updateAllTimes = () => {
       const next: Record<string, string> = {};
-      for (const g of list) {
-        const variation = 0.85 + Math.random() * 0.35;
-        next[g.key] = formatMinutes(Math.round(baseMinutes(g.deliveryTime) * variation));
-      }
+      for (const g of list) next[g.key] = getRandomTime();
       setTimes(next);
+      try {
+        localStorage.setItem(TIMES_KEY, JSON.stringify(next));
+        localStorage.setItem(TIMES_TS_KEY, String(Date.now()));
+      } catch {
+        /* storage unavailable */
+      }
     };
-    update();
-    const id = window.setInterval(update, 30000);
+
+    // On load: reuse stored times if they are less than 2h old
+    let restored = false;
+    try {
+      const raw = localStorage.getItem(TIMES_KEY);
+      const ts = Number(localStorage.getItem(TIMES_TS_KEY) ?? 0);
+      if (raw && ts && Date.now() - ts < TWO_HOURS) {
+        const stored = JSON.parse(raw) as Record<string, string>;
+        const next: Record<string, string> = {};
+        for (const g of list) next[g.key] = stored[g.key] ?? getRandomTime();
+        setTimes(next);
+        restored = true;
+      }
+    } catch {
+      /* ignore */
+    }
+    if (!restored) updateAllTimes();
+
+    // Re-generate all times every 2 hours
+    const id = window.setInterval(updateAllTimes, TWO_HOURS);
     return () => window.clearInterval(id);
   }, [list]);
+
   return times;
 }
 
