@@ -99,7 +99,7 @@ function ServicesPage() {
                 group={g}
                 id={idFor(services ?? [], g)}
                 name={lang === "mg" ? g.nameMg : g.nameFr}
-                time={times[g.key] ?? formatMinutes(baseMinutes(g.deliveryTime))}
+                time={g.deliveryTime || times[g.key] || formatMinutes(baseMinutes(g.deliveryTime))}
                 chosen={chosenPct(g.key, i)}
                 onClick={() => setSelected(g)}
               />
@@ -206,13 +206,11 @@ function ServiceTile({
             <Badge className="bg-muted text-muted-foreground">INDISPONIBLE</Badge>
           ) : id === 101 ? (
             <Badge className="bg-gradient-to-r from-destructive to-primary text-primary-foreground">🔥 TOP</Badge>
-          ) : base < 60 ? (
+          ) : (
             <Badge className="bg-success/15 text-success">
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-dot" />⚡ RAPIDE
             </Badge>
-          ) : base > 120 ? (
-            <Badge className="bg-warning/15 text-warning">🕒 LENT</Badge>
-          ) : null}
+          )}
           {gasy ? <Badge className="bg-secondary text-foreground">🇲🇬 GASY</Badge> : null}
         </div>
       </div>

@@ -114,7 +114,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         <div className="mt-2 grid grid-cols-2 gap-2">
           <Button type="button" variant="outline" aria-pressed={visibility === "invisible"} onClick={() => setVisibility("invisible")}
             className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "invisible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            <span>Invisible (LENT) • tsy miena 🔥</span>
+            <span>Invisible (RAPIDE) • tsy miena 🔥</span>
           </Button>
           <Button type="button" variant="outline" aria-pressed={visibility === "visible"} onClick={() => setVisibility("visible")}
             className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "visible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
