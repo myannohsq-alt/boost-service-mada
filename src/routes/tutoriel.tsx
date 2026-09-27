@@ -38,7 +38,15 @@ const BLOCKS: Array<{ match: string[]; video: string; steps: string[] }> = [
     ],
   },
   {
-    match: ["commander", "commande"],
+    match: ["suiv", "mes commandes", "statut"],
+    video: "/videos/suivi.mp4",
+    steps: [
+      "Midira ao amin'ny Mes commandes.",
+      "Jereo ny statut : En cours 🟡 na Terminé 🟢.",
+    ],
+  },
+  {
+    match: ["commander"],
     video: "/videos/commande.mp4",
     steps: [
       "Safidio ny service tianao.",
@@ -47,11 +55,12 @@ const BLOCKS: Array<{ match: string[]; video: string; steps: string[] }> = [
     ],
   },
   {
-    match: ["suivi", "mes commandes", "statut"],
-    video: "/videos/suivi.mp4",
+    match: ["créer un compte", "creer un compte", "inscrire"],
+    video: "/videos/compte.mp4",
     steps: [
-      "Midira ao amin'ny Mes commandes.",
-      "Jereo ny statut : En cours 🟡 na Terminé 🟢.",
+      "Tsindrio HISORATRA ANARANA (Inscription).",
+      "Fenoy ny anarana, ny mailaka ary ny tenimiafina.",
+      "Tsindrio Hiditra dia lasa Services avy hatrany.",
     ],
   },
 ];
@@ -70,9 +79,16 @@ function VideoPlayer({ src }: { src: string }) {
       preload="metadata"
       title="Tutoriel BOOST SERVICE MADA"
       className="mt-3 block"
-      style={{ width: "100%", borderRadius: "12px", background: "#0a1930" }}
+      style={{
+        width: "100%",
+        borderRadius: "12px",
+        background: "#0a1930",
+        aspectRatio: "16 / 9",
+        objectFit: "contain",
+      }}
     >
       <source src={src} type="video/mp4" />
+      <source src={src.replace(/\.mp4$/, ".webm")} type="video/webm" />
       Tsy afaka mamaky ity horonantsary ity ny navigateur-nao.
     </video>
   );
