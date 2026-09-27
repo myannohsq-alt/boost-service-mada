@@ -73,6 +73,21 @@ type ProviderRow = {
   max_qty: number;
 };
 
+const FAST_RE = /fast|instant|rapide/i;
+
+// Highest delivery speed advertised in the provider name, e.g. "100k-300k/day" -> 300000.
+function speedPerDay(name: string): number {
+  let best = 0;
+  for (const m of name.matchAll(/(\d+(?:\.\d+)?)\s*([km]?)\s*\/\s*days?/gi)) {
+    const mult = m[2]?.toLowerCase() === "k" ? 1_000 : m[2]?.toLowerCase() === "m" ? 1_000_000 : 1;
+    best = Math.max(best, Number(m[1]) * mult);
+  }
+  return best;
+}
+
+// Picks the FASTEST compatible provider service. "Fast/Instant/Rapide" names win,
+// then highest advertised speed, then price. Candidates costing more than 2x the
+// cheapest compatible option are ignored to avoid runaway costs.
 export function pickProvider(rule: Rule, unit: number, rows: ProviderRow[]): ProviderRow | null {
   const candidates = rows.filter((r) => {
     const t = `${r.name} ${r.category}`.toLowerCase();
@@ -83,9 +98,23 @@ export function pickProvider(rule: Rule, unit: number, rows: ProviderRow[]): Pro
     if (!(r.rate_usd > 0)) return false;
     return true;
   });
-  candidates.sort((a, b) => a.rate_usd - b.rate_usd);
-  return candidates[0] ?? null;
+  if (!candidates.length) return null;
+  const cheapest = Math.min(...candidates.map((c) => c.rate_usd));
+  const pool = candidates.filter((c) => c.rate_usd <= cheapest * 2);
+  pool.sort((a, b) => {
+    const fa = FAST_RE.test(a.name) ? 1 : 0;
+    const fb = FAST_RE.test(b.name) ? 1 : 0;
+    if (fa !== fb) return fb - fa;
+    const sa = speedPerDay(a.name);
+    const sb = speedPerDay(b.name);
+    if (sa !== sb) return sb - sa;
+    return a.rate_usd - b.rate_usd;
+  });
+  return pool[0] ?? null;
 }
+
+// Group services are linked manually (fastest provider chosen by the admin), never auto-mapped.
+const MANUAL_KINDS = new Set(["fb_group"]);
 
 export type MapReport = {
   mapped: number;
@@ -124,6 +153,10 @@ export async function autoMapServices(): Promise<MapReport> {
         .update({ provider_name: "BOOST SERVICE MADA (manuel)" })
         .eq("id", local.id);
       report.unmapped.push({ name: local.name_fr, reason: "Service local (traitement manuel)" });
+      continue;
+    }
+    if (MANUAL_KINDS.has(kind)) {
+      report.unmapped.push({ name: local.name_fr, reason: "Liaison manuelle (service Groupe)" });
       continue;
     }
     const rule = RULES[kind]!;
