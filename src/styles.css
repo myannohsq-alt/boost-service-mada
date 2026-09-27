@@ -400,3 +400,9 @@
 }
 
 .data-saver *, .data-saver *::before, .data-saver *::after { animation: none !important; transition: none !important; backdrop-filter: none !important; }
+
+@keyframes bsm-balance-flash {
+  0%, 100% { color: inherit; }
+  25%, 75% { color: #ef4444; text-shadow: 0 0 14px rgba(239, 68, 68, .8); transform: scale(1.15); }
+}
+.bsm-balance-flash { animation: bsm-balance-flash .4s ease-in-out 3; display: inline-block; }
