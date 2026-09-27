@@ -99,7 +99,7 @@ function ServicesPage() {
                 group={g}
                 id={idFor(services ?? [], g)}
                 name={lang === "mg" ? g.nameMg : g.nameFr}
-                time={g.deliveryTime || times[g.key] || formatMinutes(baseMinutes(g.deliveryTime))}
+                time={times[g.key] || g.deliveryTime || formatMinutes(baseMinutes(g.deliveryTime))}
                 chosen={chosenPct(g.key, i)}
                 onClick={() => setSelected(g)}
               />
