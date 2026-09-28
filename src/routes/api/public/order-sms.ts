@@ -34,9 +34,19 @@ export const Route = createFileRoute("/api/public/order-sms")({
 
         const id = String(order.id ?? "");
         const amount = String(order.amount ?? "");
-        const phone = String(order.customer_phone ?? order.phone ?? order.numero ?? "");
-        const name = String(order.customer_name ?? "");
-        if (!id || !phone) return new Response("Missing id/phone", { status: 400 });
+        const userId = String(order.user_id ?? "");
+        if (!id || !userId) return new Response("Missing id/user_id", { status: 400 });
+
+        // Phone and name live on profiles, not orders
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("phone, name")
+          .eq("id", userId)
+          .maybeSingle();
+        const phone = String(profile?.phone ?? "");
+        const name = String(profile?.name ?? "");
+        if (!phone) return Response.json({ skipped: "no phone on profile" });
 
         const client = await sendSms(
           apiKey,

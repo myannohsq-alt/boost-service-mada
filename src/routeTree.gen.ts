@@ -34,6 +34,7 @@ import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-generate'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
+import { Route as ApiPublicOrderSmsRouteImport } from './routes/api/public/order-sms'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -161,6 +162,11 @@ const InviteCodeRoute = InviteCodeRouteImport.update({
   path: '/invite/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOrderSmsRoute = ApiPublicOrderSmsRouteImport.update({
+  id: '/api/public/order-sms',
+  path: '/api/public/order-sms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSmmgenSyncRoute = ApiPublicSmmgenSyncRouteImport.update({
   id: '/api/public/smmgen-sync',
   path: '/api/public/smmgen-sync',
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/invite/$code': typeof InviteCodeRoute
+  '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesByTo {
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/invite/$code': typeof InviteCodeRoute
+  '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesById {
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/invite/$code': typeof InviteCodeRoute
+  '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRouteTypes {
@@ -280,6 +289,7 @@ export interface FileRouteTypes {
     | '/api/assistant'
     | '/api/comments-generate'
     | '/invite/$code'
+    | '/api/public/order-sms'
     | '/api/public/smmgen-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/api/assistant'
     | '/api/comments-generate'
     | '/invite/$code'
+    | '/api/public/order-sms'
     | '/api/public/smmgen-sync'
   id:
     | '__root__'
@@ -336,6 +347,7 @@ export interface FileRouteTypes {
     | '/api/assistant'
     | '/api/comments-generate'
     | '/invite/$code'
+    | '/api/public/order-sms'
     | '/api/public/smmgen-sync'
   fileRoutesById: FileRoutesById
 }
@@ -365,6 +377,7 @@ export interface RootRouteChildren {
   ApiAssistantRoute: typeof ApiAssistantRoute
   ApiCommentsGenerateRoute: typeof ApiCommentsGenerateRoute
   InviteCodeRoute: typeof InviteCodeRoute
+  ApiPublicOrderSmsRoute: typeof ApiPublicOrderSmsRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
 }
 
@@ -545,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/order-sms': {
+      id: '/api/public/order-sms'
+      path: '/api/public/order-sms'
+      fullPath: '/api/public/order-sms'
+      preLoaderRoute: typeof ApiPublicOrderSmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/smmgen-sync': {
       id: '/api/public/smmgen-sync'
       path: '/api/public/smmgen-sync'
@@ -581,6 +601,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAssistantRoute: ApiAssistantRoute,
   ApiCommentsGenerateRoute: ApiCommentsGenerateRoute,
   InviteCodeRoute: InviteCodeRoute,
+  ApiPublicOrderSmsRoute: ApiPublicOrderSmsRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
 }
 export const routeTree = rootRouteImport
