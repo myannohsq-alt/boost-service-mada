@@ -10,7 +10,7 @@ const MAX_JOBS_PER_RUN = 8;
 const MAX_ORDERS_PER_RECONCILE = 200; // spread over batched status calls
 const STATUS_BATCH_SIZE = 100; // SMMGen multi-status batch
 const MAX_STATUS_BATCHES = 2;
-const MAX_ATTEMPTS = 8; // plenty of room for transient 429s
+const MAX_ATTEMPTS = 3; // 3 tries, then the order is marked failed (never stuck pending); 429s don't count
 const BALANCE_TTL_MS = 10 * 60_000;
 const SERVICES_TTL_MS = 12 * 60 * 60_000;
 
