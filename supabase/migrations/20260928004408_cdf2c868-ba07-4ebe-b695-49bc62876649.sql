@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.notify_order_sms() FROM public, anon, authenticated;
