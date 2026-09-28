@@ -75,6 +75,17 @@ type ProviderRow = {
 
 const FAST_RE = /fast|instant|rapide/i;
 
+// Quality score from the provider name (names use unicode bold: normalize first).
+function qualityScore(name: string): number {
+  const n = name.normalize("NFKC").toLowerCase();
+  let s = 0;
+  if (/\breal\b|réel/.test(n)) s += 1;
+  if (/no\s*drop|non[- ]?drop|stable|lifetime|permanent/.test(n)) s += 2;
+  if (/refill|guarantee/.test(n) && !/no\s*refill/.test(n)) s += 2;
+  if (/\bhq\b|high\s*quality|premium/.test(n)) s += 1;
+  return s;
+}
+
 // Highest delivery speed advertised in the provider name, e.g. "100k-300k/day" -> 300000.
 function speedPerDay(name: string): number {
   let best = 0;
@@ -85,12 +96,12 @@ function speedPerDay(name: string): number {
   return best;
 }
 
-// Picks the FASTEST compatible provider service. "Fast/Instant/Rapide" names win,
-// then highest advertised speed, then price. Candidates costing more than 2x the
-// cheapest compatible option are ignored to avoid runaway costs.
+// Picks the best compatible provider: Real + No Drop + Refill + HQ first,
+// then "Fast/Instant", then highest speed, then price. Candidates costing more
+// than 3x the cheapest compatible option are ignored to avoid runaway costs.
 export function pickProvider(rule: Rule, unit: number, rows: ProviderRow[]): ProviderRow | null {
   const candidates = rows.filter((r) => {
-    const t = `${r.name} ${r.category}`.toLowerCase();
+    const t = `${r.name} ${r.category}`.normalize("NFKC").toLowerCase();
     if (rule.exclude.some((k) => t.includes(k))) return false;
     if (!rule.include.every((group) => group.some((k) => t.includes(k)))) return false;
     if (r.min_qty > unit) return false;
@@ -100,8 +111,11 @@ export function pickProvider(rule: Rule, unit: number, rows: ProviderRow[]): Pro
   });
   if (!candidates.length) return null;
   const cheapest = Math.min(...candidates.map((c) => c.rate_usd));
-  const pool = candidates.filter((c) => c.rate_usd <= cheapest * 2);
+  const pool = candidates.filter((c) => c.rate_usd <= cheapest * 3);
   pool.sort((a, b) => {
+    const qa = qualityScore(a.name);
+    const qb = qualityScore(b.name);
+    if (qa !== qb) return qb - qa;
     const fa = FAST_RE.test(a.name) ? 1 : 0;
     const fb = FAST_RE.test(b.name) ? 1 : 0;
     if (fa !== fb) return fb - fa;
