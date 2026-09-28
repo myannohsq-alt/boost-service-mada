@@ -32,9 +32,9 @@ export const Route = createFileRoute("/api/public/order-sms")({
           return new Response("Bad JSON", { status: 400 });
         }
 
-        const id = String(order.id ?? "");
-        const amount = String(order.amount ?? "");
-        const userId = String(order.user_id ?? "");
+        const id = String(order["id"] ?? "");
+        const amount = String(order["amount"] ?? "");
+        const userId = String(order["user_id"] ?? "");
         if (!id || !userId) return new Response("Missing id/user_id", { status: 400 });
 
         // Phone and name live on profiles, not orders
