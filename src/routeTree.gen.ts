@@ -22,6 +22,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GroupeRouteImport } from './routes/groupe'
+import { Route as MitadyVolaRouteImport } from './routes/mitady-vola'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PromotionsRouteImport } from './routes/promotions'
@@ -100,6 +101,11 @@ const FaqRoute = FaqRouteImport.update({
 const GroupeRoute = GroupeRouteImport.update({
   id: '/groupe',
   path: '/groupe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MitadyVolaRoute = MitadyVolaRouteImport.update({
+  id: '/mitady-vola',
+  path: '/mitady-vola',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParrainageRoute = ParrainageRouteImport.update({
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/groupe': typeof GroupeRoute
+  '/mitady-vola': typeof MitadyVolaRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/groupe': typeof GroupeRoute
+  '/mitady-vola': typeof MitadyVolaRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/groupe': typeof GroupeRoute
+  '/mitady-vola': typeof MitadyVolaRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/depot'
     | '/faq'
     | '/groupe'
+    | '/mitady-vola'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/depot'
     | '/faq'
     | '/groupe'
+    | '/mitady-vola'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/depot'
     | '/faq'
     | '/groupe'
+    | '/mitady-vola'
     | '/parrainage'
     | '/profil'
     | '/promotions'
@@ -365,6 +377,7 @@ export interface RootRouteChildren {
   DepotRoute: typeof DepotRoute
   FaqRoute: typeof FaqRoute
   GroupeRoute: typeof GroupeRoute
+  MitadyVolaRoute: typeof MitadyVolaRoute
   ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
   PromotionsRoute: typeof PromotionsRoute
@@ -472,6 +485,13 @@ declare module '@tanstack/react-router' {
       path: '/groupe'
       fullPath: '/groupe'
       preLoaderRoute: typeof GroupeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mitady-vola': {
+      id: '/mitady-vola'
+      path: '/mitady-vola'
+      fullPath: '/mitady-vola'
+      preLoaderRoute: typeof MitadyVolaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/parrainage': {
@@ -589,6 +609,7 @@ const rootRouteChildren: RootRouteChildren = {
   DepotRoute: DepotRoute,
   FaqRoute: FaqRoute,
   GroupeRoute: GroupeRoute,
+  MitadyVolaRoute: MitadyVolaRoute,
   ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
   PromotionsRoute: PromotionsRoute,
