@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.booster_max_two(), public.boost_order_price() FROM PUBLIC, anon, authenticated;
