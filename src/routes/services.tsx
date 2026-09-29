@@ -9,7 +9,7 @@ import { OrderModal, type ServiceCard } from "@/components/OrderModal";
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { buildServiceGroups, type ServiceGroup } from "@/lib/service-groups";
+import { FACEBOOK_GASY_KEY, buildServiceGroups, type ServiceGroup } from "@/lib/service-groups";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -61,6 +61,7 @@ function ServicesPage() {
   );
 
   const times = useDynamicTimes(list);
+  const gasyTime = useGasyTime();
 
   return (
     <AuthGate>
@@ -99,7 +100,7 @@ function ServicesPage() {
                 group={g}
                 id={idFor(services ?? [], g)}
                 name={lang === "mg" ? g.nameMg : g.nameFr}
-                time={times[g.key] || g.deliveryTime || formatMinutes(baseMinutes(g.deliveryTime))}
+                time={g.key === FACEBOOK_GASY_KEY ? gasyTime : times[g.key] || g.deliveryTime || formatMinutes(baseMinutes(g.deliveryTime))}
                 chosen={chosenPct(g.key, i)}
                 onClick={() => setSelected(g)}
               />
@@ -205,6 +206,26 @@ function useDynamicTimes(list: ServiceGroup[]) {
   return times;
 }
 
+const GASY_KEY = "bsm_gasy_time";
+const FOUR_HOURS = 4 * 60 * 60 * 1000;
+function useGasyTime() {
+  const [t, setT] = useState("2h 44m");
+  useEffect(() => {
+    const gen = () => {
+      const v = formatMinutes(120 + Math.floor(Math.random() * 90));
+      setT(v);
+      try { localStorage.setItem(GASY_KEY, JSON.stringify({ v, ts: Date.now() })); } catch { /* ignore */ }
+    };
+    try {
+      const s = JSON.parse(localStorage.getItem(GASY_KEY) ?? "null") as { v: string; ts: number } | null;
+      if (s && Date.now() - s.ts < FOUR_HOURS) setT(s.v); else gen();
+    } catch { gen(); }
+    const id = window.setInterval(gen, FOUR_HOURS);
+    return () => window.clearInterval(id);
+  }, []);
+  return t;
+}
+
 function idFor(all: ServiceCard[], g: ServiceGroup): number {
   const first = g.options[0]?.service;
   const idx = first ? all.findIndex((s) => s.id === first.id) : -1;
@@ -226,7 +247,8 @@ function ServiceTile({
   const base = baseMinutes(group.deliveryTime);
   const unavailable = /indispo/i.test(group.badge ?? "");
   const gasy = /gasy|malagasy|madagascar/i.test(`${group.nameFr} ${group.nameMg}`);
-  const per100 = Math.ceil(group.unitPrice * 100);
+  const premium = group.key === FACEBOOK_GASY_KEY;
+  const per100 = /réactions sur commentaires/i.test(group.nameFr) ? 15000 : Math.ceil(group.unitPrice * 100);
 
   return (
     <button
@@ -246,19 +268,24 @@ function ServiceTile({
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-dot" />⚡ RAPIDE
             </Badge>
           )}
-          {group.options.some((o) => /GARANTI/i.test(o.service.note ?? "")) ? (
+          {premium ? (<>
+            <Badge className="bg-success/15 text-success">✅ PREMIUM</Badge>
+            <Badge className="bg-gold/15 text-gold">⭐ HQ</Badge>
+            <Badge className="bg-success/15 text-success">🛡️ STABLE</Badge>
+            <Badge className="bg-secondary text-foreground">👤 Réels</Badge>
+          </>) : group.options.some((o) => /GARANTI/i.test(o.service.note ?? "")) ? (
             <Badge className="bg-success/15 text-success">🛡️ STABLE</Badge>
           ) : null}
-          {gasy ? <Badge className="bg-secondary text-foreground">🇲🇬 GASY</Badge> : null}
+          {gasy && !premium ? <Badge className="bg-secondary text-foreground">🇲🇬 GASY</Badge> : null}
         </div>
       </div>
 
-      <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{name}</p>
+      <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{premium ? "🔥 BOOST GASY 80% - QUALITÉ PREMIUM HQ" : name}</p>
       <span className="mt-1.5 w-fit rounded-full border border-border bg-secondary px-2 py-0.5 text-[10.5px] text-muted-foreground">
         ID: {id}
       </span>
       <p className="my-1.5 line-clamp-2 text-[11.5px] text-muted-foreground">
-        {group.note || (group.options.length > 1 ? group.options.map((o) => o.label).join(" · ") : group.category)}
+        {premium ? "Qualité premium HQ, stable, avec photos" : group.note || (group.options.length > 1 ? group.options.map((o) => o.label).join(" · ") : group.category)}
       </p>
 
       <p className="text-base font-bold text-foreground">
@@ -277,6 +304,9 @@ function ServiceTile({
 
       <span className="mt-2.5 inline-flex w-fit items-center gap-1 rounded-full border border-success/25 bg-success/10 px-2.5 py-1 text-[11px] text-success">
         🕒 {time}
+      </span>
+      {premium ? <span className="mt-1.5 text-[10.5px] text-success">✅ Stable - Support refill</span> : null}
+      <span className="hidden">
       </span>
     </button>
   );
