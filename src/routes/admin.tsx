@@ -6,6 +6,7 @@ import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminSync } from "@/components/AdminSync";
+import { AdminMitadyVola } from "@/components/AdminMitadyVola";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -192,6 +193,7 @@ function AdminPage() {
         {tab === "SMMGen" ? <AdminSync onDone={setMsg} /> : null}
 
         {tab === "Contenus" ? <AdminContent onDone={setMsg} /> : null}
+        {tab === "Mitady Vola" ? <AdminMitadyVola /> : null}
       </Section>
     </Layout>
   );

@@ -7,7 +7,7 @@ import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Wallet, Package, UsersRound, BookOpen, LogOut } from "lucide-react";
+import { Wallet, Package, UsersRound, BookOpen, LogOut, Coins } from "lucide-react";
 
 const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
@@ -19,6 +19,7 @@ const nav = [
   { to: "/suivi-commentaires", key: "commentsTrack", label: "💬 Suivi des commentaires", public: false },
   { to: "/groupe", key: "group", label: "👥 Groupe de discussion", public: false },
   { to: "/tutoriel", key: "tutorial", label: "📚 Tutoriel", public: false },
+  { to: "/mitady-vola", key: "mitady", label: "💸 MITADY VOLA", public: true },
   { to: "/contact", key: "contact", label: "📞 Support", public: true },
 ] as const;
 
@@ -27,6 +28,7 @@ const userNav = [
   { to: "/commandes", icon: Package, label: "Suivi des commandes" },
   { to: "/groupe", icon: UsersRound, label: "Groupe de discussion" },
   { to: "/tutoriel", icon: BookOpen, label: "Tutoriel" },
+  { to: "/mitady-vola", icon: Coins, label: "MITADY VOLA" },
 ] as const;
 
 const ANNOUNCEMENTS = [
@@ -190,6 +192,7 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
             <button onClick={toggle} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Thème">
               {theme === "dark" ? "🌙" : "☀️"}
             </button>
+            <Link to="/mitady-vola" className="hidden rounded-full border border-primary/60 px-3 py-1.5 text-xs font-semibold text-primary md:inline">MITADY VOLA</Link>
             {!user ? (
               <Link to="/auth" className="rounded-full border border-primary/60 px-3 py-1.5 text-xs font-semibold text-primary">
                 {t("login")}
