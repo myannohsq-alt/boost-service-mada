@@ -112,6 +112,105 @@ export type Database = {
         }
         Relationships: []
       }
+      boost_orders: {
+        Row: {
+          client_name: string
+          created_at: string
+          done_count: number
+          id: string
+          link: string
+          phone: string
+          price: number
+          quantity: number
+          service_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          done_count?: number
+          id?: string
+          link: string
+          phone: string
+          price?: number
+          quantity: number
+          service_type: string
+          status?: string
+          user_id?: string
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          done_count?: number
+          id?: string
+          link?: string
+          phone?: string
+          price?: number
+          quantity?: number
+          service_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      booster_accounts: {
+        Row: {
+          created_at: string
+          fb_link: string
+          fb_name: string
+          id: string
+          mvola: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fb_link: string
+          fb_name: string
+          id?: string
+          mvola: string
+          status?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          fb_link?: string
+          fb_name?: string
+          id?: string
+          mvola?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      booster_withdrawals: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          mvola: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          mvola: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          mvola?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           author_name: string
@@ -241,6 +340,79 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mission_claims: {
+        Row: {
+          created_at: string
+          id: string
+          mission_id: string
+          reward: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mission_id: string
+          reward: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mission_id?: string
+          reward?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_claims_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: true
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      missions: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          link: string
+          order_id: string
+          reward: number
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          link: string
+          order_id: string
+          reward: number
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string
+          order_id?: string
+          reward?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "missions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "boost_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -979,7 +1151,10 @@ export type Database = {
         Args: { _name: string; _seconds: number }
         Returns: boolean
       }
+      approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
+      booster_wallet: { Args: never; Returns: Json }
+      claim_mission: { Args: { _mission_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -997,6 +1172,7 @@ export type Database = {
           points: number
         }[]
       }
+      mark_boost_paid: { Args: { _id: string }; Returns: undefined }
       place_comment_order: {
         Args: { _comments: string; _link: string }
         Returns: string
@@ -1038,6 +1214,18 @@ export type Database = {
         Returns: undefined
       }
       release_sync_lock: { Args: { _name: string }; Returns: undefined }
+      request_booster_withdrawal: {
+        Args: { _amount: number }
+        Returns: undefined
+      }
+      review_booster_withdrawal: {
+        Args: { _approve: boolean; _id: string }
+        Returns: undefined
+      }
+      review_mission_claim: {
+        Args: { _approve: boolean; _claim_id: string }
+        Returns: undefined
+      }
       send_chat_message: {
         Args: {
           _content: string
