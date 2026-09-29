@@ -247,7 +247,8 @@ function ServiceTile({
   const base = baseMinutes(group.deliveryTime);
   const unavailable = /indispo/i.test(group.badge ?? "");
   const gasy = /gasy|malagasy|madagascar/i.test(`${group.nameFr} ${group.nameMg}`);
-  const per100 = Math.ceil(group.unitPrice * 100);
+  const premium = group.key === FACEBOOK_GASY_KEY;
+  const per100 = /réactions sur commentaires/i.test(group.nameFr) ? 15000 : Math.ceil(group.unitPrice * 100);
 
   return (
     <button
@@ -267,19 +268,24 @@ function ServiceTile({
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-dot" />⚡ RAPIDE
             </Badge>
           )}
-          {group.options.some((o) => /GARANTI/i.test(o.service.note ?? "")) ? (
+          {premium ? (<>
+            <Badge className="bg-success/15 text-success">✅ PREMIUM</Badge>
+            <Badge className="bg-gold/15 text-gold">⭐ HQ</Badge>
+            <Badge className="bg-success/15 text-success">🛡️ STABLE</Badge>
+            <Badge className="bg-secondary text-foreground">👤 Réels</Badge>
+          </>) : group.options.some((o) => /GARANTI/i.test(o.service.note ?? "")) ? (
             <Badge className="bg-success/15 text-success">🛡️ STABLE</Badge>
           ) : null}
-          {gasy ? <Badge className="bg-secondary text-foreground">🇲🇬 GASY</Badge> : null}
+          {gasy && !premium ? <Badge className="bg-secondary text-foreground">🇲🇬 GASY</Badge> : null}
         </div>
       </div>
 
-      <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{name}</p>
+      <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{premium ? "🔥 BOOST GASY 80% - QUALITÉ PREMIUM HQ" : name}</p>
       <span className="mt-1.5 w-fit rounded-full border border-border bg-secondary px-2 py-0.5 text-[10.5px] text-muted-foreground">
         ID: {id}
       </span>
       <p className="my-1.5 line-clamp-2 text-[11.5px] text-muted-foreground">
-        {group.note || (group.options.length > 1 ? group.options.map((o) => o.label).join(" · ") : group.category)}
+        {premium ? "Qualité premium HQ, stable, avec photos" : group.note || (group.options.length > 1 ? group.options.map((o) => o.label).join(" · ") : group.category)}
       </p>
 
       <p className="text-base font-bold text-foreground">
@@ -298,6 +304,9 @@ function ServiceTile({
 
       <span className="mt-2.5 inline-flex w-fit items-center gap-1 rounded-full border border-success/25 bg-success/10 px-2.5 py-1 text-[11px] text-success">
         🕒 {time}
+      </span>
+      {premium ? <span className="mt-1.5 text-[10.5px] text-success">✅ Stable - Support refill</span> : null}
+      <span className="hidden">
       </span>
     </button>
   );
