@@ -9,7 +9,7 @@ import { OrderModal, type ServiceCard } from "@/components/OrderModal";
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { buildServiceGroups, type ServiceGroup } from "@/lib/service-groups";
+import { FACEBOOK_GASY_KEY, buildServiceGroups, type ServiceGroup } from "@/lib/service-groups";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -61,6 +61,7 @@ function ServicesPage() {
   );
 
   const times = useDynamicTimes(list);
+  const gasyTime = useGasyTime();
 
   return (
     <AuthGate>
@@ -99,7 +100,7 @@ function ServicesPage() {
                 group={g}
                 id={idFor(services ?? [], g)}
                 name={lang === "mg" ? g.nameMg : g.nameFr}
-                time={times[g.key] || g.deliveryTime || formatMinutes(baseMinutes(g.deliveryTime))}
+                time={g.key === FACEBOOK_GASY_KEY ? gasyTime : times[g.key] || g.deliveryTime || formatMinutes(baseMinutes(g.deliveryTime))}
                 chosen={chosenPct(g.key, i)}
                 onClick={() => setSelected(g)}
               />
@@ -203,6 +204,26 @@ function useDynamicTimes(list: ServiceGroup[]) {
   }, [list]);
 
   return times;
+}
+
+const GASY_KEY = "bsm_gasy_time";
+const FOUR_HOURS = 4 * 60 * 60 * 1000;
+function useGasyTime() {
+  const [t, setT] = useState("2h 44m");
+  useEffect(() => {
+    const gen = () => {
+      const v = formatMinutes(120 + Math.floor(Math.random() * 90));
+      setT(v);
+      try { localStorage.setItem(GASY_KEY, JSON.stringify({ v, ts: Date.now() })); } catch { /* ignore */ }
+    };
+    try {
+      const s = JSON.parse(localStorage.getItem(GASY_KEY) ?? "null") as { v: string; ts: number } | null;
+      if (s && Date.now() - s.ts < FOUR_HOURS) setT(s.v); else gen();
+    } catch { gen(); }
+    const id = window.setInterval(gen, FOUR_HOURS);
+    return () => window.clearInterval(id);
+  }, []);
+  return t;
 }
 
 function idFor(all: ServiceCard[], g: ServiceGroup): number {

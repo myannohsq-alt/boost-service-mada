@@ -19,7 +19,11 @@ const REACTION_CHOICES = [
 ] as const;
 
 const QUICK = [100, 500, 1000];
-const UNIT_PRICE = 20; // 2 000 Ar / 100
+const TIERS = [
+  { key: "gasy", label: "🇲🇬 GASY 20000Ar/100", price: 20000 },
+  { key: "vazah", label: "🌍 VAZAH 15000Ar/100", price: 15000 },
+] as const;
+const CIBLES = [{ key: "pub", label: "Pub" }, { key: "pdp", label: "PDP" }, { key: "pdc", label: "PDC" }] as const;
 
 export function CommentReactionForm({ group, onClose, onOrdered }: {
   group: ServiceGroup;
@@ -30,13 +34,15 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
   const [link, setLink] = useState("");
   const [personName, setPersonName] = useState("");
   const [reaction, setReaction] = useState<string | null>(null);
+  const [tier, setTier] = useState<"gasy" | "vazah">("gasy");
+  const [cible, setCible] = useState<string>("pub");
   const [quantityText, setQuantityText] = useState("100");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const service = group.options[0]?.service;
   const quantity = Number(quantityText);
   const min = 100;
-  const cost = Number.isSafeInteger(quantity) && quantity > 0 ? quantity * UNIT_PRICE : 0;
+  const cost = Number.isSafeInteger(quantity) && quantity > 0 ? Math.ceil(quantity / 100 * (TIERS.find(t => t.key === tier)?.price ?? 20000)) : 0;
   const balance = Number(profile?.balance ?? 0);
   const insufficient = cost > balance;
 
@@ -61,7 +67,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
         _quantity: quantity,
         _link: url.toString(),
         _promo: "",
-        _note: `reaction:${reaction};target:${name}`,
+        _note: `reaction:${reaction};target:${name};cible:${cible};tier:${tier}`,
       });
       if (err) {
         setError(err.message);
@@ -92,14 +98,15 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
       <p>Vous devez être connecté pour commander.</p>
       <Button asChild className="bsm-btn bsm-btn-primary w-full"><Link to="/auth">Se connecter</Link></Button>
     </div> : <>
-      <div>
-        <label htmlFor="cr-link" className="text-xs text-muted-foreground">🔗 Lien de la Publication</label>
-        <input id="cr-link" type="url" value={link} maxLength={500} inputMode="url" onChange={e => setLink(e.target.value)} placeholder="https://facebook.com/.../posts/..." className="bsm-input mt-1" />
-        <p className="mt-1 text-[11px] text-muted-foreground">Apetraho lien publication misy ny com's an'i Rakoto, dia soraty anarany, dia izahay boost-na réaction @ com's-ny</p>
+      <div className="grid grid-cols-2 gap-2">
+        {TIERS.map(t => <Button key={t.key} type="button" variant="outline" aria-pressed={tier === t.key} onClick={() => setTier(t.key)}
+          className={`h-10 min-w-0 px-1 text-[11px] font-bold ${tier === t.key ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>{t.label}</Button>)}
       </div>
       <div>
-        <label htmlFor="cr-name" className="text-xs text-muted-foreground">👤 Anaran'ny olona nanao com's tiana hasiana réaction</label>
-        <input id="cr-name" type="text" value={personName} maxLength={100} onChange={e => setPersonName(e.target.value)} placeholder="Ex: Rakoto" className="bsm-input mt-1" />
+        <label htmlFor="cr-cible" className="text-xs text-muted-foreground">🎯 Cible</label>
+        <select id="cr-cible" value={cible} onChange={e => setCible(e.target.value)} className="bsm-input mt-1">
+          {CIBLES.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
+        </select>
       </div>
       <fieldset>
         <legend className="text-xs text-muted-foreground">😍 Type de réaction <span aria-hidden="true">*</span></legend>
@@ -113,6 +120,11 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
         </div>
       </fieldset>
       <div>
+        <label htmlFor="cr-link" className="text-xs text-muted-foreground">🔗 Lien de la Publication</label>
+        <input id="cr-link" type="url" value={link} maxLength={500} inputMode="url" onChange={e => setLink(e.target.value)} placeholder="https://facebook.com/.../posts/..." className="bsm-input mt-1" />
+        <p className="mt-1 text-[11px] text-muted-foreground">Apetraho lien publication misy ny com's an'i Rakoto, dia soraty anarany, dia izahay boost-na réaction @ com's-ny</p>
+      </div>
+      <div>
         <label htmlFor="cr-quantity" className="text-xs text-muted-foreground">🔢 Quantité (min. {min})</label>
         <input id="cr-quantity" type="number" min={min} step="1" value={quantityText} onChange={e => setQuantityText(e.target.value)} placeholder="100, 500, 1000..." className="bsm-input mt-1" />
         <div className="mt-2 grid grid-cols-3 gap-2">
@@ -122,6 +134,10 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
             {value.toLocaleString("fr-FR")}
           </Button>)}
         </div>
+      </div>
+      <div>
+        <label htmlFor="cr-name" className="text-xs text-muted-foreground">👤 Nom auteur commentaire *</label>
+        <input id="cr-name" type="text" value={personName} maxLength={100} onChange={e => setPersonName(e.target.value)} placeholder="Ex: Rakoto" className="bsm-input mt-1" />
       </div>
       <div className="rounded-md border border-border bg-secondary p-3 text-sm">
         <div className="flex items-center justify-between gap-2"><span>Mon solde</span><strong className="text-primary">{formatAr(balance)}</strong></div>
