@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const TABS = ["Recharges", "Commandes", "Services", "SMMGen", "Utilisateurs", "Contenus"] as const;
+const TABS = ["Recharges", "Commandes", "Services", "SMMGen", "Utilisateurs", "Contenus", "Mitady Vola"] as const;
 
 function AdminPage() {
   const { isAdmin, loading, user } = useAuth();
