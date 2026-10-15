@@ -89,10 +89,12 @@ function BoosterForm() {
     toast.success("Compte voaray ✅");
     setF({ fb_name: "", fb_link: "", mvola: "" });
     void qc.invalidateQueries({ queryKey: ["booster-accounts"] });
+    return undefined;
   };
   const remove = async (id: string) => {
     await db.from("booster_accounts").delete().eq("id", id);
     void qc.invalidateQueries({ queryKey: ["booster-accounts"] });
+    return undefined;
   };
   return (
     <div className="bsm-card p-5">
@@ -131,6 +133,7 @@ function Wallet() {
     if (error) return toast.error(error.message);
     toast.success("Fangatahana retrait voaray");
     void qc.invalidateQueries({ queryKey: ["booster-wallet"] });
+    return undefined;
   };
   return (
     <div className="bsm-card p-5">
@@ -161,6 +164,7 @@ function Missions() {
     toast.success("Voaray! Ho hamarinina ny admin");
     void qc.invalidateQueries({ queryKey: ["missions"] });
     void qc.invalidateQueries({ queryKey: ["booster-wallet"] });
+    return undefined;
   };
   return (
     <div className="bsm-card p-5">
@@ -199,11 +203,13 @@ function ClientOrder() {
     if (error) return toast.error(error.message);
     toast.success("Commande voaray — ataovy ny paiement");
     void qc.invalidateQueries({ queryKey: ["my-boost-orders"] });
+    return undefined;
   };
   const paid = async (id: string) => {
     const { error } = await db.rpc("mark_boost_paid", { _id: id });
     if (error) return toast.error(error.message);
     void qc.invalidateQueries({ queryKey: ["my-boost-orders"] });
+    return undefined;
   };
   return (
     <div className="bsm-card p-5">
