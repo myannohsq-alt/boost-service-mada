@@ -17,11 +17,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as CommentairesRouteImport } from './routes/commentaires'
+import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepotRouteImport } from './routes/depot'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GroupeRouteImport } from './routes/groupe'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MitadyVolaRouteImport } from './routes/mitady-vola'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
@@ -30,6 +32,7 @@ import { Route as ProtectionRouteImport } from './routes/protection'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SuiviCommentairesRouteImport } from './routes/suivi-commentaires'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
@@ -78,6 +81,11 @@ const CommentairesRoute = CommentairesRouteImport.update({
   path: '/commentaires',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConnexionRoute = ConnexionRouteImport.update({
+  id: '/connexion',
+  path: '/connexion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -101,6 +109,11 @@ const FaqRoute = FaqRouteImport.update({
 const GroupeRoute = GroupeRouteImport.update({
   id: '/groupe',
   path: '/groupe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MitadyVolaRoute = MitadyVolaRouteImport.update({
@@ -141,6 +154,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuiviCommentairesRoute = SuiviCommentairesRouteImport.update({
@@ -188,11 +206,13 @@ export interface FileRoutesByFullPath {
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/commentaires': typeof CommentairesRoute
+  '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/groupe': typeof GroupeRoute
+  '/login': typeof LoginRoute
   '/mitady-vola': typeof MitadyVolaRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
@@ -201,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/signin': typeof SigninRoute
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
@@ -218,11 +239,13 @@ export interface FileRoutesByTo {
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/commentaires': typeof CommentairesRoute
+  '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/groupe': typeof GroupeRoute
+  '/login': typeof LoginRoute
   '/mitady-vola': typeof MitadyVolaRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
@@ -231,6 +254,7 @@ export interface FileRoutesByTo {
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/signin': typeof SigninRoute
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
@@ -249,11 +273,13 @@ export interface FileRoutesById {
   '/avis': typeof AvisRoute
   '/commandes': typeof CommandesRoute
   '/commentaires': typeof CommentairesRoute
+  '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/depot': typeof DepotRoute
   '/faq': typeof FaqRoute
   '/groupe': typeof GroupeRoute
+  '/login': typeof LoginRoute
   '/mitady-vola': typeof MitadyVolaRoute
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
@@ -262,6 +288,7 @@ export interface FileRoutesById {
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/signin': typeof SigninRoute
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
@@ -281,11 +308,13 @@ export interface FileRouteTypes {
     | '/avis'
     | '/commandes'
     | '/commentaires'
+    | '/connexion'
     | '/contact'
     | '/dashboard'
     | '/depot'
     | '/faq'
     | '/groupe'
+    | '/login'
     | '/mitady-vola'
     | '/parrainage'
     | '/profil'
@@ -294,6 +323,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/reset-password'
     | '/services'
+    | '/signin'
     | '/suivi-commentaires'
     | '/tutoriel'
     | '/api/assistant'
@@ -311,11 +341,13 @@ export interface FileRouteTypes {
     | '/avis'
     | '/commandes'
     | '/commentaires'
+    | '/connexion'
     | '/contact'
     | '/dashboard'
     | '/depot'
     | '/faq'
     | '/groupe'
+    | '/login'
     | '/mitady-vola'
     | '/parrainage'
     | '/profil'
@@ -324,6 +356,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/reset-password'
     | '/services'
+    | '/signin'
     | '/suivi-commentaires'
     | '/tutoriel'
     | '/api/assistant'
@@ -341,11 +374,13 @@ export interface FileRouteTypes {
     | '/avis'
     | '/commandes'
     | '/commentaires'
+    | '/connexion'
     | '/contact'
     | '/dashboard'
     | '/depot'
     | '/faq'
     | '/groupe'
+    | '/login'
     | '/mitady-vola'
     | '/parrainage'
     | '/profil'
@@ -354,6 +389,7 @@ export interface FileRouteTypes {
     | '/recharge'
     | '/reset-password'
     | '/services'
+    | '/signin'
     | '/suivi-commentaires'
     | '/tutoriel'
     | '/api/assistant'
@@ -372,11 +408,13 @@ export interface RootRouteChildren {
   AvisRoute: typeof AvisRoute
   CommandesRoute: typeof CommandesRoute
   CommentairesRoute: typeof CommentairesRoute
+  ConnexionRoute: typeof ConnexionRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DepotRoute: typeof DepotRoute
   FaqRoute: typeof FaqRoute
   GroupeRoute: typeof GroupeRoute
+  LoginRoute: typeof LoginRoute
   MitadyVolaRoute: typeof MitadyVolaRoute
   ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
@@ -385,6 +423,7 @@ export interface RootRouteChildren {
   RechargeRoute: typeof RechargeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
+  SigninRoute: typeof SigninRoute
   SuiviCommentairesRoute: typeof SuiviCommentairesRoute
   TutorielRoute: typeof TutorielRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
@@ -452,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommentairesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/connexion': {
+      id: '/connexion'
+      path: '/connexion'
+      fullPath: '/connexion'
+      preLoaderRoute: typeof ConnexionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -485,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/groupe'
       fullPath: '/groupe'
       preLoaderRoute: typeof GroupeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mitady-vola': {
@@ -541,6 +594,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/suivi-commentaires': {
@@ -604,11 +664,13 @@ const rootRouteChildren: RootRouteChildren = {
   AvisRoute: AvisRoute,
   CommandesRoute: CommandesRoute,
   CommentairesRoute: CommentairesRoute,
+  ConnexionRoute: ConnexionRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DepotRoute: DepotRoute,
   FaqRoute: FaqRoute,
   GroupeRoute: GroupeRoute,
+  LoginRoute: LoginRoute,
   MitadyVolaRoute: MitadyVolaRoute,
   ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
@@ -617,6 +679,7 @@ const rootRouteChildren: RootRouteChildren = {
   RechargeRoute: RechargeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
+  SigninRoute: SigninRoute,
   SuiviCommentairesRoute: SuiviCommentairesRoute,
   TutorielRoute: TutorielRoute,
   ApiAssistantRoute: ApiAssistantRoute,
