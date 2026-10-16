@@ -37,6 +37,7 @@ import { Route as SuiviCommentairesRouteImport } from './routes/suivi-commentair
 import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-generate'
+import { Route as ApiOrangeDotphpRouteImport } from './routes/api/orange[.]php'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as ApiPublicOrderSmsRouteImport } from './routes/api/public/order-sms'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
@@ -181,6 +182,11 @@ const ApiCommentsGenerateRoute = ApiCommentsGenerateRouteImport.update({
   path: '/api/comments-generate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOrangeDotphpRoute = ApiOrangeDotphpRouteImport.update({
+  id: '/api/orange.php',
+  path: '/api/orange.php',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InviteCodeRoute = InviteCodeRouteImport.update({
   id: '/invite/$code',
   path: '/invite/$code',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
+  '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
+  '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
@@ -293,6 +301,7 @@ export interface FileRoutesById {
   '/tutoriel': typeof TutorielRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
+  '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
@@ -328,6 +337,7 @@ export interface FileRouteTypes {
     | '/tutoriel'
     | '/api/assistant'
     | '/api/comments-generate'
+    | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
     | '/api/public/smmgen-sync'
@@ -361,6 +371,7 @@ export interface FileRouteTypes {
     | '/tutoriel'
     | '/api/assistant'
     | '/api/comments-generate'
+    | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
     | '/api/public/smmgen-sync'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/tutoriel'
     | '/api/assistant'
     | '/api/comments-generate'
+    | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
     | '/api/public/smmgen-sync'
@@ -428,6 +440,7 @@ export interface RootRouteChildren {
   TutorielRoute: typeof TutorielRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
   ApiCommentsGenerateRoute: typeof ApiCommentsGenerateRoute
+  ApiOrangeDotphpRoute: typeof ApiOrangeDotphpRoute
   InviteCodeRoute: typeof InviteCodeRoute
   ApiPublicOrderSmsRoute: typeof ApiPublicOrderSmsRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
@@ -631,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCommentsGenerateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/orange.php': {
+      id: '/api/orange.php'
+      path: '/api/orange.php'
+      fullPath: '/api/orange.php'
+      preLoaderRoute: typeof ApiOrangeDotphpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invite/$code': {
       id: '/invite/$code'
       path: '/invite/$code'
@@ -684,6 +704,7 @@ const rootRouteChildren: RootRouteChildren = {
   TutorielRoute: TutorielRoute,
   ApiAssistantRoute: ApiAssistantRoute,
   ApiCommentsGenerateRoute: ApiCommentsGenerateRoute,
+  ApiOrangeDotphpRoute: ApiOrangeDotphpRoute,
   InviteCodeRoute: InviteCodeRoute,
   ApiPublicOrderSmsRoute: ApiPublicOrderSmsRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
