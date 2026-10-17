@@ -1235,6 +1235,7 @@ export type Database = {
         }
         Returns: string
       }
+      set_display_name: { Args: { _name: string }; Returns: string }
       spin_wheel: { Args: never; Returns: Json }
       trigger_smmgen_sync: { Args: never; Returns: undefined }
     }
