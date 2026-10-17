@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Wallet, Package, UsersRound, BookOpen, LogOut, Coins } from "lucide-react";
+import { DisplayName } from "@/components/AdminBadge";
 
 const nav = [
   { to: "/", key: "home", label: "🏠 Accueil", public: true },
@@ -163,7 +164,7 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
                 </span>
               )}
               <div className="min-w-0 leading-tight">
-                <p className="truncate text-[11px] text-muted-foreground">{profile?.name || "Membre"}</p>
+                <p className="truncate text-[11px] text-muted-foreground"><DisplayName name={profile?.name} admin={isAdmin} /></p>
                 <p className={`truncate text-xs font-bold bsm-neon-text ${balanceFlash ? "bsm-balance-flash" : ""}`}>{formatAr(profile?.balance ?? 0)}</p>
               </div>
             </Link>
