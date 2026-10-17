@@ -2,7 +2,7 @@ import { BadgeCheck } from "lucide-react";
 
 export const isAdminName = (name?: string | null) => (name ?? "").trim().toLowerCase() === "admin";
 
-export function DisplayName({ name, admin, className = "" }: { name?: string | null; admin?: boolean; className?: string }) {
+export function DisplayName({ name, admin, className = "" }: { name?: string | null | undefined; admin?: boolean | undefined; className?: string | undefined }) {
   const verified = admin || isAdminName(name);
   return (
     <span className={`inline-flex min-w-0 items-center ${verified ? "font-bold" : ""} ${className}`}>
