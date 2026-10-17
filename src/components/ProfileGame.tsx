@@ -234,7 +234,7 @@ export function WheelResults() {
         {rows.map((r) => (
           <div key={r.id} className="flex items-center gap-2 text-xs">
             <img src={r.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(r.author_name)}`} alt="" className="h-5 w-5 rounded-full object-cover" />
-            <span className="font-semibold">{r.author_name}</span>
+            <DisplayName name={r.author_name} className="font-semibold" />
             <span className="text-muted-foreground">a gagné {r.type === "ar" ? `${r.valeur} Ar` : `${r.valeur} ⭐`}</span>
             <span className="ml-auto text-[10px] text-muted-foreground">{ago(r.created_at)}</span>
           </div>
@@ -286,7 +286,7 @@ export function SaturdayDraw() {
              <tr key={r.id} className={r.id === user?.id ? "bg-primary/20" : ""}>
                <td className="py-1.5 pl-1 font-bold">{i + 1}</td>
                <td><img src={r.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(r.name)}`} alt="" className="h-6 w-6 rounded-full object-cover" /></td>
-               <td className="font-semibold">{r.name}{r.id === user?.id ? " (vous)" : ""}</td>
+               <td className="font-semibold"><DisplayName name={r.name} />{r.id === user?.id ? " (vous)" : ""}</td>
                <td className="pr-1 text-right font-bold">{r.points} ⭐</td>
              </tr>
            ))}
