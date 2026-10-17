@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Copy, Volume2, VolumeX, Camera, Share2, MessageCircle } from "lucide-react";
+import { Copy, Volume2, VolumeX, Camera, Share2, MessageCircle, Pencil } from "lucide-react";
+import { DisplayName } from "@/components/AdminBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { formatAr } from "@/lib/i18n";
@@ -53,11 +54,27 @@ function Confetti() {
 }
 
 export function ProfileHeader() {
-  const { user, profile, refresh } = useAuth();
+  const { user, profile, refresh, isAdmin } = useAuth();
   const p = profile as any;
   const [preview, setPreview] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
   const pts = Number(p?.points ?? 0);
   const lv = level(pts);
+
+  const saveName = async () => {
+    const n = draft.trim();
+    if (n.length < 3 || n.length > 20) { toast.error("Le nom doit contenir 3 à 20 caractères"); return; }
+    if (n.toLowerCase() === "admin" && !isAdmin) { toast.error("Ce nom est réservé"); return; }
+    setSaving(true);
+    const { error } = await db.rpc("set_display_name", { _name: n });
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Nom modifié avec succès");
+    setEditing(false);
+    void refresh();
+  };
 
   const upload = async (f: File) => {
     if (!user) return;
@@ -82,10 +99,22 @@ export function ProfileHeader() {
         <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && void upload(e.target.files[0])} />
       </label>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate text-lg font-bold">{p?.name || "Membre"}</p>
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${lv.cls}`}>{lv.name}</span>
-        </div>
+        {editing ? (
+          <div className="space-y-2">
+            <input value={draft} maxLength={20} autoFocus onChange={(e) => setDraft(e.target.value)} className="bsm-input !py-2 !text-sm" aria-label="Nouveau nom" />
+            <div className="flex gap-2">
+              <button disabled={saving} onClick={() => void saveName()} className="bsm-btn bsm-btn-primary !px-3 !py-1.5 !text-xs">{saving ? "..." : "Enregistrer"}</button>
+              <button onClick={() => setEditing(false)} className="bsm-btn border border-border !px-3 !py-1.5 !text-xs">Annuler</button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <DisplayName name={p?.name} admin={isAdmin} className="text-lg font-bold" />
+            <button aria-label="Modifier le nom" onClick={() => { setDraft(p?.name || ""); setEditing(true); }} className="shrink-0 rounded-full p-1 text-primary hover:bg-secondary"><Pencil className="h-4 w-4" /></button>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${lv.cls}`}>{lv.name}</span>
+          </div>
+        )}
+        <p className="mt-1 text-[10px] text-muted-foreground">(modifier le nom ne change pas ton email/login)</p>
         <div className="mt-2 grid grid-cols-3 gap-2 text-center text-[11px]">
           <div className="rounded-lg bg-secondary/60 p-2"><p className="text-muted-foreground">Solde</p><p className="font-bold text-primary">{formatAr(p?.balance ?? 0)}</p></div>
           <div className="rounded-lg bg-secondary/60 p-2"><p className="text-muted-foreground">Points</p><p className="font-bold">{pts} ⭐</p></div>
@@ -205,7 +234,7 @@ export function WheelResults() {
         {rows.map((r) => (
           <div key={r.id} className="flex items-center gap-2 text-xs">
             <img src={r.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(r.author_name)}`} alt="" className="h-5 w-5 rounded-full object-cover" />
-            <span className="font-semibold">{r.author_name}</span>
+            <DisplayName name={r.author_name} className="font-semibold" />
             <span className="text-muted-foreground">a gagné {r.type === "ar" ? `${r.valeur} Ar` : `${r.valeur} ⭐`}</span>
             <span className="ml-auto text-[10px] text-muted-foreground">{ago(r.created_at)}</span>
           </div>
@@ -257,7 +286,7 @@ export function SaturdayDraw() {
              <tr key={r.id} className={r.id === user?.id ? "bg-primary/20" : ""}>
                <td className="py-1.5 pl-1 font-bold">{i + 1}</td>
                <td><img src={r.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(r.name)}`} alt="" className="h-6 w-6 rounded-full object-cover" /></td>
-               <td className="font-semibold">{r.name}{r.id === user?.id ? " (vous)" : ""}</td>
+               <td className="font-semibold"><DisplayName name={r.name} />{r.id === user?.id ? " (vous)" : ""}</td>
                <td className="pr-1 text-right font-bold">{r.points} ⭐</td>
              </tr>
            ))}
