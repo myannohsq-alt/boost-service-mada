@@ -12,7 +12,7 @@ export const Route = createFileRoute("/mitady-vola")({
   head: () => ({
     meta: [
       { title: "Mitady Vola amin'ny Facebook — BOOST MADA" },
-      { name: "description", content: "Communauté BOOST MADA : manaova missions Facebook tsotra ary mahazoa vola MVola. 2 comptes max, tsy mila mot de passe." },
+      { name: "description", content: "Communauté BOOST MADA : manaova missions Facebook tsotra ary mahazoa vola MVola. 1 compte isaky ny olona, tsy mila mot de passe." },
       { property: "og:title", content: "Mitady Vola amin'ny Facebook — BOOST MADA" },
       { property: "og:description", content: "Manaova missions Facebook tsotra ary mahazoa vola MVola." },
       { property: "og:type", content: "website" },
@@ -64,7 +64,7 @@ function Hero() {
   return (
     <div className={card}>
       <h1 className="text-[18px] font-bold">MITADY VOLA AMIN'NY FACEBOOK-NAO?</h1>
-      <p className="mt-1 text-xs text-white/50">Communauté BOOST MADA - 2 comptes max, sans mot de passe, 100% sécurisé</p>
+      <p className="mt-1 text-xs text-white/50">Communauté BOOST MADA - 1 compte par personne, sans mot de passe, 100% sécurisé</p>
       <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
         {["Ampidiro ny compte FB", "Ataovy ny missions", "Raiso amin'ny MVola"].map((s, i) => (
           <div key={s}>
@@ -349,6 +349,42 @@ function ClientOrder() {
         </div>
       ))}
       {proofOrder ? <ProofsViewer orderId={proofOrder} onClose={() => setProofOrder(null)} /> : null}
+    </div>
+  );
+}
+
+function ProofsViewer({ orderId, onClose }: { orderId: string; onClose: () => void }) {
+  const [big, setBig] = useState<string | null>(null);
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["order-proofs", orderId],
+    queryFn: async () => {
+      const rows = ((await db.rpc("order_proofs", { _order_id: orderId })).data ?? []) as any[];
+      const paths = rows.map((r) => r.proof_path).filter(Boolean);
+      const urls: Record<string, string> = {};
+      if (paths.length) {
+        const { data: s } = await supabase.storage.from("uploads").createSignedUrls(paths, 3600);
+        for (const x of s ?? []) if (x.path && x.signedUrl) urls[x.path] = x.signedUrl;
+      }
+      return rows.map((r) => ({ ...r, url: r.proof_path ? urls[r.proof_path] : null }));
+    },
+  });
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={onClose}>
+      <div className="max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-[20px] border border-white/20 bg-[#111D13] p-5 text-white" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between"><h3 className="font-black">📸 Porofo nalefa</h3><button onClick={onClose} className="text-sm text-white/60">✕</button></div>
+        {isLoading ? <p className="mt-3 text-xs text-white/50">Miandry...</p> : null}
+        {!isLoading && !data.length ? <p className="mt-3 text-xs text-white/50">Mbola tsy misy porofo.</p> : null}
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {data.map((r: any) => (
+            <div key={r.id} className="rounded-xl bg-[#0A0F0A] p-2 text-[10px]">
+              {r.url ? <img src={r.url} alt="Porofo" onClick={() => setBig(r.url)} className="h-28 w-full cursor-pointer rounded-lg object-cover" /> : <div className="flex h-28 items-center justify-center text-white/30">Tsy misy sary</div>}
+              <p className="mt-1 truncate font-bold">{r.fb_name ?? "Booster"}</p>
+              <p className="text-white/50">{r.status === "approved" ? "Voamarina ✅" : r.status === "rejected" ? "Nolavina" : "Hohamarinina"}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {big ? <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4" onClick={(e) => { e.stopPropagation(); setBig(null); }}><img src={big} alt="Porofo" className="max-h-full max-w-full rounded-lg" /></div> : null}
     </div>
   );
 }
