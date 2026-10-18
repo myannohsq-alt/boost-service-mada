@@ -349,6 +349,7 @@ export type Database = {
           created_at: string
           id: string
           mission_id: string
+          proof_path: string | null
           reward: number
           status: string
           user_id: string
@@ -357,6 +358,7 @@ export type Database = {
           created_at?: string
           id?: string
           mission_id: string
+          proof_path?: string | null
           reward: number
           status?: string
           user_id: string
@@ -365,6 +367,7 @@ export type Database = {
           created_at?: string
           id?: string
           mission_id?: string
+          proof_path?: string | null
           reward?: number
           status?: string
           user_id?: string
@@ -1154,7 +1157,10 @@ export type Database = {
       approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
       booster_wallet: { Args: never; Returns: Json }
-      claim_mission: { Args: { _mission_id: string }; Returns: undefined }
+      claim_mission: {
+        Args: { _mission_id: string; _proof_path: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1173,6 +1179,26 @@ export type Database = {
         }[]
       }
       mark_boost_paid: { Args: { _id: string }; Returns: undefined }
+      order_proofs: {
+        Args: { _order_id: string }
+        Returns: {
+          created_at: string
+          fb_name: string
+          id: string
+          proof_path: string
+          status: string
+        }[]
+      }
+      place_boost_order: {
+        Args: {
+          _link: string
+          _name: string
+          _phone: string
+          _qty: number
+          _types: string[]
+        }
+        Returns: number
+      }
       place_comment_order: {
         Args: { _comments: string; _link: string }
         Returns: string
