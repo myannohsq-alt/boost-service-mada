@@ -234,7 +234,13 @@ function ProofModal({ missionId, onClose, onDone }: { missionId: string; onClose
     if (!file) return toast.error("Ampidiro ny capture d'écran");
     if (!still) return toast.error("Hamarino fa mbola ao ny réaction/follow");
     setBusy(true);
-    const { error } = await db.rpc("claim_mission", { _mission_id: missionId });
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) { setBusy(false); return toast.error("Midira aloha"); }
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    const path = `${u.user.id}/proof-${Date.now()}.${ext}`;
+    const up = await supabase.storage.from("uploads").upload(path, file, { contentType: file.type });
+    if (up.error) { setBusy(false); return toast.error(up.error.message); }
+    const { error } = await db.rpc("claim_mission", { _mission_id: missionId, _proof_path: path });
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Porofo voaray! Hohamarinina ✅");
@@ -281,25 +287,25 @@ function ClientOrder() {
   const toggle = (t: TypeId) => setTypes((p) => (p.includes(t) ? p.filter((x) => x !== t) : [...p, t]));
   const changeQty = (d: number) => setQty((q) => Math.min(5000, Math.max(100, q + d)));
   const total = types.length * qty * 20;
+  const { profile, isAdmin, refresh } = useAuth() as any;
+  const bal = Number(profile?.balance ?? 0);
+  const lowBal = !isAdmin && (bal < 2000 || bal < total);
+  const [proofOrder, setProofOrder] = useState<string | null>(null);
   const submit = async () => {
     const ph = phone.replace(/\s/g, "");
     if (name.trim().length < 2) return toast.error("Soraty ny anarana");
     if (!/^0\d{9}$/.test(ph)) return toast.error("Numéro diso");
     if (!/^https:\/\//i.test(link.trim())) return toast.error("Lien https:// ilaina");
     if (!types.length) return toast.error("Mifidiana karazana iray farafahakeliny");
+    if (lowBal) return toast.error("Solde tsy ampy: 2000 Ar farafahakeliny. Mameno solde aloha.");
     setBusy(true);
-    const rows = types.map((t) => ({ client_name: name.trim(), phone: ph, service_type: t, link: link.trim(), quantity: qty }));
-    const { error } = await db.from("boost_orders").insert(rows);
+    const { error } = await db.rpc("place_boost_order", { _name: name.trim(), _phone: ph, _link: link.trim(), _types: types, _qty: qty });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Commande voaray — ataovy ny paiement");
+    toast.success("Commande voaray ✅ Efa miseho amin'ny Missions");
+    void refresh?.();
     void qc.invalidateQueries({ queryKey: ["my-boost-orders"] });
-    return undefined;
-  };
-  const paid = async (id: string) => {
-    const { error } = await db.rpc("mark_boost_paid", { _id: id });
-    if (error) return toast.error(error.message);
-    void qc.invalidateQueries({ queryKey: ["my-boost-orders"] });
+    void qc.invalidateQueries({ queryKey: ["missions"] });
     return undefined;
   };
   return (
