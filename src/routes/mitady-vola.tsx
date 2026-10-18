@@ -180,14 +180,10 @@ function Missions() {
   const [modal, setModal] = useState<string | null>(null);
   const { data: missions = [] } = useQuery({
     queryKey: ["missions"],
-    queryFn: async () => (await db.from("missions").select("id,reward,link,kind,order_id").eq("status", "open").order("created_at").limit(500)).data ?? [],
+    queryFn: async () => (await db.rpc("available_missions")).data ?? [],
+    refetchInterval: 15000,
   });
-  const groups = new Map<string, { m: any; n: number }>();
-  for (const m of missions as any[]) {
-    const g = groups.get(m.order_id);
-    if (g) g.n++; else groups.set(m.order_id, { m, n: 1 });
-  }
-  const list = [...groups.values()];
+  const list = (missions as any[]).map((m) => ({ m, n: Number(m.open_count) }));
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between px-1">

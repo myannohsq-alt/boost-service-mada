@@ -1156,6 +1156,18 @@ export type Database = {
       }
       approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
+      available_missions: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          kind: string
+          link: string
+          open_count: number
+          order_id: string
+          reward: number
+        }[]
+      }
       booster_wallet: { Args: never; Returns: Json }
       claim_mission: {
         Args: { _mission_id: string; _proof_path: string }

@@ -15,6 +15,13 @@
       "when": 1792300172898,
       "tag": "0001_mitady_vola_auto",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792301648356,
+      "tag": "0002_mitady_vola_fix_balance_missions",
+      "breakpoints": true
     }
   ]
 }
