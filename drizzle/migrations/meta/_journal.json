@@ -8,6 +8,13 @@
       "when": 1792225300869,
       "tag": "0000_display_name_and_chat_images",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792300172898,
+      "tag": "0001_mitady_vola_auto",
+      "breakpoints": true
     }
   ]
 }
