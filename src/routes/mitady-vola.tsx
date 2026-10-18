@@ -104,7 +104,7 @@ function BoosterForm() {
     <div className={card}>
       <div className="flex items-center justify-between">
         <h2 className="font-bold">👤 Compte booster</h2>
-        <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-bold">{accts.length}/2</span>
+        <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-bold">{Math.min(accts.length, 1)}/1</span>
       </div>
       {accts.map((a: any) => (
         <div key={a.id} className="mt-2 flex items-center justify-between rounded-xl bg-[#0A0F0A] px-4 py-2.5 text-sm">
@@ -112,7 +112,7 @@ function BoosterForm() {
           <button onClick={() => remove(a.id)} className="text-xs font-bold text-red-400">Fafana</button>
         </div>
       ))}
-      {accts.length >= 2 ? <p className="mt-3 text-sm font-bold text-[#FFD60A]">Efa feno 2</p> : (
+      {accts.length >= 1 ? <p className="mt-3 text-sm font-bold text-[#FFD60A]">Compte Facebook 1 ihany isaky ny olona</p> : (
         <div className="mt-3 space-y-2">
           <input className={input} placeholder="Anarana Facebook" maxLength={100} value={f.fb_name} onChange={(e) => setF({ ...f, fb_name: e.target.value })} />
           <input className={input} placeholder="https://facebook.com/..." maxLength={300} value={f.fb_link} onChange={(e) => setF({ ...f, fb_link: e.target.value })} />
@@ -333,23 +333,22 @@ function ClientOrder() {
         </div>
         <p className="text-sm font-bold">{types.map((t) => TYPES.find((x) => x.id === t)!.label).join(" + ") || "—"} x {qty} = <span className="text-[#FFD60A]">{ar(total)}</span></p>
         <p className="text-[11px] text-white/50">100=2000Ar | 1000=20000Ar • Booster reçoit 10-15Ar/u selon type + bonus &gt;5/j</p>
-        <button onClick={submit} disabled={busy} className={cta}>Commander - {ar(total)}</button>
-      </div>
-      <div className="mt-4 rounded-xl border border-[#00FF88]/20 bg-[#00FF88]/10 p-3">
-        <p className="text-xs font-bold">0-48h Boost Gasy 100% Malagasy • Après 2j Système Auto</p>
-        <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-white/10"><div className="w-2/3 bg-[#00FF88]" /><div className="w-1/3 bg-[#FFD60A]" /></div>
-        <p className="mt-1.5 text-[10px] text-white/50">Priorité 100% Malagasy d'abord pour avoir vrais profils gasy dans résultats</p>
+        {lowBal ? (
+          <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-2 text-xs font-bold text-red-300">
+            Solde tsy ampy ({ar(bal)}). 2 000 Ar farafahakeliny ary {ar(total)} ilaina. <Link to="/depot" className="underline">Mameno solde</Link>
+          </p>
+        ) : null}
+        <button onClick={submit} disabled={busy || lowBal} className={cta}>Commander - {ar(total)}</button>
       </div>
       {orders.map((o: any) => (
         <div key={o.id} className="mt-3 rounded-xl bg-[#0A0F0A] p-3 text-xs">
-          <div className="flex justify-between"><span>{o.service_type} × {o.quantity}</span><span className="text-white/50">{o.status}</span></div>
+          <div className="flex justify-between"><span>{o.service_type} × {o.quantity}</span><span className="text-white/50">{o.status === "processing" ? "En cours" : o.status === "completed" ? "Vita ✅" : o.status === "cancelled" ? "Nofoanana" : o.status}</span></div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full bg-[#00FF88]" style={{ width: `${Math.min(100, (o.done_count / o.quantity) * 100)}%` }} /></div>
           <p className="mt-1">{o.done_count}/{o.quantity}</p>
-          {o.status === "pending_payment" ? (
-            <button onClick={() => paid(o.id)} className="mt-2 rounded-lg bg-[#FF7A00] px-3 py-1.5 font-bold text-black">Efa nandoa ({ar(o.price)})</button>
-          ) : null}
+          <button onClick={() => setProofOrder(o.id)} className="mt-2 rounded-lg border border-[#00FF88]/40 px-3 py-1.5 font-bold text-[#00FF88]">📸 Jereo ny porofo</button>
         </div>
       ))}
+      {proofOrder ? <ProofsViewer orderId={proofOrder} onClose={() => setProofOrder(null)} /> : null}
     </div>
   );
 }
