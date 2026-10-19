@@ -1169,6 +1169,7 @@ export type Database = {
         }[]
       }
       booster_wallet: { Args: never; Returns: Json }
+      cancel_boost_order: { Args: { _id: string }; Returns: undefined }
       claim_mission: {
         Args: { _mission_id: string; _proof_path: string }
         Returns: undefined
