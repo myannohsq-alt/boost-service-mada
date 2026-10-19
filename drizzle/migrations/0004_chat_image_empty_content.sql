@@ -1,0 +1,2 @@
+ALTER TABLE public.chat_messages DROP CONSTRAINT chat_messages_content_check;
+ALTER TABLE public.chat_messages ADD CONSTRAINT chat_messages_content_check CHECK (char_length(content) <= 500 AND (type <> 'text' OR char_length(content) >= 1));

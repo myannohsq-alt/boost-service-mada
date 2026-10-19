@@ -104,11 +104,12 @@ function GroupPage() {
         const path = `${user.id}/chat-${Date.now()}.${IMG_TYPES[file.type]}`;
         const up = await supabase.storage.from("uploads").upload(path, file, { contentType: file.type });
         if (up.error) throw new Error("Échec de l'envoi de l'image");
-        const { error } = await db.rpc("send_chat_message", { _content: "", _type: "image", _media_path: path });
+        const { error } = await db.rpc("send_chat_message", { _content: value, _type: "image", _media_path: path });
         if (error) throw error;
         clearImage();
-      }
-      if (value) {
+        setText("");
+        void refresh();
+      } else if (value) {
         const { error } = await db.rpc("send_chat_message", { _content: value });
         if (error) throw error;
         setText("");
@@ -215,7 +216,7 @@ function GroupPage() {
             </div>
           ) : null}
 
-          <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="sticky bottom-0 flex items-center gap-2 rounded-b-2xl border border-border bg-card px-3 py-2">
+          <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="sticky bottom-0 flex items-end gap-2 rounded-b-2xl border border-border bg-card px-3 py-2">
             <label aria-label="Joindre une image" className="cursor-pointer rounded-full p-2 text-primary hover:bg-secondary">
               <ImagePlus className="h-5 w-5" />
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) pickImage(f); }} />
@@ -224,7 +225,9 @@ function GroupPage() {
               {rec ? <Square className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </button>
             {rec ? <RecTimer start={recStart} /> : (
-              <input value={text} maxLength={500} onChange={(e) => setText(e.target.value)} placeholder="Message…" className="bsm-input !py-2 !text-sm" />
+              <textarea value={text} maxLength={500} rows={1}
+                onChange={(e) => { setText(e.target.value); e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px"; }}
+                placeholder={file ? "Légende (optionnel)…" : "Message…"} className="bsm-input !py-2 !text-sm resize-none leading-snug" style={{ maxHeight: 160 }} />
             )}
             <button type="submit" aria-label="Envoyer" disabled={busy || !!rec || (!file && !text.trim())} className="bsm-btn bsm-btn-primary !px-3 !py-2">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
