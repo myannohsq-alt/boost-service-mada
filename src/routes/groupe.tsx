@@ -289,7 +289,7 @@ function GroupPage() {
 type Reaction = { id: string; message_id: string; user_id: string; emoji: string };
 const EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
 
-function Reactions({ list, me, open, onOpen, onPick }: { list: Reaction[]; me?: string; open: boolean; onOpen: () => void; onPick: (e: string) => void }) {
+function Reactions({ list, me, open, onOpen, onPick }: { list: Reaction[]; me?: string | undefined; open: boolean; onOpen: () => void; onPick: (e: string) => void }) {
   const counts = EMOJIS.map((e) => ({ e, n: list.filter((r) => r.emoji === e).length, mine: list.some((r) => r.emoji === e && r.user_id === me) })).filter((x) => x.n);
   return (
     <div className="mt-1 flex flex-wrap items-center gap-1">
