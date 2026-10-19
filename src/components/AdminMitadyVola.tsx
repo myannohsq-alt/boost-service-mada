@@ -36,9 +36,12 @@ export function AdminMitadyVola() {
               <p className="truncate font-semibold">{o.client_name} • {o.phone}</p>
               <p className="text-muted-foreground">{o.service_type} × {o.quantity} — {formatAr(o.price)} • {o.status} • {o.done_count}/{o.quantity}</p>
             </div>
-            {o.status !== "processing" ? (
-              <Button size="sm" className="bsm-btn bsm-btn-primary" onClick={() => run("approve_boost_order", { _id: o.id }, "Missions créées")}>APPROUVER</Button>
-            ) : null}
+            <div className="flex shrink-0 gap-1">
+              {o.status !== "processing" ? (
+                <Button size="sm" className="bsm-btn bsm-btn-primary" onClick={() => run("approve_boost_order", { _id: o.id }, "Missions créées")}>APPROUVER</Button>
+              ) : null}
+              <Button size="sm" variant="destructive" onClick={() => { if (confirm("Hofoanana ity commande ity?")) run("cancel_boost_order", { _id: o.id }, "Commande nofoanana"); }}>🗑️ Annuler</Button>
+            </div>
           </div>
         )) : <p className="mt-2 text-xs text-muted-foreground">Aucune commande.</p>}
       </div>
