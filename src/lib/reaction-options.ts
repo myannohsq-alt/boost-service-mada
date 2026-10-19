@@ -2,17 +2,16 @@
 export const REACTIONS = [
   { key: "like", label: "👍 J'aime" },
   { key: "love", label: "❤️ J'adore" },
-  { key: "care", label: "🥰" },
-  { key: "haha", label: "😂" },
+  { key: "care", label: "🥰 Solidaire" },
+  { key: "haha", label: "😂 Haha" },
+  { key: "wow", label: "😮 Wouah" },
+  { key: "sad", label: "😢 Triste" },
+  { key: "angry", label: "😡 En colère" },
   { key: "photo-love", label: "Pdp/pdc❤️" },
 ] as const;
 
-/** Extra reactions only available for reactions on comments. */
-export const COMMENT_ONLY_REACTIONS = [
-  { key: "wow", label: "Wow 😮" },
-  { key: "sad", label: "Sad 😢" },
-  { key: "angry", label: "Angry 😡" },
-] as const;
+/** Kept for compatibility; all reactions are now in REACTIONS. */
+export const COMMENT_ONLY_REACTIONS = [] as const;
 
 export type ReactionKey =
   | (typeof REACTIONS)[number]["key"]
