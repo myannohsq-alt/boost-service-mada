@@ -82,6 +82,37 @@ function GroupPage() {
     });
   }, [msgs, urls]);
 
+  // Reactions
+  const [reacts, setReacts] = useState<Record<string, Reaction[]>>({});
+  const [picker, setPicker] = useState<string | null>(null);
+  const loadReacts = async () => {
+    const { data } = await db.from("chat_message_reactions").select("id,message_id,user_id,emoji");
+    const g: Record<string, Reaction[]> = {};
+    ((data ?? []) as Reaction[]).forEach((r) => { (g[r.message_id] ||= []).push(r); });
+    setReacts(g);
+  };
+  useEffect(() => {
+    if (!user) return;
+    void loadReacts();
+    const ch = supabase.channel("chat_reactions_live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "chat_message_reactions" }, () => { void loadReacts(); })
+      .subscribe();
+    return () => { void supabase.removeChannel(ch); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+  const react = async (messageId: string, emoji: string) => {
+    if (!user) return;
+    setPicker(null);
+    const mine = (reacts[messageId] ?? []).find((r) => r.user_id === user.id);
+    const res = mine && mine.emoji === emoji
+      ? await db.from("chat_message_reactions").delete().eq("id", mine.id)
+      : mine
+        ? await db.from("chat_message_reactions").update({ emoji }).eq("id", mine.id)
+        : await db.from("chat_message_reactions").insert({ message_id: messageId, user_id: user.id, emoji });
+    if (res.error) toast.error(res.error.message);
+    void loadReacts();
+  };
+
   const all = [...msgs, ...local].sort((a, b) => a.created_at.localeCompare(b.created_at));
   useEffect(() => { if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight; }, [all.length]);
 
@@ -190,7 +221,11 @@ function GroupPage() {
                         </button>
                       ) : <div className="flex h-32 w-48 items-center justify-center rounded-lg bg-secondary"><Loader2 className="h-5 w-5 animate-spin" /></div>
                     ) : null}
-                    {m.content ? <p className="whitespace-pre-wrap break-words text-sm">{m.content}</p> : null}
+                    {m.content ? <p className="whitespace-pre-wrap break-words text-sm"><Linkified text={m.content} /></p> : null}
+                    {!m.id.startsWith("local-") ? (
+                      <Reactions list={reacts[m.id] ?? []} me={user?.id} open={picker === m.id}
+                        onOpen={() => setPicker(picker === m.id ? null : m.id)} onPick={(e) => void react(m.id, e)} />
+                    ) : null}
                     {m.type === "vocal" && m.src ? <audio controls src={m.src} className="mt-1 w-48" /> : null}
                     <p className="mt-0.5 flex items-center justify-end gap-2 text-[10px] opacity-70">
                       {(isAdmin || (mine && m.id.startsWith("local-"))) ? <button onClick={() => void remove(m)} aria-label="Supprimer"><Trash2 className="h-3 w-3" /></button> : null}
@@ -248,6 +283,50 @@ function GroupPage() {
         ) : null}
       </Layout>
     </AuthGate>
+  );
+}
+
+type Reaction = { id: string; message_id: string; user_id: string; emoji: string };
+const EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+
+function Reactions({ list, me, open, onOpen, onPick }: { list: Reaction[]; me?: string; open: boolean; onOpen: () => void; onPick: (e: string) => void }) {
+  const counts = EMOJIS.map((e) => ({ e, n: list.filter((r) => r.emoji === e).length, mine: list.some((r) => r.emoji === e && r.user_id === me) })).filter((x) => x.n);
+  return (
+    <div className="mt-1 flex flex-wrap items-center gap-1">
+      {counts.map((c) => (
+        <button key={c.e} type="button" onClick={() => onPick(c.e)}
+          className={`rounded-full border px-1.5 py-0.5 text-[11px] ${c.mine ? "border-primary bg-primary/20" : "border-border bg-background/40"}`}>
+          {c.e} {c.n}
+        </button>
+      ))}
+      {open ? (
+        <div className="flex gap-1 rounded-full border border-border bg-card px-2 py-1 shadow-lg">
+          {EMOJIS.map((e) => <button key={e} type="button" onClick={() => onPick(e)} className="text-lg transition-transform hover:scale-125">{e}</button>)}
+        </div>
+      ) : (
+        <button type="button" onClick={onOpen} aria-label="Réagir" className="rounded-full px-1.5 py-0.5 text-[11px] opacity-60 hover:opacity-100">☺︎+</button>
+      )}
+    </div>
+  );
+}
+
+const URL_RE = /((?:https?:\/\/|www\.)[^\s<]+|(?:m\.|web\.)?(?:facebook\.com|fb\.watch|fb\.com|youtu\.be|youtube\.com|tiktok\.com|instagram\.com)\/[^\s<]*)/gi;
+function Linkified({ text }: { text: string }) {
+  const parts = text.split(URL_RE);
+  return (
+    <>
+      {parts.map((p, i) => {
+        if (i % 2 === 0) return p;
+        const clean = p.replace(/[.,!?;:)]+$/, "");
+        const tail = p.slice(clean.length);
+        const href = /^https?:\/\//i.test(clean) ? clean : `https://${clean}`;
+        return (
+          <span key={i}>
+            <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2 break-all">🔗 {clean}</a>{tail}
+          </span>
+        );
+      })}
+    </>
   );
 }
 
