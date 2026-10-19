@@ -446,7 +446,7 @@ async function submitOrder(
   let max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
   const reactionNote = /^reaction:([a-z-]+)(?:;visibility:invisible)?(?:;target:[^;]{1,100})?$/.exec(order.notes ?? "");
   if (service && isReactionService(service.platform, service.name_fr) && reactionNote) {
-    providerServiceId = reactionProviderId(reactionNote[1] ?? "", service.name_fr);
+    providerServiceId = reactionProviderId(reactionNote[1] ?? "", service.name_fr, /;visibility:invisible/.test(order.notes ?? ""));
     if (!providerServiceId) throw new Error("Type de réaction invalide");
     const { data: matched } = await db.from("provider_services")
       .select("min_qty, max_qty")
