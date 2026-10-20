@@ -335,12 +335,12 @@ function Reactions({ list, me, open, onOpen, onPick }: { list: Reaction[]; me?: 
       {counts.map((c) => (
         <button key={c.e} type="button" onClick={() => onPick(c.e)}
           className={`rounded-full border px-1.5 py-0.5 text-[11px] ${c.mine ? "border-primary bg-primary/20" : "border-border bg-background/40"}`}>
-          {c.e} {c.n}
+          <span>{c.e}</span> {c.n}
         </button>
       ))}
       {open ? (
         <div className="flex gap-1 rounded-full border border-border bg-card px-2 py-1 shadow-lg">
-          {EMOJIS.map((e) => <button key={e} type="button" onClick={() => onPick(e)} className="text-lg transition-transform hover:scale-125">{e}</button>)}
+          {EMOJIS.map((e) => <button key={e} type="button" onClick={() => onPick(e)} className="emo-tap text-lg transition-transform hover:scale-125"><span>{e}</span></button>)}
         </div>
       ) : (
         <button type="button" onClick={onOpen} aria-label="Réagir" className="rounded-full px-1.5 py-0.5 text-[11px] opacity-60 hover:opacity-100">☺︎+</button>

@@ -15,6 +15,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/useAuth";
 import { Toaster } from "@/components/ui/sonner";
+import { AnimatedEmojis } from "@/components/AnimatedEmojis";
 
 function NotFoundComponent() {
   return (
@@ -147,6 +148,7 @@ function RootComponent() {
             {/* Required: nested routes render here. */}
             <Outlet />
             <Toaster position="top-center" richColors />
+            <AnimatedEmojis />
           </AuthProvider>
         </I18nProvider>
       </ThemeProvider>
