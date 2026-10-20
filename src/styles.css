@@ -406,3 +406,34 @@
   25%, 75% { color: #ef4444; text-shadow: 0 0 14px rgba(239, 68, 68, .8); transform: scale(1.15); }
 }
 .bsm-balance-flash { animation: bsm-balance-flash .4s ease-in-out 3; display: inline-block; }
+
+/* ===== Compact order modals (mobile) ===== */
+@media (max-width: 640px) {
+  .bsm-modal > .space-y-4 > * + * { margin-top: 0.65rem; }
+  .bsm-modal h2 { font-size: 1rem; }
+  .bsm-modal .bsm-input { min-height: 38px; font-size: 13px; }
+  .bsm-modal button { font-size: 12px; }
+}
+
+/* ===== Emoji animations (reusable) ===== */
+@keyframes emo-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+@keyframes emo-beat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.18)} 30%{transform:scale(1)} 45%{transform:scale(1.12)} }
+@keyframes emo-wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-10deg)} 75%{transform:rotate(10deg)} }
+@keyframes emo-flame { 0%,100%{transform:scale(1) translateY(0)} 50%{transform:scale(1.08,1.14) translateY(-1px)} }
+@keyframes emo-launch { 0%,100%{transform:translate(0,0)} 50%{transform:translate(2px,-3px)} }
+@keyframes emo-sparkle { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.15) rotate(12deg)} }
+@keyframes emo-pop { 0%{transform:scale(1)} 40%{transform:scale(1.45)} 100%{transform:scale(1)} }
+@keyframes press { 50%{transform:scale(.96)} }
+.emo { display:inline-block; will-change:transform; }
+.emo-bounce { animation: emo-bounce 2.4s ease-in-out infinite; }
+.emo-beat { animation: emo-beat 2.2s ease-in-out infinite; }
+.emo-wiggle { animation: emo-wiggle 2.6s ease-in-out infinite; }
+.emo-flame { animation: emo-flame 1.6s ease-in-out infinite; }
+.emo-launch { animation: emo-launch 2.2s ease-in-out infinite; }
+.emo-sparkle { animation: emo-sparkle 2s ease-in-out infinite; }
+.emo-float { animation: emo-bounce 3.2s ease-in-out infinite; }
+.emo:active, .emo-tap:active .emo { animation: emo-pop .35s ease-out; }
+button:active:not(:disabled), .bsm-card:active { animation: press .18s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .emo, .emo * , button:active, .bsm-card:active { animation: none !important; }
+}

@@ -29,7 +29,7 @@ export const Route = createFileRoute("/groupe")({
   component: GroupPage,
 });
 
-type ChatMsg = { id: string; user_id: string; author_name: string; content: string; created_at: string; type?: string; src?: string; media_path?: string | null; duration?: number | null };
+type ChatMsg = { id: string; user_id: string; author_name: string; content: string; created_at: string; type?: string; src?: string; media_path?: string | null; duration?: number | null; reply_to?: string | null };
 
 const loadLocal = (): ChatMsg[] => { try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; } };
 const saveLocal = (list: ChatMsg[]) => { try { localStorage.setItem(LS_KEY, JSON.stringify(list.slice(-50))); } catch { toast.error("Mémoire du téléphone pleine"); } };
@@ -47,6 +47,8 @@ function GroupPage() {
   const [viewer, setViewer] = useState<{ url: string; path: string } | null>(null);
   const [rec, setRec] = useState<MediaRecorder | null>(null);
   const [recStart, setRecStart] = useState(0);
+  const [replyTo, setReplyTo] = useState<ChatMsg | null>(null);
+  const [avatars, setAvatars] = useState<Record<string, { name: string; avatar_url: string }>>({});
   const messagesRef = useRef<HTMLDivElement>(null);
   const sending = useRef(false);
 
@@ -70,6 +72,18 @@ function GroupPage() {
       .subscribe();
     return () => { alive = false; void supabase.removeChannel(ch); };
   }, [user]);
+
+  useEffect(() => {
+    const ids = [...new Set(msgs.map((m) => m.user_id))].filter((id) => !avatars[id]);
+    if (!ids.length) return;
+    void db.rpc("chat_member_profiles", { _ids: ids }).then(({ data }: any) => {
+      const n: Record<string, { name: string; avatar_url: string }> = {};
+      ids.forEach((id) => { n[id] = { name: "", avatar_url: "" }; });
+      (data ?? []).forEach((p: any) => { n[p.id] = { name: p.name, avatar_url: p.avatar_url }; });
+      setAvatars((a) => ({ ...a, ...n }));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [msgs]);
 
   // Signed URLs for stored images (bucket is private)
   useEffect(() => {
@@ -135,15 +149,15 @@ function GroupPage() {
         const path = `${user.id}/chat-${Date.now()}.${IMG_TYPES[file.type]}`;
         const up = await supabase.storage.from("uploads").upload(path, file, { contentType: file.type });
         if (up.error) throw new Error("Échec de l'envoi de l'image");
-        const { error } = await db.rpc("send_chat_message", { _content: value, _type: "image", _media_path: path });
+        const { error } = await db.rpc("send_chat_message", { _content: value, _type: "image", _media_path: path, _reply_to: replyTo?.id ?? null });
         if (error) throw error;
         clearImage();
-        setText("");
+        setText(""); setReplyTo(null);
         void refresh();
       } else if (value) {
-        const { error } = await db.rpc("send_chat_message", { _content: value });
+        const { error } = await db.rpc("send_chat_message", { _content: value, _reply_to: replyTo?.id ?? null });
         if (error) throw error;
-        setText("");
+        setText(""); setReplyTo(null);
         void refresh();
       }
     } catch (e: any) {
@@ -209,28 +223,44 @@ function GroupPage() {
             {all.map((m) => {
               const mine = m.user_id === user?.id;
               const imgUrl = m.media_path ? urls[m.media_path] : undefined;
+              const av = avatars[m.user_id];
+              const name = av?.name || m.author_name;
+              const parent = m.reply_to ? msgs.find((x) => x.id === m.reply_to) : undefined;
               return (
-                <div key={m.id} className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
-                  {!mine ? <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(m.author_name)}`} alt="" className="h-8 w-8 shrink-0 rounded-full" /> : null}
-                  <div className={`max-w-[78%] rounded-2xl px-3 py-2 shadow-sm ${mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm border border-border bg-card text-card-foreground"}`}>
-                    {!mine ? <p className="mb-0.5 text-[11px] text-primary"><DisplayName name={m.author_name} /></p> : null}
-                    {m.type === "image" ? (
-                      imgUrl ? (
-                        <button type="button" onClick={() => setViewer({ url: imgUrl, path: m.media_path! })} className="block">
-                          <img src={imgUrl} alt="Image partagée" loading="lazy" className="max-h-64 w-full max-w-[240px] rounded-lg object-cover" />
-                        </button>
-                      ) : <div className="flex h-32 w-48 items-center justify-center rounded-lg bg-secondary"><Loader2 className="h-5 w-5 animate-spin" /></div>
-                    ) : null}
-                    {m.content ? <p className="whitespace-pre-wrap break-words text-sm"><Linkified text={m.content} /></p> : null}
-                    {!m.id.startsWith("local-") ? (
-                      <Reactions list={reacts[m.id] ?? []} me={user?.id} open={picker === m.id}
-                        onOpen={() => setPicker(picker === m.id ? null : m.id)} onPick={(e) => void react(m.id, e)} />
-                    ) : null}
-                    {m.type === "vocal" && m.src ? <audio controls src={m.src} className="mt-1 w-48" /> : null}
-                    <p className="mt-0.5 flex items-center justify-end gap-2 text-[10px] opacity-70">
-                      {(isAdmin || (mine && m.id.startsWith("local-"))) ? <button onClick={() => void remove(m)} aria-label="Supprimer"><Trash2 className="h-3 w-3" /></button> : null}
-                      {new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                <div key={m.id} className={`flex items-start gap-2 ${mine ? "flex-row-reverse" : ""}`}>
+                  <img src={av?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`} alt="" className="h-9 w-9 shrink-0 rounded-full border border-border object-cover" />
+                  <div className={`flex max-w-[80%] flex-col ${mine ? "items-end" : "items-start"}`}>
+                    <p className="mb-0.5 flex items-center gap-1.5 px-1 text-[11px]">
+                      <span className="font-semibold text-foreground"><DisplayName name={name} /></span>
+                      <span className="text-muted-foreground">{new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
                     </p>
+                    <div className={`overflow-hidden rounded-2xl shadow-sm ${mine ? "rounded-tr-sm bg-primary text-primary-foreground" : "rounded-tl-sm border border-border bg-card text-card-foreground"}`}>
+                      {parent ? (
+                        <div className="m-1.5 rounded-lg border-l-4 border-primary bg-background/40 px-2 py-1 text-[11px]">
+                          <p className="font-semibold">{avatars[parent.user_id]?.name || parent.author_name}</p>
+                          <p className="line-clamp-2 opacity-80">{parent.content || "📷 Photo"}</p>
+                        </div>
+                      ) : null}
+                      {m.type === "image" ? (
+                        imgUrl ? (
+                          <button type="button" onClick={() => setViewer({ url: imgUrl, path: m.media_path! })} className="block w-full">
+                            <img src={imgUrl} alt="Image partagée" loading="lazy" className="max-h-80 w-full min-w-[200px] max-w-[280px] object-cover" />
+                          </button>
+                        ) : <div className="flex h-40 w-56 items-center justify-center bg-secondary"><Loader2 className="h-5 w-5 animate-spin" /></div>
+                      ) : null}
+                      {m.content ? <p className="whitespace-pre-wrap break-words px-3 py-2 text-sm"><Linkified text={m.content} /></p> : null}
+                      {m.type === "vocal" && m.src ? <audio controls src={m.src} className="m-2 w-48" /> : null}
+                    </div>
+                    <div className="mt-0.5 flex items-center gap-2 px-1 text-[11px] text-muted-foreground">
+                      {!m.id.startsWith("local-") ? (
+                        <>
+                          <Reactions list={reacts[m.id] ?? []} me={user?.id} open={picker === m.id}
+                            onOpen={() => setPicker(picker === m.id ? null : m.id)} onPick={(e) => void react(m.id, e)} />
+                          <button type="button" onClick={() => setReplyTo(m)} className="font-semibold hover:text-primary">↰ Répondre</button>
+                        </>
+                      ) : null}
+                      {(isAdmin || (mine && m.id.startsWith("local-"))) ? <button onClick={() => void remove(m)} aria-label="Supprimer"><Trash2 className="h-3 w-3" /></button> : null}
+                    </div>
                   </div>
                 </div>
               );
@@ -244,6 +274,15 @@ function GroupPage() {
             ) : null}
           </div>
 
+          {replyTo ? (
+            <div className="flex items-center gap-2 border-x border-t border-border bg-card px-3 py-2 text-xs">
+              <div className="flex-1 border-l-4 border-primary pl-2">
+                <p className="font-semibold text-primary">↰ Répondre à {avatars[replyTo.user_id]?.name || replyTo.author_name}</p>
+                <p className="line-clamp-1 text-muted-foreground">{replyTo.content || "📷 Photo"}</p>
+              </div>
+              <button type="button" aria-label="Annuler" onClick={() => setReplyTo(null)} className="rounded-full p-1 hover:bg-secondary"><X className="h-4 w-4" /></button>
+            </div>
+          ) : null}
           {preview ? (
             <div className="flex items-start gap-2 border-x border-t border-border bg-card px-3 py-2">
               <img src={preview} alt="Aperçu" className="max-h-40 max-w-[180px] rounded-lg object-contain" />
@@ -296,12 +335,12 @@ function Reactions({ list, me, open, onOpen, onPick }: { list: Reaction[]; me?: 
       {counts.map((c) => (
         <button key={c.e} type="button" onClick={() => onPick(c.e)}
           className={`rounded-full border px-1.5 py-0.5 text-[11px] ${c.mine ? "border-primary bg-primary/20" : "border-border bg-background/40"}`}>
-          {c.e} {c.n}
+          <span>{c.e}</span> {c.n}
         </button>
       ))}
       {open ? (
         <div className="flex gap-1 rounded-full border border-border bg-card px-2 py-1 shadow-lg">
-          {EMOJIS.map((e) => <button key={e} type="button" onClick={() => onPick(e)} className="text-lg transition-transform hover:scale-125">{e}</button>)}
+          {EMOJIS.map((e) => <button key={e} type="button" onClick={() => onPick(e)} className="emo-tap text-lg transition-transform hover:scale-125"><span>{e}</span></button>)}
         </div>
       ) : (
         <button type="button" onClick={onOpen} aria-label="Réagir" className="rounded-full px-1.5 py-0.5 text-[11px] opacity-60 hover:opacity-100">☺︎+</button>

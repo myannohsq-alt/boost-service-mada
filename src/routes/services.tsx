@@ -280,7 +280,7 @@ function ServiceTile({
         </div>
       </div>
 
-      <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{premium ? "🔥 BOOST GASY 80% - QUALITÉ PREMIUM HQ" : name}</p>
+      <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{premium ? "🇲🇬 BOOST MALAGASY" : name}</p>
       <span className="mt-1.5 w-fit rounded-full border border-border bg-secondary px-2 py-0.5 text-[10.5px] text-muted-foreground">
         ID: {id}
       </span>
