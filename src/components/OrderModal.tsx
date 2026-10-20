@@ -44,9 +44,9 @@ export function OrderModal({
         aria-modal="true"
         aria-labelledby="service-form-title"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md animate-in slide-in-from-bottom-4 fade-in overflow-hidden rounded-t-lg border border-primary/60 bg-card shadow-[0_0_40px_-6px_var(--color-primary)] sm:rounded-lg"
+        className="mx-3 mb-3 w-[calc(100%-1.5rem)] max-w-md animate-in slide-in-from-bottom-4 fade-in overflow-hidden rounded-xl border border-primary/60 bg-card shadow-[0_0_40px_-6px_var(--color-primary)] sm:rounded-lg"
       >
-        <div className="max-h-[88vh] overflow-y-auto p-5">
+        <div className="bsm-modal max-h-[85vh] overflow-y-auto p-3.5 sm:p-5">
           <div className="flex justify-end">
             <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Fermer">✕</Button>
           </div>
