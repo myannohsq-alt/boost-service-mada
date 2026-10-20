@@ -43,6 +43,13 @@
       "when": 1792370249971,
       "tag": "0005_chat_message_reactions",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792472100548,
+      "tag": "0006_chat_reply_avatars",
+      "breakpoints": true
     }
   ]
 }

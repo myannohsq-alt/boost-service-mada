@@ -251,6 +251,7 @@ export type Database = {
           duration: number | null
           id: string
           media_path: string | null
+          reply_to: string | null
           type: string
           user_id: string
         }
@@ -261,6 +262,7 @@ export type Database = {
           duration?: number | null
           id?: string
           media_path?: string | null
+          reply_to?: string | null
           type?: string
           user_id: string
         }
@@ -271,10 +273,19 @@ export type Database = {
           duration?: number | null
           id?: string
           media_path?: string | null
+          reply_to?: string | null
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_comments: {
         Row: {
@@ -1202,6 +1213,14 @@ export type Database = {
       }
       booster_wallet: { Args: never; Returns: Json }
       cancel_boost_order: { Args: { _id: string }; Returns: undefined }
+      chat_member_profiles: {
+        Args: { _ids: string[] }
+        Returns: {
+          avatar_url: string
+          id: string
+          name: string
+        }[]
+      }
       claim_mission: {
         Args: { _mission_id: string; _proof_path: string }
         Returns: undefined
@@ -1302,6 +1321,7 @@ export type Database = {
           _content: string
           _duration?: number
           _media_path?: string
+          _reply_to?: string
           _type?: string
         }
         Returns: string
