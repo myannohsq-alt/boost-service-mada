@@ -270,28 +270,6 @@ function AdminContent({ onDone }: { onDone: (m: string) => void }) {
         </button>
       </div>
 
-      <div className="bsm-card p-4">
-        <p className="font-semibold">🔑 Générer un code Protection Compte</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <input
-            className="bsm-input flex-1"
-            placeholder="BSM-XXXXXX"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-          />
-          <button
-            className="bsm-btn bsm-btn-primary !py-2 !text-xs"
-            onClick={async () => {
-              const value = code.trim() || `BSM-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-              const { error } = await supabase.from("protection_codes").insert({ code: value });
-              onDone(error ? `❌ ${error.message}` : `✅ Code créé : ${value}`);
-              if (!error) setCode("");
-            }}
-          >
-            Générer
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
