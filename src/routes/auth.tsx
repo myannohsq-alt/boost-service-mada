@@ -244,8 +244,10 @@ export function AuthPage() {
               <img src="/icon-192.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
               <div><p className="text-sm font-semibold">Installer l'application</p><p className="text-xs text-auth-subtitle">Disponible Android</p></div>
             </div>
-            <Button type="button" variant="outline" onClick={installApp} className="mt-3 h-11 w-full rounded-xl border-auth-primary bg-transparent text-sm font-bold text-auth-primary hover:bg-auth-primary/10 hover:text-auth-primary">
-              <Download className="h-4 w-4" /> TÉLÉCHARGER APK
+            <Button asChild variant="outline" className="mt-3 h-11 w-full rounded-xl border-auth-primary bg-transparent text-sm font-bold text-auth-primary hover:bg-auth-primary/10 hover:text-auth-primary">
+              <a href="/boostmada.apk" download="BoostMada.apk">
+                <Download className="h-4 w-4" /> TÉLÉCHARGER APK
+              </a>
             </Button>
           </div>
         </section>
