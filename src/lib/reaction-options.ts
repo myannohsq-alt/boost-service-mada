@@ -25,9 +25,9 @@ export function reactionProviderId(key: string, name: string, invisible = false)
   const comment = /commentaire|comment/i.test(name);
   // Invisible = SMMGen "Hidden Data" products: count rises, reactor names stay hidden.
   const ids: Record<ReactionKey, string | null> = comment
-    ? { like: "12669", love: "12670", care: "12671", wow: "12672", haha: "12673", sad: "12674", angry: "12675", "photo-love": "12670" }
+    ? { like: "12669", love: "12670", care: "12671", wow: "12672", haha: "12673", sad: "12674", angry: "12675", "photo-love": "12670", mix: "12724" }
     : invisible
-      ? { like: "18607", love: "18608", care: "18608", haha: "18611", "photo-love": "18608", wow: "18610", sad: "18612", angry: "18613" }
-      : { like: "16823", love: "16824", care: "16825", haha: "16827", "photo-love": "16824", wow: "16826", sad: "16828", angry: "16829" };
+      ? { like: "18607", love: "18608", care: "18608", haha: "18611", "photo-love": "18608", wow: "18610", sad: "18612", angry: "18613", mix: "17014" }
+      : { like: "16823", love: "16824", care: "16825", haha: "16827", "photo-love": "16824", wow: "16826", sad: "16828", angry: "16829", mix: "17014" };
   return Object.hasOwn(ids, key) ? ids[key as ReactionKey] : null;
 }
