@@ -202,7 +202,6 @@ function AdminPage() {
 function AdminContent({ onDone }: { onDone: (m: string) => void }) {
   const [news, setNews] = useState({ title: "", content: "" });
   const [promo, setPromo] = useState({ title: "", description: "", discount: "" });
-  const [code, setCode] = useState("");
 
   return (
     <div className="space-y-4">
