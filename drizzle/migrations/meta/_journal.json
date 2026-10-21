@@ -50,6 +50,13 @@
       "when": 1792472100548,
       "tag": "0006_chat_reply_avatars",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792574610049,
+      "tag": "0007_reactions_all_types_mix_remove_protection",
+      "breakpoints": true
     }
   ]
 }
