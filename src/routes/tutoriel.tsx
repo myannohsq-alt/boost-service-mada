@@ -119,32 +119,15 @@ function Steps({ steps }: { steps: string[] }) {
 }
 
 function TutoPage() {
-  const [code, setCode] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const unlocked = false;
 
   const { data: tutos } = useQuery({
     queryKey: ["tutorials"],
     queryFn: async () => {
-      const { data } = await supabase.from("tutorials").select("*").order("created_at");
+      const { data } = await supabase.from("tutorials").select("*").eq("is_premium", false).order("created_at");
       return data ?? [];
     },
   });
-
-  const unlock = async () => {
-    setMsg(null);
-    const { data } = await supabase
-      .from("protection_codes")
-      .select("id")
-      .eq("code", code.trim().toUpperCase())
-      .maybeSingle();
-    if (data) {
-      setUnlocked(true);
-      setMsg("🔓 Code valide, vidéos premium débloquées !");
-    } else {
-      setMsg("❌ Code invalide.");
-    }
-  };
 
   const ordered = (tutos ?? []).slice().sort((a, b) => {
     const av = blockFor(a.title) ? 0 : 1;
@@ -156,23 +139,6 @@ function TutoPage() {
     <AuthGate>
       <Layout>
         <Section title="📖 Tutoriel" subtitle="Guides simples pour bien utiliser la plateforme.">
-          <div className="bsm-card p-5">
-            <p className="font-semibold">🔓 Débloquer les tutoriels premium</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <input
-                value={code}
-                maxLength={20}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="Code d'accès"
-                className="bsm-input flex-1"
-              />
-              <button onClick={unlock} className="bsm-btn bsm-btn-primary">
-                Valider
-              </button>
-            </div>
-            {msg ? <p className="mt-3 rounded-lg bg-secondary p-3 text-sm">{msg}</p> : null}
-          </div>
-
           <div className="mt-5 space-y-3">
             {ordered.map((t) => {
               const locked = t.is_premium && !unlocked;

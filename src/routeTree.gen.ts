@@ -28,7 +28,6 @@ import { Route as MitadyVolaRouteImport } from './routes/mitady-vola'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PromotionsRouteImport } from './routes/promotions'
-import { Route as ProtectionRouteImport } from './routes/protection'
 import { Route as RechargeRouteImport } from './routes/recharge'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -137,11 +136,6 @@ const PromotionsRoute = PromotionsRouteImport.update({
   path: '/promotions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectionRoute = ProtectionRouteImport.update({
-  id: '/protection',
-  path: '/protection',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RechargeRoute = RechargeRouteImport.update({
   id: '/recharge',
   path: '/recharge',
@@ -223,7 +217,6 @@ export interface FileRoutesByFullPath {
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
-  '/protection': typeof ProtectionRoute
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
@@ -257,7 +250,6 @@ export interface FileRoutesByTo {
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
-  '/protection': typeof ProtectionRoute
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
@@ -292,7 +284,6 @@ export interface FileRoutesById {
   '/parrainage': typeof ParrainageRoute
   '/profil': typeof ProfilRoute
   '/promotions': typeof PromotionsRoute
-  '/protection': typeof ProtectionRoute
   '/recharge': typeof RechargeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
@@ -328,7 +319,6 @@ export interface FileRouteTypes {
     | '/parrainage'
     | '/profil'
     | '/promotions'
-    | '/protection'
     | '/recharge'
     | '/reset-password'
     | '/services'
@@ -362,7 +352,6 @@ export interface FileRouteTypes {
     | '/parrainage'
     | '/profil'
     | '/promotions'
-    | '/protection'
     | '/recharge'
     | '/reset-password'
     | '/services'
@@ -396,7 +385,6 @@ export interface FileRouteTypes {
     | '/parrainage'
     | '/profil'
     | '/promotions'
-    | '/protection'
     | '/recharge'
     | '/reset-password'
     | '/services'
@@ -431,7 +419,6 @@ export interface RootRouteChildren {
   ParrainageRoute: typeof ParrainageRoute
   ProfilRoute: typeof ProfilRoute
   PromotionsRoute: typeof PromotionsRoute
-  ProtectionRoute: typeof ProtectionRoute
   RechargeRoute: typeof RechargeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
@@ -581,13 +568,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromotionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/protection': {
-      id: '/protection'
-      path: '/protection'
-      fullPath: '/protection'
-      preLoaderRoute: typeof ProtectionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/recharge': {
       id: '/recharge'
       path: '/recharge'
@@ -695,7 +675,6 @@ const rootRouteChildren: RootRouteChildren = {
   ParrainageRoute: ParrainageRoute,
   ProfilRoute: ProfilRoute,
   PromotionsRoute: PromotionsRoute,
-  ProtectionRoute: ProtectionRoute,
   RechargeRoute: RechargeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,

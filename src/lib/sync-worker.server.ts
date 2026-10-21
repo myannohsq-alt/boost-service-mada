@@ -444,7 +444,8 @@ async function submitOrder(
   let providerServiceId = service?.provider_service_id;
   let min = service?.provider_min ?? 1;
   let max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
-  const reactionNote = /^reaction:([a-z-]+)(?:;visibility:invisible)?(?:;target:[^;]{1,100})?$/.exec(order.notes ?? "");
+  // Accept extra ;key:value parts (target, cible, tier…) used by the comment-reaction form.
+  const reactionNote = /^reaction:([a-z-]+)(?:;[a-z]+:[^;]{0,100})*$/.exec(order.notes ?? "");
   if (service && isReactionService(service.platform, service.name_fr) && reactionNote) {
     providerServiceId = reactionProviderId(reactionNote[1] ?? "", service.name_fr, /;visibility:invisible/.test(order.notes ?? ""));
     if (!providerServiceId) throw new Error("Type de réaction invalide");
