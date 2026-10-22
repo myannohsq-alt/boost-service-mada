@@ -472,7 +472,25 @@ async function submitOrder(
     throw new Error(`Quantité hors limites fournisseur (min ${min}, max ${max})`);
   }
 
-  const res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, order.comments || undefined);
+  // Réaction Mix on posts: split evenly into 👍 J'aime, ❤️ J'adore, 🥰 Solidaire only.
+  const isPostMix = !!(service && reactionNote?.[1] === "mix" && !/commentaire|comment/i.test(service.name_fr));
+  let res: Awaited<ReturnType<typeof api.add>>;
+  if (isPostMix) {
+    const invisible = /;visibility:invisible/.test(order.notes ?? "");
+    const base = Math.floor(order.quantity / 3);
+    const parts = [order.quantity - base * 2, base, base];
+    const subs: unknown[] = [];
+    let first: typeof res | null = null;
+    for (const [i, key] of (["like", "love", "care"] as const).entries()) {
+      const id = reactionProviderId(key, service!.name_fr, invisible)!;
+      const r = await api.add(id, order.target_link, Math.max(parts[i]!, 10), `${orderId}-${key}`);
+      subs.push({ key, id, response: r });
+      first ??= r;
+    }
+    res = { ...(first as object), mix_parts: subs } as typeof res;
+  } else {
+    res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, order.comments || undefined);
+  }
   const providerOrderId = res?.order === undefined || res.order === null ? "" : String(res.order);
   if (!providerOrderId) {
     const msg = "SMMGen n'a retourné aucun identifiant de commande";
