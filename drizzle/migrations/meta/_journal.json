@@ -57,6 +57,13 @@
       "when": 1792574610049,
       "tag": "0007_reactions_all_types_mix_remove_protection",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792645623081,
+      "tag": "0008_lock_orders_direct_insert",
+      "breakpoints": true
     }
   ]
 }

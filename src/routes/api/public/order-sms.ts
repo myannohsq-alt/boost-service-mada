@@ -16,33 +16,41 @@ export const Route = createFileRoute("/api/public/order-sms")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // Always require the hook header; compare to env secret when configured.
+        const got = request.headers.get("x-hook-secret") ?? "";
+        if (got.length < 32) return new Response("Unauthorized", { status: 401 });
         const secret = process.env["ORDER_SMS_HOOK_SECRET"];
-        if (secret) {
-          const got = request.headers.get("x-hook-secret");
-          if (got !== secret) return new Response("Unauthorized", { status: 401 });
-        }
+        if (secret && got !== secret) return new Response("Unauthorized", { status: 401 });
+
         const apiKey = process.env["INFINIREACH_KEY"];
         if (!apiKey) return new Response("Missing INFINIREACH_KEY", { status: 500 });
 
-        let order: Record<string, unknown>;
+        let payloadId = "";
         try {
-          const payload = (await request.json()) as { record?: Record<string, unknown> };
-          order = payload.record ?? (payload as Record<string, unknown>);
+          const payload = (await request.json()) as { record?: Record<string, unknown>; id?: unknown };
+          payloadId = String((payload.record ?? payload)?.["id" as never] ?? "");
         } catch {
           return new Response("Bad JSON", { status: 400 });
         }
+        if (!/^[0-9a-f-]{36}$/i.test(payloadId)) return new Response("Bad id", { status: 400 });
 
-        const id = String(order["id"] ?? "");
-        const amount = String(order["amount"] ?? "");
-        const userId = String(order["user_id"] ?? "");
-        if (!id || !userId) return new Response("Missing id/user_id", { status: 400 });
-
-        // Phone and name live on profiles, not orders
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        // Never trust caller data: load the real order and require it to be brand new.
+        const { data: ord } = await supabaseAdmin
+          .from("orders")
+          .select("id, user_id, total_price, created_at")
+          .eq("id", payloadId)
+          .maybeSingle();
+        if (!ord) return new Response("Not found", { status: 404 });
+        if (Date.now() - new Date(ord.created_at as string).getTime() > 3 * 60 * 1000)
+          return new Response("Too old", { status: 409 });
+
+        const id = String(ord.id);
+        const amount = String((ord as Record<string, unknown>).total_price ?? "");
         const { data: profile } = await supabaseAdmin
           .from("profiles")
           .select("phone, name")
-          .eq("id", userId)
+          .eq("id", ord.user_id as string)
           .maybeSingle();
         const phone = String(profile?.phone ?? "");
         const name = String(profile?.name ?? "");
