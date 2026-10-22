@@ -38,7 +38,7 @@ export const Route = createFileRoute("/api/public/order-sms")({
         // Never trust caller data: load the real order and require it to be brand new.
         const { data: ord } = await supabaseAdmin
           .from("orders")
-          .select("id, user_id, total_price, created_at")
+          .select("id, user_id, amount, created_at")
           .eq("id", payloadId)
           .maybeSingle();
         if (!ord) return new Response("Not found", { status: 404 });
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/public/order-sms")({
           return new Response("Too old", { status: 409 });
 
         const id = String(ord.id);
-        const amount = String((ord as Record<string, unknown>).total_price ?? "");
+        const amount = String(ord.amount ?? "");
         const { data: profile } = await supabaseAdmin
           .from("profiles")
           .select("phone, name")
