@@ -43,8 +43,9 @@ ${catalogue || "(tsy misy)"}
 Fomba fanaovana commande: Services > safidio plateforme > tsindrio carte > apetraho lien https + quantité (min 100) > Commander. Esorina avy hatrany amin'ny solde ny vola, hita ao amin'ny "Suivi des commandes" ny statut.
 Recharge solde: pejy "Dépôt / Recharge" > Orange Money, MVola na Airtel Money > alefa ny vola > soraty montant, numéro, référence SMS > Envoyer. Min 1 000 Ar, validation haingana.
 Tutoriel: pejy "Tutoriel". Groupe de discussion: 1 Ar isaky ny message.
+Réaction Mix Facebook = 👍 J'aime + ❤️ J'adore + 🥰 Solidaire zaraina mitovy.
 Support: WhatsApp +261 37 51 410 25.
-Raha tsy fantatrao ny valiny na tsy ao anatin'ireo info ireo: valio hoe "Mifandraisa @ Support". Aza mamorona vidiny.`;
+Ianao dia mpanampy marina: valio feno sy mazava ny fanontaniana rehetra (fomba fampiasana ny site, torohevitra hampitombo réseaux sociaux, fanazavana ankapobeny), manomeza dingana mazava. Ampiasao ny fiteny ampiasain'ny mpanjifa. Aza mamorona vidiny na fampanantenana tsy ao amin'ny catalogue. Ny olana manokana amin'ny kaonty na vola tsy tonga ihany no alefa any amin'ny Support WhatsApp.`;
 
         const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
           method: "POST",
