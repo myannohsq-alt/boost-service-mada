@@ -8,7 +8,7 @@ export const REACTIONS = [
   { key: "sad", label: "😢 Triste" },
   { key: "angry", label: "😡 En colère" },
   { key: "photo-love", label: "Pdp/pdc❤️" },
-  { key: "mix", label: "🎭 Réaction Mix" },
+  { key: "mix", label: "🎭 Mix 👍❤️🥰" },
 ] as const;
 
 /** Kept for compatibility; all reactions are now in REACTIONS. */
