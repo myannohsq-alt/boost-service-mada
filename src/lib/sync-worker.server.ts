@@ -487,7 +487,7 @@ async function submitOrder(
       subs.push({ key, id, response: r });
       first ??= r;
     }
-    res = { ...(first as object), mix_parts: subs } as typeof res;
+    res = { ...(first as object), mix_parts: subs } as unknown as typeof res;
   } else {
     res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, order.comments || undefined);
   }
