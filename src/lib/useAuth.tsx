@@ -54,6 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ]);
     setProfile((p as Profile) ?? null);
     setIsAdmin(Boolean(roles?.some((r) => r.role === "admin")));
+    const ref = localStorage.getItem("bsm_ref");
+    if (ref && p && !(p as Profile).referred_by) {
+      localStorage.removeItem("bsm_ref");
+      void (supabase.rpc as any)("claim_referral", { _code: ref });
+    } else if (ref) localStorage.removeItem("bsm_ref");
   };
 
   useEffect(() => {

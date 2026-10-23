@@ -83,7 +83,7 @@ export function AuthPage() {
 
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get("ref");
-    if (ref) setRefCode(ref);
+    if (ref) { setRefCode(ref); localStorage.setItem("bsm_ref", ref.slice(0, 20)); }
   }, []);
 
   useEffect(() => {
