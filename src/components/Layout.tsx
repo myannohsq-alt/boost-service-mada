@@ -186,6 +186,7 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
           </div>
 
           <div className="flex items-center justify-end gap-1.5">
+            {user ? <NotificationBell /> : null}
             <button onClick={doRefresh} aria-label="Actualiser" className={`hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex ${spin ? "animate-spin" : ""}`}>🔄</button>
             <button onClick={() => setLang(lang === "mg" ? "fr" : "mg")} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Langue">
               {lang === "mg" ? "🇲🇬" : "🇫🇷"}
