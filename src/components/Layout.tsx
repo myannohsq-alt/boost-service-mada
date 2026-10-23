@@ -1,3 +1,4 @@
+import { NotificationBell } from "@/components/NotificationBell";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type ReactNode } from "react";
