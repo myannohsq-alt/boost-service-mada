@@ -21,7 +21,7 @@ function dailyMessages() {
   const day = Math.floor(d.getTime() / 86400000);
   const a = POOL[(day * 2) % POOL.length];
   const b = POOL[(day * 2 + 1) % POOL.length];
-  return [a, b];
+  return [a, b].filter((x): x is (typeof POOL)[number] => !!x);
 }
 
 const SEEN_NOTIF = "bsm_notif_seen_day";
