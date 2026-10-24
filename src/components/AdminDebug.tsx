@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
 import {
   getSmmgenStats,
   listFailedOrders,
@@ -133,15 +134,30 @@ export function AdminDebug({ onDone }: { onDone: (msg: string) => void }) {
                 {o.retry_count} tentative(s) •{" "}
                 {new Date(o.created_at as string).toLocaleString("fr-FR")}
               </p>
-              {!o.provider_order_id ? (
-                <button
-                  className="bsm-btn !mt-1 !py-1 !text-xs"
-                  disabled={retry.isPending}
-                  onClick={() => retry.mutate(o.id)}
-                >
-                  🔁 Réessayer
-                </button>
-              ) : null}
+              <div className="mt-1 flex gap-2">
+                {!o.provider_order_id ? (
+                  <button
+                    className="bsm-btn !py-1 !text-xs"
+                    disabled={retry.isPending}
+                    onClick={() => retry.mutate(o.id)}
+                  >
+                    🔁 Réessayer
+                  </button>
+                ) : null}
+                {!["done", "rejected", "cancelled"].includes(o.status as string) ? (
+                  <button
+                    className="bsm-btn !bg-destructive !py-1 !text-xs !text-destructive-foreground"
+                    onClick={async () => {
+                      if (!confirm("Annuler cette commande et rembourser le client ?")) return;
+                      const { error } = await supabase.rpc("admin_cancel_order", { _id: o.id });
+                      onDone(error ? `❌ ${error.message}` : "✅ Commande annulée et remboursée");
+                      await qc.invalidateQueries({ queryKey: ["failed-orders"] });
+                    }}
+                  >
+                    🚫 Annuler
+                  </button>
+                ) : null}
+              </div>
             </div>
           ))}
           {!failed?.length ? (

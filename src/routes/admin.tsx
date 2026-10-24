@@ -165,6 +165,17 @@ function AdminPage() {
                       {s === "processing" ? "🔵 En cours" : s === "done" ? "🟢 Terminée" : "🔴 Refusée"}
                     </button>
                   ))}
+                  {!["done", "rejected", "cancelled"].includes(o.status) ? (
+                    <button
+                      className="rounded-lg bg-destructive px-3 py-2 text-xs font-semibold text-destructive-foreground"
+                      onClick={() => {
+                        if (confirm("Annuler cette commande et rembourser le client ?"))
+                          void run(() => supabase.rpc("admin_cancel_order", { _id: o.id }) as never, "✅ Commande annulée et remboursée");
+                      }}
+                    >
+                      🚫 Annuler
+                    </button>
+                  ) : null}
                 </div>
               </div>
             ))}
