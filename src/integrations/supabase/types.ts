@@ -1197,6 +1197,7 @@ export type Database = {
         Args: { _name: string; _seconds: number }
         Returns: boolean
       }
+      admin_cancel_order: { Args: { _id: string }; Returns: undefined }
       approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
       available_missions: {

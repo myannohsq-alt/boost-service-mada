@@ -64,6 +64,13 @@
       "when": 1792645623081,
       "tag": "0008_lock_orders_direct_insert",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792823342347,
+      "tag": "0009_admin_cancel_order",
+      "breakpoints": true
     }
   ]
 }
