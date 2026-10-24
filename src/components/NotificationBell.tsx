@@ -78,18 +78,16 @@ export function NotificationBell() {
       if (localStorage.getItem("bsm_push_day") === todayKey()) return;
       localStorage.setItem("bsm_push_day", todayKey());
       const opts = { body: "Ataovy dépôt 40.000 Ar dia mahazo bonus +5% avy hatrany! Tsindrio eto 🚀", icon: "/icon-192.png", badge: "/icon-192.png", tag: "bsm-bonus" };
-      navigator.serviceWorker?.getRegistration?.().then((reg) => {
-        if (reg) return reg.showNotification("🎁 BONUS DÉPÔT +5% — BOOST MADA", opts);
+      try {
         const n = new Notification("🎁 BONUS DÉPÔT +5% — BOOST MADA", opts);
         n.onclick = () => { window.focus(); window.location.href = "/depot"; };
-      }).catch(() => {});
+      } catch { /* unsupported in this browser */ }
     };
-    if (Notification.permission === "granted") show();
-    else if (Notification.permission === "default") {
-      const ask = () => { void Notification.requestPermission().then((p) => { if (p === "granted") show(); }); window.removeEventListener("click", ask); };
-      window.addEventListener("click", ask, { once: true });
-      return () => window.removeEventListener("click", ask);
-    }
+    if (Notification.permission === "granted") { show(); return undefined; }
+    if (Notification.permission !== "default") return undefined;
+    const ask = () => { void Notification.requestPermission().then((p) => { if (p === "granted") show(); }); };
+    window.addEventListener("click", ask, { once: true });
+    return () => window.removeEventListener("click", ask);
   }, []);
 
   const openPanel = () => {
