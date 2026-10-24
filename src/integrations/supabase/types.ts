@@ -1225,6 +1225,7 @@ export type Database = {
         Args: { _mission_id: string; _proof_path: string }
         Returns: undefined
       }
+      claim_referral: { Args: { _code: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
