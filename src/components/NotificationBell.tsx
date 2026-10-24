@@ -71,23 +71,29 @@ export function NotificationBell() {
     else nav.clearAppBadge?.().catch(() => {});
   }, [total]);
 
-  // Phone notification (once per day): deposit 40.000 Ar bonus 5%
+  // Phone notifications ×2 per day: morning = deposit bonus 5%, afternoon = order
   useEffect(() => {
     if (typeof Notification === "undefined") return;
-    const show = () => {
-      if (localStorage.getItem("bsm_push_day") === todayKey()) return;
-      localStorage.setItem("bsm_push_day", todayKey());
-      const opts = { body: "Ataovy dépôt 40.000 Ar dia mahazo bonus +5% avy hatrany! Tsindrio eto 🚀", icon: "/icon-192.png", badge: "/icon-192.png", tag: "bsm-bonus" };
+    const push = () => {
+      const slot = new Date().getHours() < 14 ? "am" : "pm";
+      const key = `${todayKey()}-${slot}`;
+      if (localStorage.getItem("bsm_push_slot") === key) return;
+      localStorage.setItem("bsm_push_slot", key);
+      const m = slot === "am"
+        ? { t: "🎁 BONUS DÉPÔT +5% — BOOST MADA", b: "Ataovy dépôt 40.000 Ar na mihoatra dia mahazo bonus +5% ho azy! 🚀", to: "/depot" }
+        : { t: "🚀 Boostez maintenant — BOOST MADA", b: "Ataovy commande androany: followers, réactions, vues haingana 5-15 min ⚡", to: "/services" };
       try {
-        const n = new Notification("🎁 BONUS DÉPÔT +5% — BOOST MADA", opts);
-        n.onclick = () => { window.focus(); window.location.href = "/depot"; };
-      } catch { /* unsupported in this browser */ }
+        const n = new Notification(m.t, { body: m.b, icon: "/icon-192.png", badge: "/icon-192.png", tag: `bsm-${slot}` });
+        n.onclick = () => { window.focus(); window.location.href = m.to; };
+      } catch { /* unsupported */ }
     };
-    if (Notification.permission === "granted") { show(); return undefined; }
+    let iv: number | undefined;
+    const start = () => { push(); iv = window.setInterval(push, 10 * 60000); };
+    if (Notification.permission === "granted") { start(); return () => window.clearInterval(iv); }
     if (Notification.permission !== "default") return undefined;
-    const ask = () => { void Notification.requestPermission().then((p) => { if (p === "granted") show(); }); };
+    const ask = () => { void Notification.requestPermission().then((p) => { if (p === "granted") start(); }); };
     window.addEventListener("click", ask, { once: true });
-    return () => window.removeEventListener("click", ask);
+    return () => { window.removeEventListener("click", ask); window.clearInterval(iv); };
   }, []);
 
   const openPanel = () => {

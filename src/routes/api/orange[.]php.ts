@@ -58,7 +58,9 @@ async function handle(request: Request) {
     if (!flipped?.length) return json({ success: true, credited: false, message: "already processed" });
 
     const { data: prof } = await supabaseAdmin.from("profiles").select("balance").eq("id", match.user_id).single();
-    await supabaseAdmin.from("profiles").update({ balance: Number(prof?.balance ?? 0) + Number(match.amount) }).eq("id", match.user_id);
+    const bonus = Number(match.amount) >= 40000 ? Math.round(Number(match.amount) * 0.05) : 0;
+    await supabaseAdmin.from("profiles").update({ balance: Number(prof?.balance ?? 0) + Number(match.amount) + bonus }).eq("id", match.user_id);
+    await supabaseAdmin.from("notifications").insert({ user_id: match.user_id, title: "Recharge validée ✅", body: `Votre solde a été crédité de ${match.amount} Ar.${bonus ? " 🎁 Bonus 5% offert !" : ""}` });
     return json({ success: true, credited: true, recharge_id: match.id, amount: Number(match.amount) });
   } catch (e) {
     console.error("orange.php", e);
