@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Two encouragement messages per day, same for every user (rotates by date).
 const POOL = [
-  { title: "💰 Ataovy ny dépôt anao androany!", body: "Recharge haingana amin'ny MVola, Airtel na Orange dia manomboha boost avy hatrany 🚀", to: "/depot" },
+  { title: "🎁 Dépôt 40.000 Ar = Bonus +5%!", body: "Ataovy dépôt 40.000 Ar dia mahazo bonus 5% avy hatrany 🚀", to: "/depot" },
   { title: "💬 Miresaha ao amin'ny Groupe!", body: "Zarao ny vokatrao, mametraha fanontaniana ary mifanampia amin'ny mpikambana hafa 🤝", to: "/groupe" },
   { title: "🎁 Asaivo ny namanao!", body: "Alefaso amin'ny namanao ny rohy fanasanao ao amin'ny Profil — fifanampiana no hery 💪", to: "/profil" },
   { title: "🔥 Boosté ny pejinao androany", body: "Ataovy dépôt kely dia hitombo haingana ny followers sy réactions-nao ⚡", to: "/depot" },
@@ -70,6 +70,27 @@ export function NotificationBell() {
     if (total > 0) nav.setAppBadge?.(total).catch(() => {});
     else nav.clearAppBadge?.().catch(() => {});
   }, [total]);
+
+  // Phone notification (once per day): deposit 40.000 Ar bonus 5%
+  useEffect(() => {
+    if (typeof Notification === "undefined") return;
+    const show = () => {
+      if (localStorage.getItem("bsm_push_day") === todayKey()) return;
+      localStorage.setItem("bsm_push_day", todayKey());
+      const opts = { body: "Ataovy dépôt 40.000 Ar dia mahazo bonus +5% avy hatrany! Tsindrio eto 🚀", icon: "/icon-192.png", badge: "/icon-192.png", tag: "bsm-bonus" };
+      navigator.serviceWorker?.getRegistration?.().then((reg) => {
+        if (reg) return reg.showNotification("🎁 BONUS DÉPÔT +5% — BOOST MADA", opts);
+        const n = new Notification("🎁 BONUS DÉPÔT +5% — BOOST MADA", opts);
+        n.onclick = () => { window.focus(); window.location.href = "/depot"; };
+      }).catch(() => {});
+    };
+    if (Notification.permission === "granted") show();
+    else if (Notification.permission === "default") {
+      const ask = () => { void Notification.requestPermission().then((p) => { if (p === "granted") show(); }); window.removeEventListener("click", ask); };
+      window.addEventListener("click", ask, { once: true });
+      return () => window.removeEventListener("click", ask);
+    }
+  }, []);
 
   const openPanel = () => {
     setOpen(true);

@@ -305,6 +305,7 @@ const BADGE_OPTIONS = [
   { value: "ultra", label: "⚡ Ultra" },
   { value: "reco", label: "⭐ Recommandé" },
   { value: "new", label: "🆕 Nouveau" },
+  { value: "indispo", label: "🔒 Indisponible" },
 ];
 
 function AdminServices({ onDone }: { onDone: (m: string) => void }) {
@@ -346,6 +347,15 @@ function AdminServices({ onDone }: { onDone: (m: string) => void }) {
                 ({s.platform} • {s.category})
               </span>
             </p>
+            <div className="flex gap-1.5">
+            <button
+              onClick={() => void patch(s.id, { badge: s.badge === "indispo" ? "" : "indispo" })}
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                s.badge === "indispo" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-foreground"
+              }`}
+            >
+              {s.badge === "indispo" ? "🔒 Indisponible" : "✅ Disponible"}
+            </button>
             <button
               onClick={() => void patch(s.id, { active: !s.active })}
               className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -354,6 +364,7 @@ function AdminServices({ onDone }: { onDone: (m: string) => void }) {
             >
               {s.active ? "👁️ Visible" : "🙈 Masqué"}
             </button>
+            </div>
           </div>
 
           <div className="mt-3 grid gap-2 sm:grid-cols-4">

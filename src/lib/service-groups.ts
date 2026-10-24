@@ -77,7 +77,8 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
       map.set(key, group);
     }
 
-    if (!group.badge && s.badge) group.badge = s.badge;
+    if (/indispo/i.test(s.badge ?? "")) group.badge = s.badge;
+    else if (!group.badge && s.badge) group.badge = s.badge;
     if (!group.note && s.note) group.note = s.note;
     if (unitPrice < group.unitPrice) group.unitPrice = unitPrice;
 
