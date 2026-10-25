@@ -1,21 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthPage } from "@/routes/auth";
+import { publicPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy | boostmada.app" },
-      { name: "description", content: "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Paiement MVola Orange Money Airtel. Livraison rapide Madagascar." },
-      { property: "og:title", content: "BoostMada - Boost Facebook TikTok Instagram 100% Gasy" },
-      { property: "og:description", content: "Boostez vos réseaux sociaux 100% Gasy. Likes, Followers, Vues, Commentaires IA Gasy. Paiement MVola Orange Money Airtel. Livraison rapide Madagascar." },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://boostmada.app/" },
-      { property: "og:site_name", content: "BoostMada" },
-      { property: "og:locale", content: "fr_MG" },
-      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
-    ],
+    ...publicPageHead("/", "BoostMada — Boost réseaux sociaux à Madagascar, 100% Gasy", "Réactions, abonnés, vues et commentaires pour Facebook, TikTok, Instagram et YouTube. Créez votre compte ; paiements en Ariary via MVola, Orange Money ou Airtel.", true),
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "BOOST SERVICE MADA",
+        alternateName: "BoostMada",
+        url: "https://boostmada.app/",
+        inLanguage: ["fr", "mg"],
+      }),
+    }],
   }),
   component: AuthPage,
 });
