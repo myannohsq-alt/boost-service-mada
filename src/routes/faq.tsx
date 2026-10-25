@@ -1,23 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
+import { publicPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "FAQ & règles — BOOST SERVICE MADA" },
-      {
-        name: "description",
-        content:
-          "Questions fréquentes : dépôt minimum, recharge, rapidité des services, remboursement et support.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "FAQ — BOOST SERVICE MADA" },
-      { property: "og:description", content: "Toutes les réponses à vos questions." },
-      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
-      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
-    ],
-  }),
+  head: () => publicPageHead("/faq", "Questions fréquentes — Recharge et commandes BoostMada", "Retrouvez les réponses sur les recharges, les commandes et le support BOOST SERVICE MADA avant de choisir votre service de boost."),
   component: FaqPage,
 });
 

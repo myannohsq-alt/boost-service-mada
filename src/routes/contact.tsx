@@ -1,26 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
+import { publicPageHead } from "@/lib/seo";
 import { useAuth } from "@/lib/useAuth";
 import { OPERATORS } from "@/lib/payment-operators";
 
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact & support 24h/24 — BOOST SERVICE MADA" },
-      {
-        name: "description",
-        content:
-          "Contactez le support BOOST SERVICE MADA sur Messenger BOOST & SERVICE ou WhatsApp +261 37 51 410 25.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "Contact — BOOST SERVICE MADA" },
-      { property: "og:description", content: "Support disponible 24h/24." },
-      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
-      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
-    ],
-  }),
+  head: () => publicPageHead("/contact", "Contact et support — BOOST SERVICE MADA", "Contactez BOOST SERVICE MADA sur Messenger BOOST & SERVICE ou WhatsApp au +261 37 51 410 25 pour vos questions sur les services et commandes."),
   component: ContactPage,
 });
 

@@ -1,11 +1,12 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Mail, LockKeyhole, Download, Star, X } from "lucide-react";
+import { Mail, LockKeyhole, Download, Star, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/useAuth";
 import { AiAssistant } from "@/components/AiAssistant";
+import { publicPageHead } from "@/lib/seo";
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -15,18 +16,7 @@ type InstallPromptEvent = Event & {
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): { ref?: string } =>
     typeof search["ref"] === "string" ? { ref: search["ref"] as string } : {},
-  head: () => ({
-    meta: [
-      { title: "Connexion & Inscription — BOOST SERVICE MADA" },
-      { name: "description", content: "Connectez-vous à BoostMada pour commander vos services de boost Facebook, TikTok, Instagram et YouTube à Madagascar." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "Connexion — BOOST SERVICE MADA" },
-      { property: "og:description", content: "Accédez à votre compte BoostMada, votre solde et vos commandes." },
-      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
-      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
-    ],
-  }),
+  head: () => publicPageHead("/auth", "Connexion et inscription — BoostMada", "Créez votre compte BoostMada ou connectez-vous pour accéder aux services, à votre solde en Ariary et au suivi de vos commandes.", true),
   component: AuthPage,
 });
 
@@ -163,15 +153,18 @@ export function AuthPage() {
         <span className="text-sm text-muted-foreground">Chargement…</span>
       ) : (
         <section className="relative z-10 w-full max-w-[400px]" aria-label="Connexion BoostMada">
+          <header className="mb-5 text-center">
+            <img src="/social/boostmada-share.jpg" alt="SMM B&S — BOOST SERVICE MADA, 100% Gasy" width={1200} height={630} fetchPriority="high" className="mb-4 aspect-[1200/630] w-full rounded-lg object-contain" />
+            <h1 className="font-sans text-xl font-bold leading-tight text-foreground">BOOST SERVICE MADA</h1>
+            <p className="mt-2 text-sm font-medium text-auth-subtitle">Boostez vos réseaux sociaux - 100% Gasy</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Réactions, abonnés, vues et commentaires sur Facebook, TikTok, Instagram et YouTube.</p>
+            <p className="mt-2 text-xs text-muted-foreground">Paiements en Ariary · MVola · Orange Money · Airtel</p>
+            {mode === "login" && <Button onClick={() => changeMode("signup")} className="auth-primary-button mt-4 h-11 w-full rounded-lg font-semibold">Créer mon compte <ArrowRight aria-hidden="true" className="h-4 w-4" /></Button>}
+          </header>
           <div className="rounded-[20px] border border-border bg-card p-6 shadow-[0_18px_48px_-24px_var(--color-background)]">
-          <img src="/icon-192.png" alt="SMM B&S" width={48} height={48} className="mx-auto h-12 w-12 object-contain" />
-          <h1 className="mt-3 text-center font-sans text-[20px] font-bold uppercase leading-tight tracking-[3px] text-foreground">
-            BOOST SERVICE MADA
-          </h1>
-          <p className="mt-1.5 text-center text-[13px] text-auth-subtitle">Boostez vos réseaux sociaux</p>
-          <p className="mt-3 text-center text-[13px] text-muted-foreground">
-            {mode === "signup" ? "Créez votre compte" : mode === "forgot" ? "Réinitialisez votre mot de passe" : "Connectez-vous à votre compte"}
-          </p>
+          <h2 className="text-center font-sans text-lg font-bold text-foreground">
+            {mode === "signup" ? "Créer mon compte" : mode === "forgot" ? "Réinitialiser mon mot de passe" : "Déjà client ? Connectez-vous"}
+          </h2>
 
           <form onSubmit={submit} className="mt-5 space-y-3.5">
             {mode === "signup" && (
@@ -204,7 +197,7 @@ export function AuthPage() {
             )}
             {msg && <p role="status" className="rounded-md bg-secondary p-3 text-sm">{msg}</p>}
             <Button disabled={busy} type="submit" className="auth-primary-button mt-1 h-11 w-full rounded-xl text-sm font-bold uppercase hover:opacity-90">
-              {busy ? "Veuillez patienter…" : mode === "login" ? "Se connecter" : mode === "signup" ? "S'inscrire" : "Envoyer le lien"}
+              {busy ? "Veuillez patienter…" : mode === "login" ? "Se connecter" : mode === "signup" ? "Créer mon compte" : "Envoyer le lien"}
             </Button>
           </form>
 
@@ -250,6 +243,11 @@ export function AuthPage() {
               </a>
             </Button>
           </div>
+          <nav aria-label="Informations BoostMada" className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+            <Link to="/a-propos" className="hover:text-primary">À propos</Link>
+            <Link to="/faq" className="hover:text-primary">Questions fréquentes</Link>
+            <Link to="/contact" className="hover:text-primary">Contacter le support</Link>
+          </nav>
         </section>
       )}
        {!loading && !user && <AiAssistant orange />}
