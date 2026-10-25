@@ -23,3 +23,4 @@
 - [x] Vérifier que le groupe n'affiche que des clients réels, facture 1 Ar au texte et conserve photo/vocal localement de façon lisible.
 - [x] Menu Tutoriel : quatre vrais lecteurs vidéo jouables (compte 10,8 s, dépôt 23,8 s, commande 17,1 s, suivi 13,2 s) avec étapes malgaches numérotées en orange et badges « Gratuit 🎬 » ; vérifié en navigateur.
 - [ ] Lien « Mon Profil » dans le menu client — en attente : le menu client est figé à cinq entrées précises, il faut dire laquelle remplacer ou ajouter.
+- [ ] Améliorer le référencement, les aperçus Facebook/WhatsApp et les appels à l’action de l’accueil sans changer les comptes ni les commandes.
