@@ -1,26 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
+import { publicPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/a-propos")({
-  head: () => ({
-    meta: [
-      { title: "À propos — BOOST SERVICE MADA 🇲🇬" },
-      {
-        name: "description",
-        content:
-          "BOOST SERVICE MADA est une plateforme malagasy de boost réseaux sociaux : rapide, sécurisée et disponible 24h/24, réservée à ses membres.",
-      },
-      { property: "og:title", content: "À propos — BOOST SERVICE MADA" },
-      {
-        property: "og:description",
-        content: "Qui sommes-nous : plateforme premium malagasy de boost réseaux sociaux.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:image", content: "https://boostmada.app/icon-512.png" },
-      { name: "twitter:image", content: "https://boostmada.app/icon-512.png" },
-    ],
-  }),
+  head: () => publicPageHead("/a-propos", "À propos de BoostMada — Boost réseaux sociaux à Madagascar", "Découvrez BOOST SERVICE MADA : réactions, abonnés, vues et commentaires pour les créateurs et les pages malagasy, avec paiements en Ariary."),
   component: AboutPage,
 });
 

@@ -14,10 +14,12 @@ export const Route = createFileRoute("/tutoriel")({
           "Apprenez à créer un compte, faire un dépôt, commander et suivre vos commandes sur BOOST SERVICE MADA.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://boostmada.app/tutoriel" },
       { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Tutoriels — BOOST SERVICE MADA" },
       { property: "og:description", content: "Guides pas à pas en Malagasy et Français." },
     ],
+    links: [{ rel: "canonical", href: "https://boostmada.app/tutoriel" }],
   }),
   component: TutoPage,
 });
