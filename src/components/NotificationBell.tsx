@@ -7,7 +7,7 @@ const POOL = [
   { title: "🎁 Dépôt 40.000 Ar = Bonus +5%!", body: "Ataovy dépôt 40.000 Ar dia mahazo bonus 5% avy hatrany 🚀", to: "/depot" },
   { title: "💬 Miresaha ao amin'ny Groupe!", body: "Zarao ny vokatrao, mametraha fanontaniana ary mifanampia amin'ny mpikambana hafa 🤝", to: "/groupe" },
   { title: "🎁 Asaivo ny namanao!", body: "Alefaso amin'ny namanao ny rohy fanasanao ao amin'ny Profil — fifanampiana no hery 💪", to: "/profil" },
-  { title: "🔥 Boosté ny pejinao androany", body: "Ataovy dépôt kely dia hitombo haingana ny followers sy réactions-nao ⚡", to: "/depot" },
+  { title: "🚀 Ataovy commande androany", body: "Followers, réactions, vues: haingana 5-15 min ⚡ Boostéo ny pejinao!", to: "/services" },
   { title: "👥 Misy resaka vaovao ao amin'ny Groupe", body: "Midira dia ampio na anontanio ireo mpikambana hafa 💬", to: "/groupe" },
   { title: "🤝 Zarao amin'ny namana", body: "Invitation iray = fanampiana iray. Alefaso ny rohinao amin'ny Facebook sy WhatsApp 📲", to: "/profil" },
 ];
