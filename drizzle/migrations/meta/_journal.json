@@ -71,6 +71,13 @@
       "when": 1792823342347,
       "tag": "0009_admin_cancel_order",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793050543388,
+      "tag": "0010_mission_one_per_user",
+      "breakpoints": true
     }
   ]
 }
