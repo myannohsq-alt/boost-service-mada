@@ -121,8 +121,8 @@ export const listProviderServices = createServerFn({ method: "POST" })
       .order("name", { ascending: true })
       .limit(60);
     if (data.onlySelected) q = q.eq("selected", true);
-    const term = (data.search ?? "").replace(/[^\p{L}\p{N} _-]/gu, "").trim().slice(0, 60);
-    if (term) q = q.or(`name.ilike.%${term}%,category.ilike.%${term}%`);
+    const term = (data.search ?? "").replace(/[^\p{L}\p{N} _-]/gu, "").replace(/[,().%*\\"]/g, "").trim().slice(0, 60);
+    if (term) q = q.or(`name.ilike."%${term}%",category.ilike."%${term}%"`);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     return rows ?? [];
@@ -166,8 +166,8 @@ export const listLocalServices = createServerFn({ method: "POST" })
       .order("platform", { ascending: true })
       .limit(200);
     if (data.onlyUnmapped) q = q.is("provider_service_id", null);
-    const term = (data.search ?? "").replace(/[^\p{L}\p{N} _-]/gu, "").trim().slice(0, 60);
-    if (term) q = q.or(`name_fr.ilike.%${term}%,category.ilike.%${term}%,platform.ilike.%${term}%`);
+    const term = (data.search ?? "").replace(/[^\p{L}\p{N} _-]/gu, "").replace(/[,().%*\\"]/g, "").trim().slice(0, 60);
+    if (term) q = q.or(`name_fr.ilike."%${term}%",category.ilike."%${term}%",platform.ilike."%${term}%"`);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     return rows ?? [];
