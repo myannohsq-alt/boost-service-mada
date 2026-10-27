@@ -112,7 +112,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {hasVisibility && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de Visibilité</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
-          <Button type="button" variant="outline" aria-pressed={visibility === "invisible"} onClick={() => setVisibility("invisible")}
+          <Button type="button" variant="outline" aria-pressed={visibility === "invisible"} onClick={() => { setVisibility("invisible"); if (reaction && !["like", "love", "haha", "mix"].includes(reaction)) setReaction(null); }}
             className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "invisible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
             <span>Invisible (RAPIDE) • tsy miena 🔥</span>
           </Button>
@@ -125,7 +125,9 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {needsReaction && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de réaction <span aria-hidden="true">*</span></legend>
         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-           {(isFacebookGasy ? REACTIONS.filter(item => item.key !== "photo-love" && item.key !== "mix") : REACTIONS).map(item => <Button key={item.key} type="button" variant="outline"
+           {(isFacebookGasy ? REACTIONS.filter(item => item.key !== "photo-love" && item.key !== "mix")
+             : hasVisibility && visibility === "invisible" ? REACTIONS.filter(item => ["like", "love", "haha", "mix"].includes(item.key))
+             : REACTIONS).map(item => <Button key={item.key} type="button" variant="outline"
             aria-pressed={reaction === item.key}
             onClick={() => setReaction(item.key)}
             className={`h-10 min-w-0 px-2 text-xs ${reaction === item.key ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
