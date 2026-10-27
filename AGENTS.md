@@ -11,7 +11,7 @@
 
 - Keep one `ServiceForm` for all catalogue orders and use `reaction:<key>` in order notes for reaction routing; this preserves the existing order RPC and lets the server select the correct provider product.
 - Treat catalogue pack `unit` as a pricing divisor rather than a universal order minimum; the public minimum is 100 and the backend validates provider limits before charging.
-- Only Réactions Vazaha exposes visibility: invisible appends `;visibility:invisible` to `reaction:<key>`; both choices retain the same price for consistent billing.
+- Only Réactions Vazaha exposes visibility: invisible appends `;visibility:invisible` to `reaction:<key>`; invisible uses its own catalogue service price and offers only like, love, haha and mix.
 - Keep Facebook Gasy as one catalogue card with two underlying orderable services; the selected service ID preserves distinct reaction/follower provider routing and server-side pricing.
 - Keep the client sidebar navigation in Layout separate from the full admin navigation; clients need exactly five menu actions while admins retain their complete menu.
 - Share the login experience between / and /auth; this keeps sign-in, signup, recovery, and post-auth Services navigation consistent without duplicate forms.
