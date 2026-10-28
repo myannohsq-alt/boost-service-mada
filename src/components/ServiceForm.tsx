@@ -30,8 +30,10 @@ export function ServiceForm({ group, onClose, onOrdered }: {
   const isFacebookGasy = group.key === FACEBOOK_GASY_KEY;
   const needsReaction = isFacebookGasy ? gasyType === "Réaction Gasy" : isReactionService(group.platform, group.nameFr);
   const hasVisibility = needsReaction && /vazah/i.test(group.nameFr);
+  const followerVisibility = !needsReaction && !isFacebookGasy && /follower/i.test(group.nameFr)
+    && group.options.some((o) => /invisible|tsy hita/i.test(o.service.name_fr));
   // Retain the existing service variant for pricing and provider mapping.
-  const matchingOptions = hasVisibility
+  const matchingOptions = hasVisibility || followerVisibility
     ? group.options.filter((option) => visibility === "invisible"
       ? /invisible|tsy hita/i.test(option.service.name_fr)
       : /visible|hita/i.test(option.service.name_fr) && !/invisible|tsy hita/i.test(option.service.name_fr))
@@ -106,6 +108,16 @@ export function ServiceForm({ group, onClose, onOrdered }: {
             aria-pressed={gasyType === type} onClick={() => { setGasyType(type); setError(null); }}
             className={`h-12 min-w-0 whitespace-normal px-2 text-center text-xs ${gasyType === type ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
             {type}
+          </Button>)}
+        </div>
+      </fieldset>}
+      {followerVisibility && <fieldset>
+        <legend className="text-xs text-muted-foreground">Type de Followers</legend>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {([["invisible", "🕶️ Followers Invisible", "800 Ar/100"], ["visible", "👁️ Followers Visible", "300 Ar/100"]] as const).map(([v, label, price]) => <Button key={v} type="button" variant="outline"
+            aria-pressed={visibility === v} onClick={() => { setVisibility(v); setError(null); }}
+            className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === v ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+            <span>{label}</span><span className="opacity-80">{price}</span>
           </Button>)}
         </div>
       </fieldset>}
