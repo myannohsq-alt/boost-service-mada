@@ -294,12 +294,17 @@ function DepotPage() {
             </div>
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || !(Number(amount) >= MIN_DEPOSIT)}
               onClick={() => void submit()}
-              className="bsm-btn bsm-btn-primary w-full disabled:opacity-50"
+              className="bsm-btn bsm-btn-primary w-full disabled:cursor-not-allowed disabled:opacity-40"
             >
               {busy ? "Envoi…" : "✅ Envoyer la demande"}
             </button>
+            {amount && Number(amount) < MIN_DEPOSIT ? (
+              <p className="text-center text-xs text-destructive">
+                Dépôt minimum : {formatAr(MIN_DEPOSIT)}
+              </p>
+            ) : null}
           </div>
 
           {/* --- Historique --- */}

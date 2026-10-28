@@ -80,11 +80,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await load(session?.user?.id);
   };
 
+  // Mahita rehefa nekena ny dépôt: notification + animation + solde vaovao.
+  const [celebrate, setCelebrate] = useState<number | null>(null);
+  useEffect(() => {
+    const uid = session?.user?.id;
+    if (!uid) return;
+    const key = `bsm_pending_recharges_${uid}`;
+    let stop = false;
+    const check = async () => {
+      const { data } = await supabase
+        .from("recharges")
+        .select("id, amount, status")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (stop || !data) return;
+      const prev: string[] = JSON.parse(localStorage.getItem(key) || "[]");
+      const approved = data.filter((r) => prev.includes(r.id) && r.status === "approved");
+      localStorage.setItem(key, JSON.stringify(data.filter((r) => r.status === "pending").map((r) => r.id)));
+      if (approved.length) {
+        const total = approved.reduce((s, r) => s + Number(r.amount), 0);
+        await load(uid);
+        setCelebrate(total);
+        const { toast } = await import("sonner");
+        toast.success(`🎉 Dépôt accepté : +${total.toLocaleString("fr-FR")} Ar`, {
+          description: "Efa tafiditra ao amin'ny soldenao.",
+        });
+        if ("Notification" in window && Notification.permission === "granted") {
+          try { new Notification("Dépôt accepté ✅", { body: `+${total.toLocaleString("fr-FR")} Ar ajouté à votre solde`, icon: "/icon-192.png" }); } catch { /* ignore */ }
+        }
+        setTimeout(() => setCelebrate(null), 3500);
+      }
+    };
+    void check();
+    const t = setInterval(() => void check(), 15000);
+    return () => { stop = true; clearInterval(t); };
+  }, [session?.user?.id]);
+
   return (
     <AuthContext.Provider
       value={{ session, user: session?.user ?? null, profile, isAdmin, loading, refresh }}
     >
       {children}
+      {celebrate !== null && (
+        <div className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center bg-background/40 backdrop-blur-sm animate-in fade-in">
+          <div className="rounded-2xl border border-primary bg-card px-8 py-6 text-center shadow-2xl animate-in zoom-in-50 duration-500">
+            <div className="text-5xl animate-bounce">🎉</div>
+            <p className="mt-2 font-display text-lg font-bold text-foreground">Dépôt accepté !</p>
+            <p className="text-2xl font-bold text-primary">+{celebrate.toLocaleString("fr-FR")} Ar</p>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 }
