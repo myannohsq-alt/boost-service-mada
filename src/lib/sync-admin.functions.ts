@@ -312,6 +312,7 @@ export const listFailedOrders = createServerFn({ method: "POST" })
         "id, service_label, quantity, target_link, status, api_error, provider_error, provider_order_id, retry_count, created_at",
       )
       .or("status.eq.failed,api_error.neq.")
+      .not("status", "in", "(done,rejected,cancelled)")
       .order("created_at", { ascending: false })
       .limit(50);
     return rows ?? [];

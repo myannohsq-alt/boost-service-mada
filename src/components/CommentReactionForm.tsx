@@ -20,8 +20,8 @@ const REACTION_CHOICES = [
 
 const QUICK = [100, 500, 1000];
 const TIERS = [
-  { key: "gasy", label: "🇲🇬 GASY 20000Ar/100", price: 20000 },
-  { key: "vazah", label: "🌍 VAZAH 15000Ar/100", price: 15000 },
+  { key: "gasy", label: "🇲🇬 GASY 2000Ar/100", price: 2000 },
+  { key: "vazah", label: "🌍 VAZAH 1500Ar/100", price: 1500 },
 ] as const;
 const CIBLES = [{ key: "pub", label: "Pub" }, { key: "pdp", label: "PDP" }, { key: "pdc", label: "PDC" }] as const;
 
@@ -42,7 +42,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
   const service = group.options[0]?.service;
   const quantity = Number(quantityText);
   const min = 100;
-  const cost = Number.isSafeInteger(quantity) && quantity > 0 ? Math.ceil(quantity / 100 * (TIERS.find(t => t.key === tier)?.price ?? 20000)) : 0;
+  const cost = Number.isSafeInteger(quantity) && quantity > 0 ? Math.ceil(quantity / 100 * (TIERS.find(t => t.key === tier)?.price ?? 2000)) : 0;
   const balance = Number(profile?.balance ?? 0);
   const insufficient = cost > balance;
 
@@ -92,7 +92,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
   return <div className="space-y-4">
     <div>
       <ServiceBadge badge={group.badge} />
-      <h2 id="service-form-title" className="mt-1 font-display text-lg font-bold text-foreground">Reaction amin'ny Commentaire 💬</h2>
+      <h2 id="service-form-title" className="mt-1 font-display text-lg font-bold text-foreground">Réaction sur Commentaire 💬</h2>
     </div>
     {!user ? <div className="space-y-3 text-sm">
       <p>Vous devez être connecté pour commander.</p>
