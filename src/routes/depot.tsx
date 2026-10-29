@@ -179,21 +179,28 @@ function DepotPage() {
           </div>
 
           {/* --- Carte de paiement de l'opérateur --- */}
-          <div key={active.id} style={accent} className="bsm-op-card mt-4 p-5 text-center">
-            <span className="bsm-op-badge">
-              {active.emoji} {active.badge}
-            </span>
-            <p className="bsm-op-number mt-4">{active.phone}</p>
-            <p className="mt-3 text-sm font-extrabold uppercase tracking-[0.22em] text-gold">
-              👤 {active.owner}
-            </p>
-            <button
-              type="button"
-              onClick={() => void copy(active)}
-              className="mt-2 text-xs font-semibold text-muted-foreground underline"
-            >
-              {copied ? "✅ Copié !" : "📋 Copier le numéro"}
-            </button>
+          <div key={active.id} style={accent} className="bsm-op-card mt-4 p-4">
+            <div className="flex items-center gap-3 border-b border-border pb-3">
+              <span
+                className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border-2 font-display text-3xl font-black leading-none"
+                style={{ borderColor: "var(--op)", color: "var(--op)", background: "color-mix(in oklab, var(--op) 15%, transparent)" }}
+              >
+                {active.mark}
+                <span className="mt-1 text-[9px] font-bold tracking-wider">{active.badge}</span>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gold">Numéro bénéficiaire</p>
+                <button
+                  type="button"
+                  onClick={() => void copy(active)}
+                  className="block font-display text-xl font-extrabold text-foreground"
+                  title="Copier le numéro"
+                >
+                  {active.phone} <span className="text-xs">{copied ? "✅" : "📋"}</span>
+                </button>
+                <p className="truncate text-sm font-extrabold uppercase text-gold">👤 {active.owner}</p>
+              </div>
+            </div>
             {(() => {
               const n = Math.floor(Number(amount));
               const ok = n >= MIN_DEPOSIT && n <= 2_000_000;
@@ -265,50 +272,6 @@ function DepotPage() {
             })()}
           </div>
 
-          {/* --- Étapes MG + FR --- */}
-          <div className="bsm-card mt-5 p-5">
-            <h2 className="font-semibold">
-              📝 Fomba famenoana <span className="text-muted-foreground">· Comment déposer</span>
-            </h2>
-            <div className="mt-3 grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gold">
-                  🇲🇬 Malagasy
-                </p>
-                <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-muted-foreground">
-                  <li>
-                    Alefaso ny vola amin'ny{" "}
-                    <strong className="text-foreground">{active.phone}</strong> ({active.label}).
-                  </li>
-                  <li>
-                    Raiso ny <strong className="text-foreground">référence</strong> ao amin'ny SMS.
-                  </li>
-                  <li>Fenoy ny formulaire : montant, numéro, référence.</li>
-                  <li>Miandry validation : ho tonga avy hatrany ny solde-nao.</li>
-                </ol>
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
-                  🇫🇷 Français
-                </p>
-                <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-muted-foreground">
-                  <li>
-                    Envoyez le montant au{" "}
-                    <strong className="text-foreground">{active.phone}</strong> ({active.label}).
-                  </li>
-                  <li>
-                    Notez la <strong className="text-foreground">référence</strong> reçue par SMS.
-                  </li>
-                  <li>Remplissez le formulaire : montant, numéro, référence.</li>
-                  <li>Attendez la validation : le solde est crédité rapidement.</li>
-                </ol>
-              </div>
-            </div>
-            <p className="mt-4 rounded-xl bg-secondary/70 p-3 text-xs text-muted-foreground">
-              ⚠️ Référence efa nampiasaina dia lavina automatique. Toute fausse information peut
-              entraîner le refus.
-            </p>
-          </div>
 
           {/* --- Formulaire --- */}
           <div className="bsm-card mt-5 space-y-3 p-5">
@@ -376,6 +339,53 @@ function DepotPage() {
                 Dépôt minimum : {formatAr(MIN_DEPOSIT)}
               </p>
             ) : null}
+          </div>
+
+          {/* --- Étapes MG + FR --- */}
+          <div className="bsm-card mt-5 p-4">
+            <h2 className="font-semibold">💡 Fomba famenoana / Comment déposer</h2>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {[
+                {
+                  flag: "🇲🇬 Malagasy",
+                  cls: "text-gold",
+                  steps: [
+                    <>Alefaso {active.label} amin'ny <strong className="text-foreground">{active.phone}</strong></>,
+                    <>Tehirizo ny <strong className="text-foreground">référence</strong></>,
+                    <>Fenoy ny formulaire etsy ambony</>,
+                    <>Andraso 2-5 min fanamafisana</>,
+                  ],
+                },
+                {
+                  flag: "🇫🇷 Français",
+                  cls: "text-primary",
+                  steps: [
+                    <>Envoyez {active.label} au <strong className="text-foreground">{active.phone}</strong></>,
+                    <>Notez la <strong className="text-foreground">référence</strong></>,
+                    <>Remplissez le formulaire ci-dessus</>,
+                    <>Attente 2-5 min validation</>,
+                  ],
+                },
+              ].map((col) => (
+                <div key={col.flag} className="rounded-xl bg-secondary/60 p-3">
+                  <p className={`text-[10px] font-bold uppercase tracking-widest ${col.cls}`}>{col.flag}</p>
+                  <ol className="mt-2 space-y-2 text-xs text-muted-foreground">
+                    {col.steps.map((s, i) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-[10px] font-bold text-foreground">
+                          {i + 1}
+                        </span>
+                        <span>{s}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 rounded-xl border border-gold/40 bg-gold/10 p-3 text-xs text-gold">
+              ⚠️ <strong>Attention :</strong> Référence efa nampiasaina dia lavina automatique.
+              Vérifiez bien avant d'envoyer. Une référence = une seule transaction.
+            </p>
           </div>
 
           {/* --- Historique --- */}
