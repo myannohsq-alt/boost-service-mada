@@ -489,7 +489,9 @@ async function submitOrder(
     }
     res = { ...(first as object), mix_parts: subs } as unknown as typeof res;
   } else {
-    res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, order.comments || undefined);
+    // Reaction orders store the commenter's name in `comments`; SMMGen must get a quantity, not custom comments.
+    const isReaction = !!(service && isReactionService(service.platform, service.name_fr) && reactionNote);
+    res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, isReaction ? undefined : order.comments || undefined);
   }
   const providerOrderId = res?.order === undefined || res.order === null ? "" : String(res.order);
   if (!providerOrderId) {
