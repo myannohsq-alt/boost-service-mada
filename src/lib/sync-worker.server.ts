@@ -477,11 +477,13 @@ async function submitOrder(
   let res: Awaited<ReturnType<typeof api.add>>;
   if (isPostMix) {
     const invisible = /;visibility:invisible/.test(order.notes ?? "");
-    const base = Math.floor(order.quantity / 3);
-    const parts = [order.quantity - base * 2, base, base];
+    // Invisible mix = 👍 + ❤️ only (Hidden Data has no Care; min 50 each).
+    const keys = invisible ? (["like", "love"] as const) : (["like", "love", "care"] as const);
+    const base = Math.floor(order.quantity / keys.length);
+    const parts = keys.map((_, i) => i === 0 ? order.quantity - base * (keys.length - 1) : base);
     const subs: unknown[] = [];
     let first: typeof res | null = null;
-    for (const [i, key] of (["like", "love", "care"] as const).entries()) {
+    for (const [i, key] of keys.entries()) {
       const id = reactionProviderId(key, service!.name_fr, invisible)!;
       const r = await api.add(id, order.target_link, Math.max(parts[i]!, 10), `${orderId}-${key}`);
       subs.push({ key, id, response: r });

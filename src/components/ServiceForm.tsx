@@ -43,7 +43,9 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     undefined,
   )?.service;
   const quantity = Number(quantityText);
-  const min = 100;
+  const invisibleMix = hasVisibility && visibility === "invisible" && reaction === "mix";
+  const min = invisibleMix ? 100 : 100;
+  const belowMin = !Number.isSafeInteger(quantity) || quantity < min;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
     ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
   const balance = Number(profile?.balance ?? 0);
