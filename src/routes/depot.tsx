@@ -55,6 +55,7 @@ function DepotPage() {
   const [reference, setReference] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [called, setCalled] = useState(false);
   const copyTimer = useRef<number | null>(null);
 
   const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0]!;
@@ -184,17 +185,12 @@ function DepotPage() {
             </span>
             <p className="bsm-op-number mt-4">{active.phone}</p>
             <p className="mt-3 text-sm font-extrabold uppercase tracking-[0.22em] text-gold">
-              {active.owner}
-            </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Composez{" "}
-              <span className="font-display font-bold text-foreground">{active.ussd}</span> pour
-              envoyer
+              👤 {active.owner}
             </p>
             <button
               type="button"
               onClick={() => void copy(active)}
-              className="bsm-btn bsm-btn-gold mt-4 w-full sm:w-auto"
+              className="mt-2 text-xs font-semibold text-muted-foreground underline"
             >
               {copied ? "✅ Copié !" : "📋 Copier le numéro"}
             </button>
@@ -203,30 +199,67 @@ function DepotPage() {
               const ok = n >= MIN_DEPOSIT && n <= 2_000_000;
               const code = ok ? ussdFor(active.id, n) : null;
               return (
-                <div className="mt-4 rounded-xl border border-border p-3 text-left">
-                  <p className="text-xs text-muted-foreground">
-                    Code USSD (montant 1 000 – 2 000 000 Ar)
-                  </p>
-                  <p className="mt-1 break-all font-display text-sm font-bold text-foreground">
-                    {code ?? "Ampidiro ny montant eo ambany"}
-                  </p>
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <a
-                      href={code ? `tel:${code.replace(/#/g, "%23")}` : undefined}
-                      aria-disabled={!code}
-                      className={`bsm-btn bsm-btn-gold text-center ${code ? "" : "pointer-events-none opacity-50"}`}
+                <div className="mt-4 border-t border-border pt-4 text-left">
+                  <label className="text-sm font-semibold text-foreground">
+                    🪙 Montant à déposer (Ar)
+                  </label>
+                  <div className="relative mt-2">
+                    <input
+                      value={amount}
+                      inputMode="numeric"
+                      maxLength={7}
+                      placeholder="5000"
+                      onChange={(e) => {
+                        setAmount(e.target.value.replace(/\D/g, ""));
+                        setCalled(false);
+                      }}
+                      className="bsm-input !rounded-xl !py-3 pr-16 font-display text-2xl font-bold"
+                    />
+                    <span
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-3 py-1 text-sm font-bold"
+                      style={{ background: "color-mix(in oklab, var(--op) 25%, transparent)", color: "var(--op)" }}
                     >
-                      📞 Appeler pour envoyer
-                    </a>
-                    <button
-                      type="button"
-                      disabled={!code}
-                      onClick={() => code && void navigator.clipboard?.writeText(code)}
-                      className="bsm-btn disabled:opacity-50"
-                    >
-                      📋 Copier le code
-                    </button>
+                      Ar
+                    </span>
                   </div>
+                  <p className="mt-1 text-[11px] font-semibold">
+                    <span className="text-muted-foreground">Minimum : 1 000 Ar</span>
+                    <span className="text-muted-foreground"> | </span>
+                    <span className="text-gold">Maximum : 2 000 000 Ar</span>
+                  </p>
+                  <a
+                    href={code ? `tel:${code.replace(/#/g, "%23")}` : undefined}
+                    aria-disabled={!code}
+                    onClick={() => code && setCalled(true)}
+                    className={`bsm-btn bsm-btn-gold mt-4 block w-full text-center text-base ${code ? "" : "pointer-events-none opacity-50"}`}
+                  >
+                    📞 Appeler pour envoyer
+                  </a>
+                  <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                    {code
+                      ? `Le code sera préparé pour lancer l'appel ${active.label}.`
+                      : "Ampidiro ny montant (1 000 – 2 000 000 Ar)."}
+                  </p>
+                  {called && code && (
+                    <div className="mt-3 rounded-xl border border-border p-3 text-center">
+                      <p className="text-xs text-muted-foreground">
+                        Tsy nety ve ny antso ? Adikao ity kaody ity :
+                      </p>
+                      <p className="mt-1 break-all font-display text-sm font-bold text-foreground">
+                        {code}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void navigator.clipboard?.writeText(code);
+                          toast.success("Kaody voadika !");
+                        }}
+                        className="bsm-btn mt-2 w-full"
+                      >
+                        📋 Copier le code
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })()}
