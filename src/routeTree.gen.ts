@@ -34,6 +34,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SuiviCommentairesRouteImport } from './routes/suivi-commentaires'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
+import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]well-known.assetlinks[.]json'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-generate'
 import { Route as ApiOrangeDotphpRouteImport } from './routes/api/orange[.]php'
@@ -166,6 +167,12 @@ const TutorielRoute = TutorielRouteImport.update({
   path: '/tutoriel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotwellKnownAssetlinksDotjsonRoute =
+  DotwellKnownAssetlinksDotjsonRouteImport.update({
+    id: '/.well-known/assetlinks.json',
+    path: '/.well-known/assetlinks.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAssistantRoute = ApiAssistantRouteImport.update({
   id: '/api/assistant',
   path: '/api/assistant',
@@ -223,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
+  '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/orange.php': typeof ApiOrangeDotphpRoute
@@ -256,6 +264,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
+  '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/orange.php': typeof ApiOrangeDotphpRoute
@@ -290,6 +299,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
+  '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/orange.php': typeof ApiOrangeDotphpRoute
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/suivi-commentaires'
     | '/tutoriel'
+    | '/.well-known/assetlinks.json'
     | '/api/assistant'
     | '/api/comments-generate'
     | '/api/orange.php'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/suivi-commentaires'
     | '/tutoriel'
+    | '/.well-known/assetlinks.json'
     | '/api/assistant'
     | '/api/comments-generate'
     | '/api/orange.php'
@@ -391,6 +403,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/suivi-commentaires'
     | '/tutoriel'
+    | '/.well-known/assetlinks.json'
     | '/api/assistant'
     | '/api/comments-generate'
     | '/api/orange.php'
@@ -425,6 +438,7 @@ export interface RootRouteChildren {
   SigninRoute: typeof SigninRoute
   SuiviCommentairesRoute: typeof SuiviCommentairesRoute
   TutorielRoute: typeof TutorielRoute
+  DotwellKnownAssetlinksDotjsonRoute: typeof DotwellKnownAssetlinksDotjsonRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
   ApiCommentsGenerateRoute: typeof ApiCommentsGenerateRoute
   ApiOrangeDotphpRoute: typeof ApiOrangeDotphpRoute
@@ -610,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorielRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/assetlinks.json': {
+      id: '/.well-known/assetlinks.json'
+      path: '/.well-known/assetlinks.json'
+      fullPath: '/.well-known/assetlinks.json'
+      preLoaderRoute: typeof DotwellKnownAssetlinksDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/assistant': {
       id: '/api/assistant'
       path: '/api/assistant'
@@ -681,6 +702,7 @@ const rootRouteChildren: RootRouteChildren = {
   SigninRoute: SigninRoute,
   SuiviCommentairesRoute: SuiviCommentairesRoute,
   TutorielRoute: TutorielRoute,
+  DotwellKnownAssetlinksDotjsonRoute: DotwellKnownAssetlinksDotjsonRoute,
   ApiAssistantRoute: ApiAssistantRoute,
   ApiCommentsGenerateRoute: ApiCommentsGenerateRoute,
   ApiOrangeDotphpRoute: ApiOrangeDotphpRoute,
