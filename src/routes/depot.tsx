@@ -40,6 +40,12 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: "❌ Refusé",
 };
 
+function ussdFor(id: Operator["id"], n: number) {
+  if (id === "mvola") return `#111*1*2*0346546600*${n}*2*2#`;
+  if (id === "orange") return `#144*11*0375141025*0375141025*${n}*2#`;
+  return `*436*2*1*1*0330296908*${n}*2#`;
+}
+
 function DepotPage() {
   const { user, profile, refresh } = useAuth();
   const qc = useQueryClient();
@@ -192,6 +198,38 @@ function DepotPage() {
             >
               {copied ? "✅ Copié !" : "📋 Copier le numéro"}
             </button>
+            {(() => {
+              const n = Math.floor(Number(amount));
+              const ok = n >= MIN_DEPOSIT && n <= 2_000_000;
+              const code = ok ? ussdFor(active.id, n) : null;
+              return (
+                <div className="mt-4 rounded-xl border border-border p-3 text-left">
+                  <p className="text-xs text-muted-foreground">
+                    Code USSD (montant 1 000 – 2 000 000 Ar)
+                  </p>
+                  <p className="mt-1 break-all font-display text-sm font-bold text-foreground">
+                    {code ?? "Ampidiro ny montant eo ambany"}
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <a
+                      href={code ? `tel:${code.replace(/#/g, "%23")}` : undefined}
+                      aria-disabled={!code}
+                      className={`bsm-btn bsm-btn-gold text-center ${code ? "" : "pointer-events-none opacity-50"}`}
+                    >
+                      📞 Appeler pour envoyer
+                    </a>
+                    <button
+                      type="button"
+                      disabled={!code}
+                      onClick={() => code && void navigator.clipboard?.writeText(code)}
+                      className="bsm-btn disabled:opacity-50"
+                    >
+                      📋 Copier le code
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* --- Étapes MG + FR --- */}

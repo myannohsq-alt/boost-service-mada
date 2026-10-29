@@ -82,7 +82,7 @@ function LiveClock() {
   }, []);
   return (
     <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold tabular-nums text-foreground">
-      {now ? now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "--:--"}
+      {now ? now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "--:--:--"}
     </span>
   );
 }
@@ -188,11 +188,11 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
 
           <div className="flex items-center justify-end gap-1.5">
             {user ? <NotificationBell /> : null}
-            <button onClick={doRefresh} aria-label="Actualiser" className={`hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex ${spin ? "animate-spin" : ""}`}>🔄</button>
+            <button onClick={doRefresh} aria-label="Actualiser" className={`flex h-9 w-9 items-center justify-center rounded-xl border border-border text-sm ${spin ? "animate-spin" : ""}`}>🔄</button>
             <button onClick={() => setLang(lang === "mg" ? "fr" : "mg")} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Langue">
               {lang === "mg" ? "🇲🇬" : "🇫🇷"}
             </button>
-            <button onClick={toggle} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Thème">
+            <button onClick={toggle} className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-sm" aria-label="Thème">
               {theme === "dark" ? "🌙" : "☀️"}
             </button>
             <Link to="/mitady-vola" className="hidden rounded-full border border-primary/60 px-3 py-1.5 text-xs font-semibold text-primary md:inline">MITADY VOLA</Link>
