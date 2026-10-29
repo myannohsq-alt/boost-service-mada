@@ -43,7 +43,9 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     undefined,
   )?.service;
   const quantity = Number(quantityText);
+  const invisibleMix = hasVisibility && visibility === "invisible" && reaction === "mix";
   const min = 100;
+  const belowMin = !Number.isSafeInteger(quantity) || quantity < min;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
     ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
   const balance = Number(profile?.balance ?? 0);
@@ -143,13 +145,16 @@ export function ServiceForm({ group, onClose, onOrdered }: {
             aria-pressed={reaction === item.key}
             onClick={() => setReaction(item.key)}
             className={`h-10 min-w-0 px-2 text-xs ${reaction === item.key ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            {item.label}
+            {item.key === "mix" && hasVisibility && visibility === "invisible" ? "🎭 Mix 👍❤️" : item.label}
           </Button>)}
         </div>
       </fieldset>}
       <div>
         <label htmlFor="service-quantity" className="text-xs text-muted-foreground">Quantité (min. {min})</label>
         <input id="service-quantity" type="number" min={min} step="1" value={quantityText} onChange={e => setQuantityText(e.target.value)} className="bsm-input mt-1" />
+        <p className={`mt-1 text-xs ${belowMin ? "text-destructive" : "text-muted-foreground"}`}>
+          Minimum : {min} {invisibleMix ? "(👍 + ❤️ zaraina roa)" : ""}{belowMin ? " — tsy ampy ny quantité" : ""}
+        </p>
         <div className="mt-2 grid grid-cols-4 gap-2">
           {QUICK.map(value => <Button key={value} type="button" variant="outline" disabled={value < min}
             aria-pressed={quantity === value} onClick={() => setQuantityText(String(value))}
@@ -165,7 +170,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {insufficient && <p className="text-xs text-destructive">Solde insuffisant, veuillez recharger. <Link to="/depot" className="underline">Recharger</Link></p>}
       {error && <p role="alert" className="rounded-md bg-secondary p-2 text-xs text-destructive">{error}</p>}
       <div className="space-y-2">
-        <Button type="button" disabled={busy || insufficient || !service} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
+        <Button type="button" disabled={busy || insufficient || !service || belowMin} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
           {busy ? "Envoi…" : `Commander — ${formatAr(cost)}`}
         </Button>
         <Button type="button" variant="outline" onClick={onClose} className="bsm-btn bsm-btn-ghost w-full">Annuler</Button>
