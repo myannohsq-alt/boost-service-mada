@@ -179,21 +179,28 @@ function DepotPage() {
           </div>
 
           {/* --- Carte de paiement de l'opérateur --- */}
-          <div key={active.id} style={accent} className="bsm-op-card mt-4 p-5 text-center">
-            <span className="bsm-op-badge">
-              {active.emoji} {active.badge}
-            </span>
-            <p className="bsm-op-number mt-4">{active.phone}</p>
-            <p className="mt-3 text-sm font-extrabold uppercase tracking-[0.22em] text-gold">
-              👤 {active.owner}
-            </p>
-            <button
-              type="button"
-              onClick={() => void copy(active)}
-              className="mt-2 text-xs font-semibold text-muted-foreground underline"
-            >
-              {copied ? "✅ Copié !" : "📋 Copier le numéro"}
-            </button>
+          <div key={active.id} style={accent} className="bsm-op-card mt-4 p-4">
+            <div className="flex items-center gap-3 border-b border-border pb-3">
+              <span
+                className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border-2 font-display text-3xl font-black leading-none"
+                style={{ borderColor: "var(--op)", color: "var(--op)", background: "color-mix(in oklab, var(--op) 15%, transparent)" }}
+              >
+                {active.mark}
+                <span className="mt-1 text-[9px] font-bold tracking-wider">{active.badge}</span>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gold">Numéro bénéficiaire</p>
+                <button
+                  type="button"
+                  onClick={() => void copy(active)}
+                  className="block font-display text-xl font-extrabold text-foreground"
+                  title="Copier le numéro"
+                >
+                  {active.phone} <span className="text-xs">{copied ? "✅" : "📋"}</span>
+                </button>
+                <p className="truncate text-sm font-extrabold uppercase text-gold">👤 {active.owner}</p>
+              </div>
+            </div>
             {(() => {
               const n = Math.floor(Number(amount));
               const ok = n >= MIN_DEPOSIT && n <= 2_000_000;
