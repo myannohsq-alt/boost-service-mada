@@ -82,7 +82,7 @@ function LiveClock() {
   }, []);
   return (
     <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold tabular-nums text-foreground">
-      {now ? now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "--:--"}
+      {now ? now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "--:--:--"}
     </span>
   );
 }
