@@ -25,12 +25,14 @@ function ProfilPage() {
         <Section title="Mon profil">
           <div className="mx-auto max-w-xl space-y-4">
             <ProfileHeader />
-            <Link
-              to="/depot"
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-gold py-4 font-display text-lg font-black tracking-wide text-primary-foreground shadow-lg transition active:scale-95"
-            >
-              💸 RECHARGE
-            </Link>
+            <div className="flex justify-center">
+              <Link
+                to="/depot"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-gold px-5 py-2 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-md ring-1 ring-primary/40 transition hover:brightness-110 active:scale-95"
+              >
+                <span>💸</span> Recharge <span aria-hidden>→</span>
+              </Link>
+            </div>
             <InviteCard />
             <LotteryDraw />
           </div>
