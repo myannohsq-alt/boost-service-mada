@@ -189,7 +189,7 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
           <div className="flex items-center justify-end gap-1.5">
             {user ? <NotificationBell /> : null}
             <button onClick={doRefresh} aria-label="Actualiser" className={`flex h-9 w-9 items-center justify-center rounded-xl border border-border text-sm ${spin ? "animate-spin" : ""}`}>🔄</button>
-            <button onClick={() => setLang(lang === "mg" ? "fr" : "mg")} className="hidden h-9 w-9 items-center justify-center rounded-xl border border-border text-sm sm:flex" aria-label="Langue">
+            <button onClick={() => setLang(lang === "mg" ? "fr" : "mg")} className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-sm" aria-label="Langue">
               {lang === "mg" ? "🇲🇬" : "🇫🇷"}
             </button>
             <button onClick={toggle} className="flex h-9 w-9 items-center justify-center rounded-xl border border-border text-sm" aria-label="Thème">
@@ -291,7 +291,23 @@ export function Layout({ children, hideAnnouncement = false }: { children: React
         <Logo size={40} />
         <p className="mt-3 font-display text-sm font-bold text-foreground">BOOST SERVICE MADA 🇲🇬</p>
         <p className="mt-1">{t("slogan")}</p>
-        <p className="mt-3">Messenger : BOOST &amp; SERVICE • WhatsApp : +261 37 51 410 25</p>
+        <div className="mx-auto mt-5 max-w-md space-y-3 text-left">
+          <a href="https://wa.me/261375141025" target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-background/60 p-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-2xl">💬</span>
+            <span className="min-w-0">
+              <span className="block text-[11px] text-muted-foreground">{lang === "fr" ? "Une question ? Écrivez-nous sur WhatsApp" : "Misy tsy mazava ? Andefaso hafatra WhatsApp"}</span>
+              <span className="block font-display text-base font-bold text-foreground">+261 37 51 410 25</span>
+              <span className="block text-[11px] text-primary">{lang === "fr" ? "Messages uniquement • pas d'appels" : "Hafatra ihany • tsy mandray antso"}</span>
+            </span>
+          </a>
+          <a href="/boostmada.apk" download className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-gold py-3 font-bold text-primary-foreground shadow-lg">
+            📲 {lang === "fr" ? "Télécharger l'application" : "Télécharger l'application"}
+          </a>
+          <p className="flex items-center justify-center gap-2 text-xs font-semibold text-foreground">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+            {lang === "fr" ? "Service disponible 24h/24 · 7j/7" : "Service dispo 24h/24 · 7j/7"}
+          </p>
+        </div>
         <p className="mt-3">© {new Date().getFullYear()} BOOST SERVICE MADA</p>
       </footer>
     </div>
