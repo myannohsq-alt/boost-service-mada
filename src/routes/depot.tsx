@@ -10,6 +10,9 @@ import { OPERATORS, operatorById, type Operator } from "@/lib/payment-operators"
 import { supabase } from "@/integrations/supabase/client";
 
 const MIN_DEPOSIT = 1000;
+const MAX_DEPOSIT = 2_000_000;
+/** Official service numbers (last 9 digits) — clients must enter their own sender number. */
+const SERVICE_NUMBERS = ["346546600", "330296908", "375141025"];
 const QUICK_AMOUNTS = [1000, 2000, 5000, 10000];
 
 export const Route = createFileRoute("/depot")({
@@ -99,12 +102,17 @@ function DepotPage() {
 
   const submit = async () => {
     const value = Number(amount);
-    if (!Number.isFinite(value) || value < MIN_DEPOSIT) {
-      toast.error(`❌ Dépôt minimum : ${formatAr(MIN_DEPOSIT)}.`);
+    if (!Number.isFinite(value) || value < MIN_DEPOSIT || value > MAX_DEPOSIT) {
+      toast.error("❌ Montant entre 1 000 et 2 000 000 Ar.");
       return;
     }
-    if (sender.replace(/\D/g, "").length < 9) {
+    const digits = sender.replace(/\D/g, "");
+    if (digits.length < 9) {
       toast.error("❌ Numéro d'envoi invalide.");
+      return;
+    }
+    if (SERVICE_NUMBERS.includes(digits.slice(-9))) {
+      toast.error("Numéro nandefa le vola no apetraka eo azafady 🙏");
       return;
     }
     if (reference.trim().length < 3) {
@@ -150,33 +158,6 @@ function DepotPage() {
             </p>
           </div>
 
-          {/* --- Choix de l'opérateur --- */}
-          <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {OPERATORS.map((o) => {
-              const on = o.id === active.id;
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  onClick={() => selectOperator(o.id)}
-                  aria-pressed={on}
-                  style={{ "--op": o.accent } as CSSProperties}
-                  className={`bsm-op-tile ${on ? "bsm-op-tile-active" : ""} active:scale-[0.98]`}
-                >
-                  <span className="bsm-op-mark">{o.mark}</span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-bold">{o.label}</span>
-                    <span
-                      className="block truncate text-[11px] font-semibold tracking-wide"
-                      style={{ color: on ? "var(--op)" : "var(--color-muted-foreground)" }}
-                    >
-                      {on ? "● Sélectionné" : o.ussd}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
 
           {/* --- Carte de paiement de l'opérateur --- */}
           <div key={active.id} style={accent} className="bsm-op-card mt-4 p-4">
