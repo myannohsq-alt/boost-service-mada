@@ -53,10 +53,9 @@ export function LotteryDraw() {
     await Promise.all([load(), refresh()]);
   }
 
-  const colors = ["#EAB308", "#0EA5E9", "#22C55E", "#EF4444", "#A855F7", "#F97316", "#14B8A6", "#EC4899"];
+  const colors = ["#7C3AED", "#E11D48", "#0891B2", "#F97316", "#2563EB", "#DB2777", "#059669", "#CA8A04"];
   const n = entries.length;
-  // 1 participant => 3 segments (same name), sinon 1 segment par participant
-  const segs = n === 1 ? [entries[0], entries[0], entries[0]] : entries;
+  const segs = entries;
   const s = segs.length;
   const wheelBg = s
     ? `conic-gradient(${segs.map((_, i) => `${colors[i % colors.length]} ${(i / s) * 360}deg ${((i + 1) / s) * 360}deg`).join(",")})`
@@ -81,7 +80,11 @@ export function LotteryDraw() {
             {s > 1 && segs.map((_, i) => (
               <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-px w-1/2 origin-left bg-background/40" style={{ transform: `rotate(${(i / s) * 360 - 90}deg)` }} />
             ))}
-            {segs.map((e, i) => {
+            {s === 1 ? (
+              <span className="absolute left-1/2 top-[22%] max-w-[80%] -translate-x-1/2 truncate font-black text-white" style={{ fontSize: 22, textShadow: "0 2px 4px rgba(0,0,0,0.6)" }}>
+                {segs[0].author_name}
+              </span>
+            ) : segs.map((e, i) => {
               const angle = ((i + 0.5) / s) * 360;
               return (
                 <span
