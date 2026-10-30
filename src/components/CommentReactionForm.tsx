@@ -31,7 +31,6 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
   const [link, setLink] = useState("");
   const [personName, setPersonName] = useState("");
   const [reaction, setReaction] = useState<string | null>(null);
-  const [tier, setTier] = useState<"gasy" | "vazah">("gasy");
   const [cible, setCible] = useState<string>("pub");
   const [quantityText, setQuantityText] = useState("100");
   const [busy, setBusy] = useState(false);
@@ -39,7 +38,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
   const service = group.options[0]?.service;
   const quantity = Number(quantityText);
   const min = 100;
-  const cost = Number.isSafeInteger(quantity) && quantity > 0 ? Math.ceil(quantity / 100 * (TIERS.find(t => t.key === tier)?.price ?? 2000)) : 0;
+  const cost = Number.isSafeInteger(quantity) && quantity > 0 ? Math.ceil(quantity / 100 * PRICE_PER_100) : 0;
   const balance = Number(profile?.balance ?? 0);
   const insufficient = cost > balance;
 
@@ -64,7 +63,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
         _quantity: quantity,
         _link: url.toString(),
         _promo: "",
-        _note: `reaction:${reaction};target:${name};cible:${cible};tier:${tier}`,
+        _note: `reaction:${reaction};target:${name};cible:${cible};tier:vazah`,
       });
       if (err) {
         setError(err.message);
@@ -95,10 +94,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
       <p>Vous devez être connecté pour commander.</p>
       <Button asChild className="bsm-btn bsm-btn-primary w-full"><Link to="/auth">Se connecter</Link></Button>
     </div> : <>
-      <div className="grid grid-cols-2 gap-2">
-        {TIERS.map(t => <Button key={t.key} type="button" variant="outline" aria-pressed={tier === t.key} onClick={() => setTier(t.key)}
-          className={`h-10 min-w-0 px-1 text-[11px] font-bold ${tier === t.key ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>{t.label}</Button>)}
-      </div>
+      <div className="rounded-md border border-primary bg-primary/10 py-2 text-center text-sm font-bold text-primary">💬 1500 Ar / 100 réactions</div>
       <div>
         <label htmlFor="cr-cible" className="text-xs text-muted-foreground">🎯 Cible</label>
         <select id="cr-cible" value={cible} onChange={e => setCible(e.target.value)} className="bsm-input mt-1">
