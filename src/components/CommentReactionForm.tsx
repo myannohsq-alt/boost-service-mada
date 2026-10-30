@@ -11,16 +11,11 @@ import { ServiceBadge } from "@/components/ServiceBadge";
 
 const REACTION_CHOICES = [
   { key: "like", label: "Like 👍" },
-  { key: "love", label: "Love ❤️" },
-  { key: "haha", label: "Haha 😂" },
-  { key: "wow", label: "Wow 😮" },
-  { key: "sad", label: "Sad 😢" },
-  { key: "angry", label: "Angry 😡" },
+  { key: "love", label: "J'adore ❤️" },
 ] as const;
 
 const QUICK = [100, 500, 1000];
 const PRICE_PER_100 = 1500;
-const CIBLES = [{ key: "pub", label: "Pub" }, { key: "pdp", label: "PDP" }, { key: "pdc", label: "PDC" }] as const;
 
 export function CommentReactionForm({ group, onClose, onOrdered }: {
   group: ServiceGroup;
@@ -85,65 +80,65 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
     }
   }
 
+  async function paste() {
+    try { setLink((await navigator.clipboard.readText()).trim()); } catch { toast.error("Collez le lien manuellement"); }
+  }
+  const pill = (active: boolean) =>
+    `rounded-xl border px-2 py-2.5 text-sm font-bold transition ${active ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`;
+  const label = "block text-xs font-semibold text-muted-foreground";
+
   return <div className="space-y-4">
     <div>
       <ServiceBadge badge={group.badge} />
-      <h2 id="service-form-title" className="mt-1 font-display text-lg font-bold text-foreground">Réaction sur Commentaire 💬</h2>
+      <h2 id="service-form-title" className="mt-1 font-display text-lg font-extrabold text-foreground">Commander — Boost Réaction Commentaire</h2>
     </div>
     {!user ? <div className="space-y-3 text-sm">
       <p>Vous devez être connecté pour commander.</p>
       <Button asChild className="bsm-btn bsm-btn-primary w-full"><Link to="/auth">Se connecter</Link></Button>
     </div> : <>
-      <div className="rounded-md border border-primary bg-primary/10 py-2 text-center text-sm font-bold text-primary">💬 1500 Ar / 100 réactions</div>
-      <div>
-        <label htmlFor="cr-cible" className="text-xs text-muted-foreground">🎯 Cible</label>
-        <select id="cr-cible" value={cible} onChange={e => setCible(e.target.value)} className="bsm-input mt-1">
-          {CIBLES.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
-        </select>
+      <div className="flex items-center justify-between rounded-xl border border-border bg-secondary px-3 py-2.5 text-sm">
+        <span className="text-muted-foreground">Votre solde</span><b className="text-primary">{formatAr(balance)}</b>
       </div>
-      <fieldset>
-        <legend className="text-xs text-muted-foreground">😍 Type de réaction <span aria-hidden="true">*</span></legend>
-        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {REACTION_CHOICES.map(item => <Button key={item.key} type="button" variant="outline"
-            aria-pressed={reaction === item.key}
-            onClick={() => setReaction(item.key)}
-            className={`h-10 min-w-0 px-2 text-xs ${reaction === item.key ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            {item.label}
-          </Button>)}
-        </div>
-      </fieldset>
-      <div>
-        <label htmlFor="cr-link" className="text-xs text-muted-foreground">🔗 Lien de la Publication</label>
-        <input id="cr-link" type="url" value={link} maxLength={500} inputMode="url" onChange={e => setLink(e.target.value)} placeholder="https://facebook.com/.../posts/..." className="bsm-input mt-1" />
-        <p className="mt-1 text-[11px] text-muted-foreground">Apetraho lien publication misy ny com's an'i Rakoto, dia soraty anarany, dia izahay boost-na réaction @ com's-ny</p>
-      </div>
-      <div>
-        <label htmlFor="cr-quantity" className="text-xs text-muted-foreground">🔢 Quantité (min. {min})</label>
-        <input id="cr-quantity" type="number" min={min} step="1" value={quantityText} onChange={e => setQuantityText(e.target.value)} placeholder="100, 500, 1000..." className="bsm-input mt-1" />
-        <div className="mt-2 grid grid-cols-3 gap-2">
-          {QUICK.map(value => <Button key={value} type="button" variant="outline"
-            aria-pressed={quantity === value} onClick={() => setQuantityText(String(value))}
-            className={`h-9 min-w-0 px-1 text-xs ${quantity === value ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            {value.toLocaleString("fr-FR")}
-          </Button>)}
+      <div className="space-y-1">
+        <span className={label}>Type de Visibilité</span>
+        <div className="rounded-xl border border-primary bg-primary/10 py-2 text-center">
+          <div className="text-sm font-bold text-primary">Rapid🔼</div>
+          <div className="text-[11px] font-semibold text-primary/80">{PRICE_PER_100} Ar /100</div>
         </div>
       </div>
-      <div>
-        <label htmlFor="cr-name" className="text-xs text-muted-foreground">👤 Nom auteur commentaire *</label>
-        <input id="cr-name" type="text" value={personName} maxLength={100} onChange={e => setPersonName(e.target.value)} placeholder="Ex: Rakoto" className="bsm-input mt-1" />
+      <div className="space-y-1">
+        <span className={label}>Type de réaction</span>
+        <div className="grid grid-cols-2 gap-2">
+          {REACTION_CHOICES.map(item => <button key={item.key} type="button" aria-pressed={reaction === item.key}
+            onClick={() => setReaction(item.key)} className={pill(reaction === item.key)}>{item.label}</button>)}
+        </div>
       </div>
-      <div className="rounded-md border border-border bg-secondary p-3 text-sm">
-        <div className="flex items-center justify-between gap-2"><span>Mon solde</span><strong className="text-primary">{formatAr(balance)}</strong></div>
-        <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2"><span>Total à payer</span><strong className="text-lg text-primary">{formatAr(cost)}</strong></div>
+      <div className="space-y-1">
+        <label htmlFor="cr-link" className={label}>Lien Facebook (URL)</label>
+        <div className="flex gap-2">
+          <input id="cr-link" type="url" value={link} maxLength={500} inputMode="url" onChange={e => setLink(e.target.value)} placeholder="Copier le lien Facebook ici." className="bsm-input" />
+          <button type="button" onClick={paste} className="rounded-lg border border-border bg-secondary px-3 text-xs font-semibold">Coller</button>
+        </div>
+        <p className="text-[11px] text-muted-foreground">Apetraho ny lien mivantana an'ilay commentaire (Partager → Copier le lien).</p>
+      </div>
+      <div className="space-y-1">
+        <label htmlFor="cr-quantity" className={label}>Quantité (min. {min})</label>
+        <input id="cr-quantity" type="number" min={min} step="1" value={quantityText} onChange={e => setQuantityText(e.target.value)} className="bsm-input" />
+        <div className="grid grid-cols-3 gap-2">
+          {QUICK.map(value => <button key={value} type="button" aria-pressed={quantity === value}
+            onClick={() => setQuantityText(String(value))} className={pill(quantity === value)}>{value}</button>)}
+        </div>
+      </div>
+      <div className="flex items-center justify-between rounded-xl border border-border bg-secondary px-3 py-2.5 text-sm">
+        <span>Sarany 💵</span><b className="text-lg text-primary">{cost ? formatAr(cost) : "—"}</b>
       </div>
       {insufficient && <p className="text-xs text-destructive">Solde insuffisant. <Link to="/recharge" className="underline">Recharger</Link></p>}
       {error && <p role="alert" className="rounded-md bg-secondary p-2 text-xs text-destructive">{error}</p>}
-      <div className="space-y-2">
-        <Button type="button" disabled={busy || insufficient || !service} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
-          {busy ? "Envoi…" : `Commander — ${formatAr(cost)}`}
-        </Button>
-        <Button type="button" variant="outline" onClick={onClose} className="bsm-btn bsm-btn-ghost w-full">Annuler</Button>
-      </div>
+      <Button type="button" disabled={busy || insufficient || !service} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
+        {busy ? "Envoi…" : "➤ Envoyer la demande"}
+      </Button>
+      <p className="text-xs font-semibold text-destructive">⚠️ Amarino tsara fa rehefa lasa dia tsy afaka tapahana intsony.</p>
+      <Button type="button" variant="outline" onClick={onClose} className="bsm-btn bsm-btn-ghost w-full">Annuler</Button>
     </>}
   </div>;
 }
