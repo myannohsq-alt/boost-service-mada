@@ -274,72 +274,113 @@ function DepotPage() {
 
 
           {/* --- Formulaire --- */}
-          <div className="bsm-card mt-5 space-y-3 p-5">
-            <h2 className="font-semibold">📝 Demande de dépôt</h2>
-            <div>
-              <label className="text-xs text-muted-foreground">💵 Montant envoyé (Ar)</label>
-              <input
-                value={amount}
-                inputMode="numeric"
-                maxLength={9}
-                placeholder="1000"
-                onChange={(e) => setAmount(e.target.value.replace(/\D/g, ""))}
-                className="bsm-input mt-1 !rounded-xl"
-              />
-              <div className="mt-2 flex flex-wrap gap-2">
-                {QUICK_AMOUNTS.map((q) => (
-                  <button
-                    key={q}
-                    type="button"
-                    onClick={() => setAmount(String(q))}
-                    className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
-                      amount === String(q)
-                        ? "border-primary bg-primary/15 text-primary"
-                        : "border-border bg-secondary/60 text-muted-foreground hover:border-primary/50"
-                    }`}
-                  >
-                    {q.toLocaleString("fr-FR")}
-                  </button>
-                ))}
+          {(() => {
+            const n = Number(amount);
+            const amountOk = n >= MIN_DEPOSIT && n <= MAX_DEPOSIT;
+            const senderDigits = sender.replace(/\D/g, "").slice(-9);
+            const isServiceNo = SERVICE_NUMBERS.includes(senderDigits);
+            const senderOk = senderDigits.length === 9 && !isServiceNo;
+            const refOk = reference.trim().length >= 3;
+            const can = amountOk && senderOk && refOk && !busy;
+            const box = "rounded-2xl border border-neon/30 bg-background/60 p-3";
+            const field =
+              "w-full rounded-xl border border-neon/40 bg-secondary/60 px-3 py-2.5 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-neon focus:shadow-[0_0_10px_var(--color-neon)]";
+            return (
+              <div className="mt-5 space-y-3 rounded-3xl border-2 border-neon/70 bg-card p-4 shadow-[0_0_18px_color-mix(in_oklab,var(--color-neon)_45%,transparent)]">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neon/20 text-2xl">💳</span>
+                  <div>
+                    <h2 className="font-display text-2xl font-extrabold leading-tight">
+                      Demande de <span className="text-gold">dépôt</span>
+                    </h2>
+                    <p className="border-b-2 border-gold pb-1 text-sm text-primary">
+                      Remplissez les informations ci-dessous
+                    </p>
+                  </div>
+                </div>
+
+                <div className={box}>
+                  <label className="flex items-center gap-2 text-sm font-bold">🪙 Montant à déposer (Ar)</label>
+                  <div className="relative mt-2">
+                    <input
+                      value={amount}
+                      inputMode="numeric"
+                      maxLength={7}
+                      placeholder="Ex : 1000"
+                      onChange={(e) => setAmount(e.target.value.replace(/\D/g, ""))}
+                      className={`${field} pr-16 font-display text-lg font-bold`}
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-neon px-3 py-1 text-sm font-bold text-background">Ar</span>
+                  </div>
+                  <p className="mt-1.5 text-xs font-semibold">
+                    Minimum : <span className="text-gold">1 000 Ar</span> | Maximum : <span className="text-gold">2 000 000 Ar</span>
+                  </p>
+                  <div className="mt-2 grid grid-cols-4 gap-2">
+                    {QUICK_AMOUNTS.map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => setAmount(String(q))}
+                        className={`rounded-full border-2 py-1.5 text-sm font-bold ${
+                          amount === String(q) ? "border-gold bg-gold/15 text-gold" : "border-neon/60 text-foreground"
+                        }`}
+                      >
+                        {q.toLocaleString("fr-FR")}
+                      </button>
+                    ))}
+                  </div>
+                  {amount && !amountOk ? (
+                    <p className="mt-1 text-xs font-semibold text-destructive">Montant entre 1 000 et 2 000 000 Ar.</p>
+                  ) : null}
+                </div>
+
+                <div className={box}>
+                  <label className="text-sm font-bold">📞 Numéro ayant envoyé l'argent</label>
+                  <input
+                    value={sender}
+                    inputMode="tel"
+                    maxLength={20}
+                    placeholder="Ex : 034 12 345 67"
+                    onChange={(e) => setSender(e.target.value)}
+                    className={`${field} mt-2 ${isServiceNo ? "!border-destructive" : ""}`}
+                  />
+                  {isServiceNo ? (
+                    <p className="mt-1.5 text-sm font-bold text-destructive">
+                      ⚠️ Numéro nandefa le vola no apetraka eo azafady 🙏
+                    </p>
+                  ) : (
+                    <p className="mt-1.5 text-xs text-primary">
+                      ℹ️ Saisissez le numéro qui a envoyé l'argent, et non le numéro du service.
+                    </p>
+                  )}
+                </div>
+
+                <div className={box}>
+                  <label className="text-sm font-bold">📋 Référence de transaction</label>
+                  <input
+                    value={reference}
+                    maxLength={40}
+                    placeholder="Ex : 1234567890"
+                    onChange={(e) => setReference(e.target.value)}
+                    className={`${field} mt-2`}
+                  />
+                  <p className="mt-1.5 text-xs text-primary">
+                    ℹ️ Copiez la référence figurant dans le SMS de confirmation de votre transfert.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={!can}
+                  onClick={() => void submit()}
+                  className="w-full rounded-full bg-gold py-3 text-lg font-extrabold text-background disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {busy ? "Envoi…" : "✅ Envoyer la demande"}
+                </button>
+                <p className="text-center text-xs text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
               </div>
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">
-                📱 Numéro ayant envoyé l'argent
-              </label>
-              <input
-                value={sender}
-                inputMode="tel"
-                maxLength={20}
-                placeholder="03X XX XXX XX"
-                onChange={(e) => setSender(e.target.value)}
-                className="bsm-input mt-1 !rounded-xl"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">🔢 Référence transaction</label>
-              <input
-                value={reference}
-                maxLength={40}
-                placeholder="Ex : 1234567890"
-                onChange={(e) => setReference(e.target.value)}
-                className="bsm-input mt-1 !rounded-xl"
-              />
-            </div>
-            <button
-              type="button"
-              disabled={busy || !(Number(amount) >= MIN_DEPOSIT)}
-              onClick={() => void submit()}
-              className="bsm-btn bsm-btn-primary w-full disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {busy ? "Envoi…" : "✅ Envoyer la demande"}
-            </button>
-            {amount && Number(amount) < MIN_DEPOSIT ? (
-              <p className="text-center text-xs text-destructive">
-                Dépôt minimum : {formatAr(MIN_DEPOSIT)}
-              </p>
-            ) : null}
-          </div>
+            );
+          })()}
 
           {/* --- Étapes MG + FR --- */}
           <div className="bsm-card mt-5 p-4">
