@@ -1,3 +1,4 @@
+import { generateTraite } from "@/lib/traite-comments";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
