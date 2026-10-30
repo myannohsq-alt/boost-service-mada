@@ -77,9 +77,12 @@ export function LotteryDraw() {
         <div className="relative mx-auto mt-5 h-72 w-72 max-w-full">
           <div className="absolute left-1/2 top-[-12px] z-10 h-0 w-0 -translate-x-1/2 border-x-[14px] border-t-[24px] border-x-transparent border-t-gold drop-shadow-[0_0_6px_rgba(255,184,0,0.9)]" />
           <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-background shadow-[0_0_30px_rgba(0,0,0,0.5)]" style={{ background: wheelBg }}>
-            {s > 1 && segs.map((_, i) => (
-              <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-px w-1/2 origin-left bg-background/40" style={{ transform: `rotate(${(i / s) * 360 - 90}deg)` }} />
-            ))}
+            {s > 0 && Array.from({ length: s === 1 ? 3 : s }).map((_, i, arr) => {
+              const deg = s === 1 ? [-30, 210, 90][i] : (i / arr.length) * 360 - 90;
+              return (
+                <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-[6px] w-1/2 origin-left rounded-full bg-rose-500 shadow-[0_0_6px_rgba(0,0,0,0.5)]" style={{ transform: `rotate(${deg}deg) translateY(-50%)` }} />
+              );
+            })}
             {s === 1 ? (
               <span className="absolute left-1/2 top-[22%] max-w-[80%] -translate-x-1/2 truncate font-black text-white" style={{ fontSize: 22, textShadow: "0 2px 4px rgba(0,0,0,0.6)" }}>
                 {segs[0].author_name}
