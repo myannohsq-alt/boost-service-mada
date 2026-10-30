@@ -37,3 +37,23 @@ export function generateTraite(count: number): string[] {
   }
   return out;
 }
+
+const HBD = ["Joyeux anniversaire", "Hbd", "Tratry ny tsingerintaona", "Arahabaina tratry ny tsingerintaona", "Mirary soa sy fahasalamana", "Happy birthday", "Bon anniversaire", "Tratry ny faha teraka", "Mirary fiadanana sy fahombiazana", "Hbd e", "Tsingerintaona sambatra", "Andriamanitra anie hitahy anao"];
+const HBD_EMO = ["🎂", "🎉", "🎊", "🥳", "🎁", "✨", "🎈", "💐", "❤️", "🙏", "🫶", "🌹"];
+const VENTE = ["Prix svp", "Mp", "Mbola misy ve ?", "Tena tsara ilay entana", "Efa nandray aho misaotra", "Combien svp", "Tiako io", "Inona ny vidiny ?", "Livraison any amin'ny faritra ve ?", "Qualité top", "Recommandé 💯", "Mba alefaso prix inbox", "Disponible ?", "Tena mety", "Efa voaray ny entako, misaotra", "Interessée", "Ohatrinona ?"];
+const VENTE_EMO = ["🎀", "🛍️", "💯", "🔥", "😍", "👌", "🙏", "✨", "💖", "📦"];
+
+function variants(base: string[], emo: string[], count: number): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  let guard = 0;
+  while (out.length < count && guard++ < count * 60) {
+    const c = `${pick(base)}${Math.random() < 0.3 ? " e" : ""} ${pick(emo)}${Math.random() < 0.6 ? pick(emo) : ""}${Math.random() < 0.3 ? pick(emo) : ""}`;
+    if (seen.has(c)) continue;
+    seen.add(c);
+    out.push(c);
+  }
+  return out;
+}
+export const generateHbd = (count: number) => variants(HBD, HBD_EMO, count);
+export const generateVente = (count: number) => variants(VENTE, VENTE_EMO, count);
