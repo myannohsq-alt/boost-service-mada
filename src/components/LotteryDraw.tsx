@@ -80,7 +80,11 @@ export function LotteryDraw() {
             {s > 1 && segs.map((_, i) => (
               <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-px w-1/2 origin-left bg-background/40" style={{ transform: `rotate(${(i / s) * 360 - 90}deg)` }} />
             ))}
-            {segs.map((e, i) => {
+            {s === 1 ? (
+              <span className="absolute left-1/2 top-[22%] max-w-[80%] -translate-x-1/2 truncate font-black text-white" style={{ fontSize: 22, textShadow: "0 2px 4px rgba(0,0,0,0.6)" }}>
+                {segs[0].author_name}
+              </span>
+            ) : segs.map((e, i) => {
               const angle = ((i + 0.5) / s) * 360;
               return (
                 <span
