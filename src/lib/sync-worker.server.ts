@@ -62,6 +62,13 @@ export async function enqueueJob(kind: string, payload: Record<string, unknown> 
 // already have a live job.
 async function sweepUnsentOrders(db: Admin): Promise<number> {
   const cutoff = new Date(Date.now() - 90_000).toISOString();
+  // Release submit jobs stuck in "running" after a crashed/timed-out worker.
+  await db
+    .from("sync_jobs")
+    .update({ status: "queued", run_after: new Date().toISOString() })
+    .eq("kind", "submit_order")
+    .eq("status", "running")
+    .lt("updated_at", new Date(Date.now() - 10 * 60_000).toISOString());
   const { data: orders } = await db
     .from("orders")
     .select("id")
