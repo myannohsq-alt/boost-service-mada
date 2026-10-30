@@ -159,6 +159,26 @@ function DepotPage() {
           </div>
 
 
+          {/* --- Choix de l'opérateur --- */}
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {OPERATORS.map((o) => {
+              const on = o.id === active.id;
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => selectOperator(o.id)}
+                  aria-pressed={on}
+                  style={{ "--op": o.accent } as CSSProperties}
+                  className={`bsm-op-tile ${on ? "bsm-op-tile-active" : ""} !flex-col !gap-1 !p-2 text-center active:scale-[0.98]`}
+                >
+                  <span className="bsm-op-mark">{o.mark}</span>
+                  <span className="block truncate text-[11px] font-bold">{o.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* --- Carte de paiement de l'opérateur --- */}
           <div key={active.id} style={accent} className="bsm-op-card mt-4 p-4">
             <div className="flex items-center gap-3 border-b border-border pb-3">
@@ -263,46 +283,46 @@ function DepotPage() {
             const senderOk = senderDigits.length === 9 && !isServiceNo;
             const refOk = reference.trim().length >= 3;
             const can = amountOk && senderOk && refOk && !busy;
-            const box = "rounded-2xl border border-neon/30 bg-background/60 p-3";
+            const box = "rounded-xl border border-neon/30 bg-background/60 p-2.5";
             const field =
-              "w-full rounded-xl border border-neon/40 bg-secondary/60 px-3 py-2.5 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-neon focus:shadow-[0_0_10px_var(--color-neon)]";
+              "w-full rounded-xl border border-neon/40 bg-secondary/60 px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-neon focus:shadow-[0_0_10px_var(--color-neon)]";
             return (
-              <div className="mt-5 space-y-3 rounded-3xl border-2 border-neon/70 bg-card p-4 shadow-[0_0_18px_color-mix(in_oklab,var(--color-neon)_45%,transparent)]">
+              <div className="mt-4 space-y-2 rounded-2xl border border-neon/70 bg-card p-3 shadow-[0_0_18px_color-mix(in_oklab,var(--color-neon)_45%,transparent)]">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neon/20 text-2xl">💳</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neon/20 text-base">💳</span>
                   <div>
-                    <h2 className="font-display text-2xl font-extrabold leading-tight">
+                    <h2 className="font-display text-base font-extrabold leading-tight">
                       Demande de <span className="text-gold">dépôt</span>
                     </h2>
-                    <p className="border-b-2 border-gold pb-1 text-sm text-primary">
+                    <p className="text-[11px] text-primary">
                       Remplissez les informations ci-dessous
                     </p>
                   </div>
                 </div>
 
                 <div className={box}>
-                  <label className="flex items-center gap-2 text-sm font-bold">🪙 Montant à déposer (Ar)</label>
-                  <div className="relative mt-2">
+                  <label className="flex items-center gap-2 text-xs font-bold">🪙 Montant à déposer (Ar)</label>
+                  <div className="relative mt-1.5">
                     <input
                       value={amount}
                       inputMode="numeric"
                       maxLength={7}
                       placeholder="Ex : 1000"
                       onChange={(e) => setAmount(e.target.value.replace(/\D/g, ""))}
-                      className={`${field} pr-16 font-display text-lg font-bold`}
+                      className={`${field} pr-14 font-display text-base font-bold`}
                     />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-neon px-3 py-1 text-sm font-bold text-background">Ar</span>
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-neon px-2 py-0.5 text-xs font-bold text-background">Ar</span>
                   </div>
-                  <p className="mt-1.5 text-xs font-semibold">
+                  <p className="mt-1 text-[11px] font-semibold">
                     Minimum : <span className="text-gold">1 000 Ar</span> | Maximum : <span className="text-gold">2 000 000 Ar</span>
                   </p>
-                  <div className="mt-2 grid grid-cols-4 gap-2">
+                  <div className="mt-1.5 grid grid-cols-4 gap-2">
                     {QUICK_AMOUNTS.map((q) => (
                       <button
                         key={q}
                         type="button"
                         onClick={() => setAmount(String(q))}
-                        className={`rounded-full border-2 py-1.5 text-sm font-bold ${
+                        className={`rounded-full border py-1 text-xs font-bold ${
                           amount === String(q) ? "border-gold bg-gold/15 text-gold" : "border-neon/60 text-foreground"
                         }`}
                       >
@@ -316,36 +336,36 @@ function DepotPage() {
                 </div>
 
                 <div className={box}>
-                  <label className="text-sm font-bold">📞 Numéro ayant envoyé l'argent</label>
+                  <label className="text-xs font-bold">📞 Numéro ayant envoyé l'argent</label>
                   <input
                     value={sender}
                     inputMode="tel"
                     maxLength={20}
                     placeholder="Ex : 034 12 345 67"
                     onChange={(e) => setSender(e.target.value)}
-                    className={`${field} mt-2 ${isServiceNo ? "!border-destructive" : ""}`}
+                    className={`${field} mt-1.5 ${isServiceNo ? "!border-destructive" : ""}`}
                   />
                   {isServiceNo ? (
-                    <p className="mt-1.5 text-sm font-bold text-destructive">
+                    <p className="mt-1 text-[11px] font-bold text-destructive">
                       ⚠️ Numéro nandefa le vola no apetraka eo azafady 🙏
                     </p>
                   ) : (
-                    <p className="mt-1.5 text-xs text-primary">
+                    <p className="mt-1 text-[11px] text-primary">
                       ℹ️ Saisissez le numéro qui a envoyé l'argent, et non le numéro du service.
                     </p>
                   )}
                 </div>
 
                 <div className={box}>
-                  <label className="text-sm font-bold">📋 Référence de transaction</label>
+                  <label className="text-xs font-bold">📋 Référence de transaction</label>
                   <input
                     value={reference}
                     maxLength={40}
                     placeholder="Ex : 1234567890"
                     onChange={(e) => setReference(e.target.value)}
-                    className={`${field} mt-2`}
+                    className={`${field} mt-1.5`}
                   />
-                  <p className="mt-1.5 text-xs text-primary">
+                  <p className="mt-1 text-[11px] text-primary">
                     ℹ️ Copiez la référence figurant dans le SMS de confirmation de votre transfert.
                   </p>
                 </div>
@@ -354,11 +374,11 @@ function DepotPage() {
                   type="button"
                   disabled={!can}
                   onClick={() => void submit()}
-                  className="w-full rounded-full bg-gold py-3 text-lg font-extrabold text-background disabled:cursor-not-allowed disabled:opacity-40"
+                  className="w-full rounded-full bg-gold py-2.5 text-sm font-extrabold text-background disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {busy ? "Envoi…" : "✅ Envoyer la demande"}
                 </button>
-                <p className="text-center text-xs text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
+                <p className="text-center text-[10px] text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
               </div>
             );
           })()}
