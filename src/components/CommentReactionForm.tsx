@@ -19,10 +19,7 @@ const REACTION_CHOICES = [
 ] as const;
 
 const QUICK = [100, 500, 1000];
-const TIERS = [
-  { key: "gasy", label: "🇲🇬 GASY 2000Ar/100", price: 2000 },
-  { key: "vazah", label: "🌍 VAZAH 1500Ar/100", price: 1500 },
-] as const;
+const PRICE_PER_100 = 1500;
 const CIBLES = [{ key: "pub", label: "Pub" }, { key: "pdp", label: "PDP" }, { key: "pdc", label: "PDC" }] as const;
 
 export function CommentReactionForm({ group, onClose, onOrdered }: {
