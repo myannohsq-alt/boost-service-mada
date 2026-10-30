@@ -53,10 +53,9 @@ export function LotteryDraw() {
     await Promise.all([load(), refresh()]);
   }
 
-  const colors = ["#EAB308", "#0EA5E9", "#22C55E", "#EF4444", "#A855F7", "#F97316", "#14B8A6", "#EC4899"];
+  const colors = ["#7C3AED", "#E11D48", "#0891B2", "#F97316", "#2563EB", "#DB2777", "#059669", "#CA8A04"];
   const n = entries.length;
-  // 1 participant => 3 segments (same name), sinon 1 segment par participant
-  const segs = n === 1 ? [entries[0], entries[0], entries[0]] : entries;
+  const segs = entries;
   const s = segs.length;
   const wheelBg = s
     ? `conic-gradient(${segs.map((_, i) => `${colors[i % colors.length]} ${(i / s) * 360}deg ${((i + 1) / s) * 360}deg`).join(",")})`
