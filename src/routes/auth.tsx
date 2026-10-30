@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Mail, LockKeyhole, Download, ArrowRight, Eye, EyeOff, User, UserPlus, Smartphone, ShieldCheck, Zap, Headphones, Users, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,12 @@ const phoneEmail = (raw: string) => {
 };
 const inputClass = "mt-1.5 h-11 w-full rounded-xl border border-border bg-auth-input px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-auth-primary focus:ring-2 focus:ring-auth-primary/30";
 
+const Field = ({ icon: Icon, label, children }: { icon: typeof Mail; label: string; children: ReactNode }) => (
+  <label className="block text-sm font-medium text-foreground">
+    <span className="mb-1.5 flex items-center gap-2"><Icon aria-hidden="true" className="h-4 w-4 text-gold" />{label}</span>
+    <span className="relative block"><Icon aria-hidden="true" className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gold" />{children}</span>
+  </label>
+);
 export function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
@@ -154,12 +160,6 @@ export function AuthPage() {
     setMsg(null);
   };
 
-  const Field = ({ icon: Icon, label, children }: { icon: typeof Mail; label: string; children: React.ReactNode }) => (
-    <label className="block text-sm font-medium text-foreground">
-      <span className="mb-1.5 flex items-center gap-2"><Icon aria-hidden="true" className="h-4 w-4 text-gold" />{label}</span>
-      <span className="relative block"><Icon aria-hidden="true" className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gold" />{children}</span>
-    </label>
-  );
   const inCls = "h-12 w-full rounded-full border border-border bg-auth-input pl-12 pr-12 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-gold focus:ring-2 focus:ring-gold/30";
 
   const googleBtn = (
