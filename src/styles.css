@@ -81,7 +81,7 @@
     ),
     radial-gradient(90% 80% at 90% 10%, oklch(0.84 0.16 90 / 0.18) 0%, transparent 55%);
   --gradient-neon: linear-gradient(100deg, oklch(0.72 0.19 50), oklch(0.82 0.17 80));
-  --auth-input: #2c3645;
+  --auth-input: #f1f5f9;
   --brand-mark: #2a3441;
   --notice-background: #ffffff;
   --notice-foreground: #1b2433;
