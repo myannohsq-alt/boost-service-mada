@@ -142,7 +142,12 @@ export function AuthPage() {
         },
       });
       setBusy(false);
-      if (error) return setMsg(error.message.toLowerCase().includes("already") ? "❌ Cette adresse email est déjà utilisée." : `❌ ${error.message}`);
+      if (error) {
+        const m = error.message.toLowerCase();
+        if (m.includes("already")) return setMsg(byPhone ? "❌ Efa misy kaonty amin'io numéro io. Cliquez « Se connecter »." : "❌ Cette adresse email est déjà utilisée.");
+        if (m.includes("password")) return setMsg("❌ Teny miafina tsotra loatra. Asio litera sy tarehimarika (ex : Rakoto0001#).");
+        return setMsg(`❌ ${error.message}`);
+      }
       if (!data.session) return setMsg("✅ Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
       void navigate({ to: "/services", replace: true });
       return;
