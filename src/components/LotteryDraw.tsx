@@ -28,8 +28,8 @@ export function LotteryDraw() {
   async function load() {
     await db.rpc("settle_lottery");
     const [e, d] = await Promise.all([
-      db.from("lottery_entries").select("user_id,author_name,amount,created_at").eq("draw_date", drawDate).order("created_at"),
-      db.from("lottery_draws").select("*").order("draw_date", { ascending: false }).limit(10),
+      db.rpc("lottery_participants", { _date: drawDate }),
+      db.rpc("lottery_recent_draws", { _limit: 10 }),
     ]);
     setEntries(e.data ?? []);
     setDraws(d.data ?? []);
@@ -42,7 +42,7 @@ export function LotteryDraw() {
   const mm = String(Math.floor((left % 3600e3) / 60e3)).padStart(2, "0");
   const ss = String(Math.floor((left % 60e3) / 1e3)).padStart(2, "0");
   const prize = entries.reduce((s, x) => s + (Number(x.amount) || FEE), 0);
-  const joined = entries.some((x) => x.user_id === user?.id);
+  const joined = !!user && entries.some((x) => x.is_me);
 
   async function join() {
     setBusy(true);

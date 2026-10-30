@@ -1300,6 +1300,24 @@ export type Database = {
         }[]
       }
       lottery_next_date: { Args: never; Returns: string }
+      lottery_participants: {
+        Args: { _date: string }
+        Returns: {
+          amount: number
+          author_name: string
+          created_at: string
+          is_me: boolean
+        }[]
+      }
+      lottery_recent_draws: {
+        Args: { _limit?: number }
+        Returns: {
+          draw_date: string
+          participants: number
+          prize: number
+          winner_name: string
+        }[]
+      }
       mark_boost_paid: { Args: { _id: string }; Returns: undefined }
       order_proofs: {
         Args: { _order_id: string }
