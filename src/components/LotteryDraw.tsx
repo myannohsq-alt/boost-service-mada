@@ -53,10 +53,10 @@ export function LotteryDraw() {
     await Promise.all([load(), refresh()]);
   }
 
-  const colors = ["var(--primary)", "var(--gold, #FFB800)", "#3B82F6", "#06B6D4", "#F97316", "#6366F1"];
+  const colors = ["#1E3A8A", "#7C3AED", "#0E7490", "#BE185D", "#15803D", "#B45309"];
   const n = entries.length;
   const wheelBg = n
-    ? `conic-gradient(${entries.map((_, i) => `${colors[i % colors.length]} ${(i / n) * 360}deg ${((i + 1) / n) * 360}deg`).join(",")})`
+    ? `repeating-conic-gradient(from 0deg, rgba(255,255,255,0.06) 0deg 6deg, transparent 6deg 12deg), conic-gradient(${entries.map((_, i) => `${colors[i % colors.length]} ${(i / n) * 360}deg ${((i + 1) / n) * 360}deg`).join(",")})`
     : "conic-gradient(var(--secondary) 0deg 360deg)";
 
   return (
@@ -72,22 +72,22 @@ export function LotteryDraw() {
         </div>
 
         <div className="relative mx-auto mt-5 h-56 w-56">
-          <div className="absolute left-1/2 top-[-6px] z-10 h-0 w-0 -translate-x-1/2 border-x-[10px] border-t-[16px] border-x-transparent border-t-primary" />
-          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-border shadow-2xl" style={{ background: wheelBg }}>
+          <div className="absolute left-1/2 top-[-10px] z-10 h-0 w-0 -translate-x-1/2 border-x-[12px] border-t-[22px] border-x-transparent border-t-gold drop-shadow-[0_0_6px_rgba(255,184,0,0.9)]" />
+          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-gold/70 shadow-[0_0_25px_rgba(255,184,0,0.35)]" style={{ background: wheelBg }}>
             {entries.map((e, i) => {
               const angle = ((i + 0.5) / n) * 360;
               return (
                 <span
                   key={i}
-                  className="absolute left-1/2 top-1/2 max-w-[80px] origin-left truncate text-[11px] font-bold text-white drop-shadow"
-                  style={{ transform: `rotate(${angle - 90}deg) translateX(28px)` }}
+                  className="absolute left-1/2 top-1/2 max-w-[80px] origin-left truncate rounded-full bg-background/70 px-1.5 text-[11px] font-bold text-gold"
+                  style={{ transform: `rotate(${angle - 90}deg) translateX(34px)` }}
                 >
                   {e.author_name}
                 </span>
               );
             })}
           </div>
-          <div className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-primary bg-card text-2xl">🎟️</div>
+          <div className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-gold bg-card text-2xl">🎟️</div>
         </div>
 
         <div className="mx-auto mt-4 flex max-w-xs justify-center gap-2">
