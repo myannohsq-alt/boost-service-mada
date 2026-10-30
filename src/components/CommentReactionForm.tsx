@@ -24,9 +24,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
 }) {
   const { user, profile, refresh } = useAuth();
   const [link, setLink] = useState("");
-  const [personName, setPersonName] = useState("");
   const [reaction, setReaction] = useState<string | null>(null);
-  const [cible, setCible] = useState<string>("pub");
   const [quantityText, setQuantityText] = useState("100");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +43,6 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
     catch { return setError("Entrez un lien valide commençant par https://"); }
     if (url.protocol !== "https:" || !url.hostname.includes("."))
       return setError("Entrez un lien valide commençant par https://");
-    const name = personName.trim().replace(/[;\n\r]/g, " ").slice(0, 100);
-    if (name.length < 2) return setError("Soraty ny anaran'ny olona (ex: Rakoto).");
     if (!reaction) return setError("Choisissez un type de réaction.");
     if (!Number.isSafeInteger(quantity) || quantity < min)
       return setError(`Quantité minimum : ${min}`);
@@ -58,7 +54,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
         _quantity: quantity,
         _link: url.toString(),
         _promo: "",
-        _note: `reaction:${reaction};target:${name};cible:${cible};tier:vazah`,
+        _note: `reaction:${reaction};tier:vazah`,
       });
       if (err) {
         setError(err.message);
@@ -66,7 +62,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
         return;
       }
       toast.success(`Commande réussie ! Nouveau solde : ${formatAr(balance - cost)}`, {
-        description: `Réaction ${reaction} sur le com's de ${name} × ${quantity} — statut : En cours`,
+        description: `Réaction ${reaction} sur commentaire × ${quantity} — statut : En cours`,
       });
       try { await fulfillNow({ data: undefined as never }); }
       catch { /* La commande reste en file pour le prochain cycle. */ }
