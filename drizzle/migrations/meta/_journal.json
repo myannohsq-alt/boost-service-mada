@@ -99,6 +99,13 @@
       "when": 1793329129602,
       "tag": "0013_lottery_and_tiktok_invisible",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793332117811,
+      "tag": "0014_lottery_200_with_stars",
+      "breakpoints": true
     }
   ]
 }
