@@ -53,11 +53,15 @@ export function LotteryDraw() {
     await Promise.all([load(), refresh()]);
   }
 
-  const colors = ["#1E3A8A", "#7C3AED", "#0E7490", "#BE185D", "#15803D", "#B45309"];
+  const colors = ["#EAB308", "#0EA5E9", "#22C55E", "#EF4444", "#A855F7", "#F97316", "#14B8A6", "#EC4899"];
   const n = entries.length;
-  const wheelBg = n
-    ? `repeating-conic-gradient(from 0deg, rgba(255,255,255,0.06) 0deg 6deg, transparent 6deg 12deg), conic-gradient(${entries.map((_, i) => `${colors[i % colors.length]} ${(i / n) * 360}deg ${((i + 1) / n) * 360}deg`).join(",")})`
+  // 1 participant => 3 segments (same name), sinon 1 segment par participant
+  const segs = n === 1 ? [entries[0], entries[0], entries[0]] : entries;
+  const s = segs.length;
+  const wheelBg = s
+    ? `conic-gradient(${segs.map((_, i) => `${colors[i % colors.length]} ${(i / s) * 360}deg ${((i + 1) / s) * 360}deg`).join(",")})`
     : "conic-gradient(var(--secondary) 0deg 360deg)";
+  const fontSize = s <= 3 ? 18 : s <= 6 ? 14 : s <= 10 ? 11 : 9;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-primary/40 bg-card">
@@ -71,16 +75,19 @@ export function LotteryDraw() {
           <p className="text-[11px] text-muted-foreground">Totalin'ny fandraisana anjara rehetra • {n} mpandray anjara</p>
         </div>
 
-        <div className="relative mx-auto mt-5 h-56 w-56">
-          <div className="absolute left-1/2 top-[-10px] z-10 h-0 w-0 -translate-x-1/2 border-x-[12px] border-t-[22px] border-x-transparent border-t-gold drop-shadow-[0_0_6px_rgba(255,184,0,0.9)]" />
-          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-gold/70 shadow-[0_0_25px_rgba(255,184,0,0.35)]" style={{ background: wheelBg }}>
-            {entries.map((e, i) => {
-              const angle = ((i + 0.5) / n) * 360;
+        <div className="relative mx-auto mt-5 h-72 w-72 max-w-full">
+          <div className="absolute left-1/2 top-[-12px] z-10 h-0 w-0 -translate-x-1/2 border-x-[14px] border-t-[24px] border-x-transparent border-t-gold drop-shadow-[0_0_6px_rgba(255,184,0,0.9)]" />
+          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-background shadow-[0_0_30px_rgba(0,0,0,0.5)]" style={{ background: wheelBg }}>
+            {s > 1 && segs.map((_, i) => (
+              <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-px w-1/2 origin-left bg-background/40" style={{ transform: `rotate(${(i / s) * 360 - 90}deg)` }} />
+            ))}
+            {segs.map((e, i) => {
+              const angle = ((i + 0.5) / s) * 360;
               return (
                 <span
                   key={i}
-                  className="absolute left-1/2 top-1/2 max-w-[80px] origin-left truncate rounded-full bg-background/70 px-1.5 text-[11px] font-bold text-gold"
-                  style={{ transform: `rotate(${angle - 90}deg) translateX(34px)` }}
+                  className="absolute left-1/2 top-1/2 origin-left truncate pl-12 font-black text-white"
+                  style={{ transform: `rotate(${angle - 90}deg) translateY(-50%)`, fontSize, maxWidth: "50%", textShadow: "0 2px 4px rgba(0,0,0,0.6)" }}
                 >
                   {e.author_name}
                 </span>
