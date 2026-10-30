@@ -80,7 +80,7 @@ export function LotteryDraw() {
             {s > 0 && Array.from({ length: s === 1 ? 3 : s }).map((_, i, arr) => {
               const deg = s === 1 ? [-30, 210, 90][i] : (i / arr.length) * 360 - 90;
               return (
-                <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-[6px] w-1/2 origin-left rounded-full bg-rose-500 shadow-[0_0_6px_rgba(0,0,0,0.5)]" style={{ transform: `rotate(${deg}deg) translateY(-50%)` }} />
+                <span key={`l${i}`} className="absolute left-1/2 top-1/2 h-[4px] w-1/2 origin-left rounded-full bg-background shadow-[0_0_4px_rgba(255,184,0,0.6)]" style={{ transform: `rotate(${deg}deg) translateY(-50%)` }} />
               );
             })}
             {s === 1 ? (
