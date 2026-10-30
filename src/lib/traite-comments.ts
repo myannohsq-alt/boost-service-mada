@@ -20,7 +20,7 @@ const WORDS = ["Tsara", "Good", "M'lay", "Kiass", "Soa", "J'adore", "Bomm", "Bos
 const EMO = ["🔥", "❤️‍🔥", "🫶", "🥰", "😍", "💖", "✨", "👑", "💯", "🥷🏻", "🦋", "🌹", "😎", "💥", "🤎", "🧸", "🪶", "🇲🇬", "🙏", "📸"];
 const DECOR: [string, string][] = [["#", ""], ["", ""], ["❤️‍🔥🫶", "🫶❤️‍🔥"], ["༒", "༒"], ["🪶", "🪶"], ["✘ ✘ ", ""], ["♡ ", " ♡"], ["…", "…"]];
 
-const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
+const pick = <T,>(a: T[]): T => a[Math.floor(Math.random() * a.length)] as T;
 
 export function generateTraite(count: number): string[] {
   const out: string[] = [];
