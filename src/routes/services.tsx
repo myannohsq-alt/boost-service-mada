@@ -248,7 +248,7 @@ function ServiceTile({
   const unavailable = /indispo/i.test(group.badge ?? "");
   const gasy = /gasy|malagasy|madagascar/i.test(`${group.nameFr} ${group.nameMg}`);
   const premium = group.key === FACEBOOK_GASY_KEY;
-  const per100 = /réactions sur commentaires/i.test(group.nameFr) ? 15000 : Math.ceil(group.unitPrice * 100);
+  const per100 = /réactions sur commentaires/i.test(group.nameFr) ? 1500 : Math.ceil(group.unitPrice * 100);
 
   return (
     <button

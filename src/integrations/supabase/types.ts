@@ -387,6 +387,60 @@ export type Database = {
           },
         ]
       }
+      lottery_draws: {
+        Row: {
+          created_at: string
+          draw_date: string
+          participants: number
+          prize: number
+          winner_id: string | null
+          winner_name: string
+        }
+        Insert: {
+          created_at?: string
+          draw_date: string
+          participants?: number
+          prize?: number
+          winner_id?: string | null
+          winner_name?: string
+        }
+        Update: {
+          created_at?: string
+          draw_date?: string
+          participants?: number
+          prize?: number
+          winner_id?: string | null
+          winner_name?: string
+        }
+        Relationships: []
+      }
+      lottery_entries: {
+        Row: {
+          amount: number
+          author_name: string
+          created_at: string
+          draw_date: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          author_name?: string
+          created_at?: string
+          draw_date: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          author_name?: string
+          created_at?: string
+          draw_date?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mission_claims: {
         Row: {
           created_at: string
@@ -1235,6 +1289,7 @@ export type Database = {
         Returns: boolean
       }
       invited_count: { Args: never; Returns: number }
+      join_lottery: { Args: never; Returns: undefined }
       leaderboard: {
         Args: { _limit?: number }
         Returns: {
@@ -1244,6 +1299,7 @@ export type Database = {
           points: number
         }[]
       }
+      lottery_next_date: { Args: never; Returns: string }
       mark_boost_paid: { Args: { _id: string }; Returns: undefined }
       order_proofs: {
         Args: { _order_id: string }
@@ -1329,6 +1385,7 @@ export type Database = {
         Returns: string
       }
       set_display_name: { Args: { _name: string }; Returns: string }
+      settle_lottery: { Args: never; Returns: undefined }
       spin_wheel: { Args: never; Returns: Json }
       trigger_smmgen_sync: { Args: never; Returns: undefined }
     }

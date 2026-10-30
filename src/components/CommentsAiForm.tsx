@@ -1,3 +1,4 @@
+import { generateTraite } from "@/lib/traite-comments";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -65,6 +66,11 @@ export function CommentsAiForm({ onClose }: { onClose?: () => void }) {
   const balance = Number(profile?.balance ?? 0);
 
   async function generate() {
+    if (theme === "traite") {
+      setText(generateTraite(qty).join("\n"));
+      toast.success(`${qty} commentaires Traite 🔥 prêts`);
+      return;
+    }
     setBusy(true);
     setText("");
     const seen = new Set<string>();
@@ -154,6 +160,7 @@ export function CommentsAiForm({ onClose }: { onClose?: () => void }) {
       <div className="space-y-1">
         <label className={label}>4. Thème</label>
         <select value={theme} onChange={(e) => setTheme(e.target.value)} className={field}>
+          <option value="traite">Traite 🔥</option>
           <option value="anniversaire">Anniversaire 🎉</option>
           <option value="vente">Vente</option>
           <option value="felicitations">Félicitations</option>

@@ -24,3 +24,7 @@
 - [x] Menu Tutoriel : quatre vrais lecteurs vidéo jouables (compte 10,8 s, dépôt 23,8 s, commande 17,1 s, suivi 13,2 s) avec étapes malgaches numérotées en orange et badges « Gratuit 🎬 » ; vérifié en navigateur.
 - [ ] Lien « Mon Profil » dans le menu client — en attente : le menu client est figé à cinq entrées précises, il faut dire laquelle remplacer ou ajouter.
 - [x] Améliorer le référencement, les aperçus Facebook/WhatsApp et les appels à l’action de l’accueil sans changer les comptes ni les commandes ; image 1200×630 légère et vérifications navigateur/HTML effectuées, publication non demandée.
+- [x] Profil : bouton RECHARGE + Tirage Solde 19h30 (300 Ar, 50 % au gagnant, historique) à la place de la roue.
+- [x] Footer WhatsApp / Télécharger l'application / 24h/24 ; bouton langue visible ; prix Réaction sur Commentaire 1500 Ar ; Likes TikTok Invisible 500 Ar ; thème Traite 🔥.
+- [ ] Traduction française complète de toutes les pages — partielle (menu/footer seulement).
+- [ ] Boost Malagasy ciblé Madagascar — SMMGen ne propose pas ce ciblage.
