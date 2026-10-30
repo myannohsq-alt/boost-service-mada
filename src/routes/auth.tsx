@@ -236,6 +236,7 @@ export function AuthPage() {
                 </Field>
               )}
               {pwField}
+              {mode === "signup" && <p className="-mt-2 pl-2 text-xs text-muted-foreground">Farafahakeliny 6 caractères, litera + tarehimarika (ex : Rakoto0001#)</p>}
               {mode !== "forgot" && (
                 <label className="flex items-start gap-2 text-xs text-muted-foreground">
                   <input type="checkbox" checked={accept} onChange={(e) => setAccept(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
