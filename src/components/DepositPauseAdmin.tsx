@@ -36,7 +36,7 @@ export function DepositPauseAdmin() {
       .from("deposit_pauses")
       .update({ paused_until: until, updated_at: new Date().toISOString() })
       .eq("method", method);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(minutes ? `${LABELS[method]} suspendu ${minutes} min` : `${LABELS[method]} réactivé`);
     await qc.invalidateQueries({ queryKey: ["deposit-pauses"] });
   };
