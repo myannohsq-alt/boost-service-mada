@@ -113,6 +113,13 @@
       "when": 1793333750109,
       "tag": "0015_lottery_restrict_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1793432907546,
+      "tag": "0016_deposit_pauses",
+      "breakpoints": true
     }
   ]
 }
