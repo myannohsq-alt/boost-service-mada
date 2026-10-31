@@ -26,11 +26,11 @@ export function reactionProviderId(key: string, name: string, invisible = false)
   // Invisible = SMMGen "Hidden Data" products: count rises, reactor names stay hidden.
   const ids: Record<ReactionKey, string | null> = comment
     ? // SMMGen Ultrafast comment reactions (~10 000/day).
-      { like: "18690", love: "18691", care: "18692", haha: "18693", wow: "18694", sad: "18695", angry: "18696", "photo-love": "18691", mix: "12724" }
+      { like: "12724", love: "12724", care: "12724", haha: "12724", wow: "12724", sad: "12724", angry: "12724", "photo-love": "12724", mix: "12724" }
     : invisible
       ? // Hidden data, instant, 10k/day, NO REFILL (~$0.24/1k).
-        { like: "18375", love: "18376", care: "18376", haha: "18379", "photo-love": "18376", wow: "18378", sad: "18380", angry: "18381", mix: "19819" }
+        { like: "18607", love: "18608", care: "18608", haha: "18611", "photo-love": "18608", wow: "18610", sad: "18612", angry: "18613", mix: "18608" }
       : // Global Data Cheapest, instant, 50k/day, NO REFILL (~$0.074/1k).
-        { like: "17347", love: "17348", care: "17349", haha: "17351", "photo-love": "17348", wow: "17350", sad: "17352", angry: "17353", mix: "19819" };
+        { like: "17347", love: "17348", care: "17349", haha: "17351", "photo-love": "17348", wow: "17350", sad: "17352", angry: "17353", mix: "17347" };
   return Object.hasOwn(ids, key) ? ids[key as ReactionKey] : null;
 }

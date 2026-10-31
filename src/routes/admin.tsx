@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
+import { DepositPauseAdmin } from "@/components/DepositPauseAdmin";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -96,6 +97,7 @@ function AdminPage() {
 
         {tab === "Recharges" ? (
           <div className="space-y-3">
+            <DepositPauseAdmin />
             {(data?.recharges ?? []).map((r) => (
               <div key={r.id} className="bsm-card p-4">
                 <p className="font-semibold text-gold">{formatAr(Number(r.amount))}</p>

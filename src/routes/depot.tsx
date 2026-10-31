@@ -8,6 +8,7 @@ import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { OPERATORS, operatorById, type Operator } from "@/lib/payment-operators";
 import { supabase } from "@/integrations/supabase/client";
+import { useDepositPauses } from "@/components/DepositPauseAdmin";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -62,6 +63,8 @@ function DepotPage() {
   const copyTimer = useRef<number | null>(null);
 
   const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0]!;
+  const { data: pauses } = useDepositPauses();
+  const pausedUntil = pauses?.[active.id] ?? null;
 
   useEffect(
     () => () => {
@@ -132,7 +135,7 @@ function DepotPage() {
 
     if (error) {
       const dup = error.message.toLowerCase().includes("duplicate") || error.code === "23505";
-      toast.error(dup ? "⚠️ Cette référence a déjà été utilisée." : `❌ ${error.message}`);
+      toast.error(dup ? "⚠️ Cette référence a déjà été utilisée." : `❌ ${error.message}`, { duration: 6000 });
       return;
     }
     toast.success("✅ Demande envoyée ! Votre solde sera crédité après validation.");
@@ -282,7 +285,7 @@ function DepotPage() {
             const isServiceNo = SERVICE_NUMBERS.includes(senderDigits);
             const senderOk = senderDigits.length === 9 && !isServiceNo;
             const refOk = reference.trim().length >= 3;
-            const can = amountOk && senderOk && refOk && !busy;
+            const can = amountOk && senderOk && refOk && !busy && !pausedUntil;
             const box = "rounded-xl border border-neon/30 bg-background/60 p-2.5";
             const field =
               "w-full rounded-xl border border-neon/40 bg-secondary/60 px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-neon focus:shadow-[0_0_10px_var(--color-neon)]";
@@ -376,7 +379,7 @@ function DepotPage() {
                   onClick={() => void submit()}
                   className="w-full rounded-full bg-gold py-2.5 text-sm font-extrabold text-background disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {busy ? "Envoi…" : "✅ Envoyer la demande"}
+                  {pausedUntil ? `⏸️ ${active.label} suspendu jusqu'à ${pausedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : busy ? "Envoi…" : "✅ Envoyer la demande"}
                 </button>
                 <p className="text-center text-[10px] text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
               </div>

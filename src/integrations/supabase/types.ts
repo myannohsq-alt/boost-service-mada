@@ -387,6 +387,24 @@ export type Database = {
           },
         ]
       }
+      deposit_pauses: {
+        Row: {
+          method: string
+          paused_until: string | null
+          updated_at: string
+        }
+        Insert: {
+          method: string
+          paused_until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          method?: string
+          paused_until?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lottery_draws: {
         Row: {
           created_at: string

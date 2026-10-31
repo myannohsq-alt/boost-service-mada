@@ -7,6 +7,8 @@ import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
+import { showOrderSent } from "@/components/OrderSentOverlay";
+import { privateLinkIssue } from "@/lib/link-check";
 import { FACEBOOK_GASY_KEY, type ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
 
@@ -59,6 +61,8 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     catch { return setError("Entrez un lien valide commençant par https://"); }
     if (url.protocol !== "https:" || !url.hostname.includes("."))
       return setError("Entrez un lien valide commençant par https://");
+    const linkIssue = privateLinkIssue(url);
+    if (linkIssue) return setError(linkIssue);
     if (needsReaction && !reaction) return setError("Choisissez un type de réaction.");
     if (!Number.isSafeInteger(quantity) || quantity < min)
       return setError(`Quantité minimum : ${min}`);
@@ -77,7 +81,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         toast.error("Commande refusée", { description: err.message });
         return;
       }
-       toast.success(`Commande réussie ! Nouveau solde : ${formatAr(balance - cost)}`, { description: `${isFacebookGasy ? gasyType : name} × ${quantity} — statut : En cours` });
+      showOrderSent(`${isFacebookGasy ? gasyType : name} × ${quantity}`, formatAr(balance - cost));
       try { await fulfillNow({ data: undefined as never }); }
       catch { /* The order remains queued for the next cycle. */ }
       await refresh();
