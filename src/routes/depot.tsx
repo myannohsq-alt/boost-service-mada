@@ -8,6 +8,7 @@ import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { OPERATORS, operatorById, type Operator } from "@/lib/payment-operators";
 import { supabase } from "@/integrations/supabase/client";
+import { useDepositPauses } from "@/components/DepositPauseAdmin";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -62,6 +63,8 @@ function DepotPage() {
   const copyTimer = useRef<number | null>(null);
 
   const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0]!;
+  const { data: pauses } = useDepositPauses();
+  const pausedUntil = pauses?.[active.id] ?? null;
 
   useEffect(
     () => () => {
