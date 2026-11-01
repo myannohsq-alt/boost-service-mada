@@ -44,9 +44,12 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     (best, current) => !best || current.service.unit < best.service.unit ? current : best,
     undefined,
   )?.service;
-  const quantity = Number(quantityText);
+  const isCustomComments = /^commentaires custom/i.test(service?.name_fr ?? group.nameFr);
+  const [commentsText, setCommentsText] = useState("");
+  const commentLines = commentsText.split("\n").map((l) => l.trim()).filter(Boolean);
+  const quantity = isCustomComments ? commentLines.length : Number(quantityText);
   const invisibleMix = hasVisibility && visibility === "invisible" && reaction === "mix";
-  const min = 100;
+  const min = Math.max(100, service?.provider_min ?? 0);
   const belowMin = !Number.isSafeInteger(quantity) || quantity < min;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
     ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
