@@ -51,7 +51,7 @@ export function WheelGame() {
     const [b, s, w] = await Promise.all([
       db.rpc("game_week_board", { _limit: 50 }),
       db.rpc("game_recent_spins", { _limit: 100 }),
-      db.from("game_week_winners").select("*").order("week_end", { ascending: false }).limit(3),
+      db.rpc("game_recent_winners", { _limit: 3 }),
     ]);
     setBoard(b.data ?? []); setSpins(s.data ?? []); setWinners(w.data ?? []);
   }
