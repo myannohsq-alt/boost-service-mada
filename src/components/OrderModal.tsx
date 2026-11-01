@@ -17,6 +17,7 @@ export type ServiceCard = {
   note: string | null;
   badge?: string | null | undefined;
   delivery_time?: string | null | undefined;
+  provider_min?: number | null | undefined;
 };
 
 export function OrderModal({
