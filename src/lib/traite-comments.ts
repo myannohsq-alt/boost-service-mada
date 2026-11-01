@@ -1,4 +1,5 @@
 // Commentaires « Traite 🔥 » fournis par l'admin ; les variantes sont générées localement.
+import { EXTRA } from "./traite-extra";
 const BASE = [
   "❤️‍🔥🫶#Tsara🫶❤️‍🔥", "🪶🥀𝔟𝔬̃𝔰𝔰 𝔩𝔩🪶", "𝑮𝒐𝒐𝒅 🔥", "#Gøød🔥", "Super ✅🔥", "🫀 🪽#𝗚𝗢𝗢𝗗🫰🏻🤎",
   "👑🫶 #STÃR 🐊🥷🏻", "🖇️🤎𝐆𝐨𝐨𝐝🫶❤‍🔥", "🌵#Kiass📷🌴", "Tsara💥✔", "𝓜𝓪𝓷𝓭𝓸𝓷𝓪 𝓷𝓪𝓶𝓪 🔥😎", "Man🔥😎",
@@ -21,21 +22,42 @@ const EMO = ["🔥", "❤️‍🔥", "🫶", "🥰", "😍", "💖", "✨", "�
 const DECOR: [string, string][] = [["#", ""], ["", ""], ["❤️‍🔥🫶", "🫶❤️‍🔥"], ["༒", "༒"], ["🪶", "🪶"], ["✘ ✘ ", ""], ["♡ ", " ♡"], ["…", "…"]];
 
 const pick = <T,>(a: T[]): T => a[Math.floor(Math.random() * a.length)] as T;
+const shuffle = <T,>(a: T[]): T[] => [...a].sort(() => Math.random() - 0.5);
+
+// Facebook affiche l’apostrophe ASCII comme « &#039; » : on la remplace par ’ (et & par « et »).
+export const cleanComment = (s: string) => s.replace(/['`´]/g, "’").replace(/&/g, "et");
+
+export const MAX_REPEAT = 4;
 
 export function generateTraite(count: number): string[] {
+  const pool = [...new Set([...BASE, ...EXTRA].map(cleanComment))];
   const out: string[] = [];
-  const seen = new Set<string>();
-  const pool = [...BASE].sort(() => Math.random() - 0.5);
-  for (const b of pool) { if (out.length >= count) break; seen.add(b); out.push(b); }
+  // Chaque tour utilise TOUS les commentaires une fois avant d’en répéter un ; max 4 fois chacun.
+  for (let round = 0; round < MAX_REPEAT && out.length < count; round++) {
+    for (const c of shuffle(pool)) { if (out.length >= count) break; out.push(c); }
+  }
+  const seen = new Set(out);
   let guard = 0;
   while (out.length < count && guard++ < count * 50) {
     const [l, r] = pick(DECOR);
-    const c = Math.random() < 0.5 ? `${pick(BASE)} ${pick(EMO)}` : `${l}${pick(WORDS)}${r} ${pick(EMO)}${Math.random() < 0.5 ? pick(EMO) : ""}`;
+    const c = cleanComment(Math.random() < 0.5 ? `${pick(pool)} ${pick(EMO)}` : `${l}${pick(WORDS)}${r} ${pick(EMO)}${Math.random() < 0.5 ? pick(EMO) : ""}`);
     if (seen.has(c)) continue;
     seen.add(c);
     out.push(c);
   }
-  return out;
+  // Mélange final pour éviter que les répétitions se suivent en blocs.
+  return spread(out);
+}
+
+function spread(list: string[]): string[] {
+  const s = shuffle(list);
+  for (let i = 1; i < s.length; i++) {
+    if (s[i] === s[i - 1]) {
+      const j = s.findIndex((x, k) => k > i && x !== s[i] && s[k - 1] !== s[i] && s[k + 1] !== s[i]);
+      if (j > 0) [s[i], s[j]] = [s[j]!, s[i]!];
+    }
+  }
+  return s;
 }
 
 const HBD = ["Joyeux anniversaire", "Hbd", "Tratry ny tsingerintaona", "Arahabaina tratry ny tsingerintaona", "Mirary soa sy fahasalamana", "Happy birthday", "Bon anniversaire", "Tratry ny faha teraka", "Mirary fiadanana sy fahombiazana", "Hbd e", "Tsingerintaona sambatra", "Andriamanitra anie hitahy anao"];
