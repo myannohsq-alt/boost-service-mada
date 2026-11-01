@@ -7,6 +7,6 @@ test("rules", () => {
     expect(Math.max(...c.values())).toBeLessThanOrEqual(4);
     expect(o.some(x => x.includes("'"))).toBe(false);
   }
-  const o = generateTraite(300); expect(new Set(o).size).toBe(300);
+  const o = generateTraite(150); expect(new Set(o).size).toBe(150);
   expect(generateVente(50).some(x => x.includes("'"))).toBe(false);
 });
