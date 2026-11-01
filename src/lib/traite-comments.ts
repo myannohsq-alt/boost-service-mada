@@ -70,7 +70,7 @@ function variants(base: string[], emo: string[], count: number): string[] {
   const seen = new Set<string>();
   let guard = 0;
   while (out.length < count && guard++ < count * 60) {
-    const c = `${pick(base)}${Math.random() < 0.3 ? " e" : ""} ${pick(emo)}${Math.random() < 0.6 ? pick(emo) : ""}${Math.random() < 0.3 ? pick(emo) : ""}`;
+    const c = cleanComment(`${pick(base)}${Math.random() < 0.3 ? " e" : ""} ${pick(emo)}${Math.random() < 0.6 ? pick(emo) : ""}${Math.random() < 0.3 ? pick(emo) : ""}`);
     if (seen.has(c)) continue;
     seen.add(c);
     out.push(c);
