@@ -44,9 +44,12 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     (best, current) => !best || current.service.unit < best.service.unit ? current : best,
     undefined,
   )?.service;
-  const quantity = Number(quantityText);
+  const isCustomComments = /^commentaires custom/i.test(service?.name_fr ?? group.nameFr);
+  const [commentsText, setCommentsText] = useState("");
+  const commentLines = commentsText.split("\n").map((l) => l.trim()).filter(Boolean);
+  const quantity = isCustomComments ? commentLines.length : Number(quantityText);
   const invisibleMix = hasVisibility && visibility === "invisible" && reaction === "mix";
-  const min = 100;
+  const min = Math.max(100, service?.provider_min ?? 0);
   const belowMin = !Number.isSafeInteger(quantity) || quantity < min;
   const cost = service && Number.isFinite(quantity) && quantity >= 0
     ? Math.ceil(quantity / service.unit * Number(service.price)) : 0;
@@ -69,7 +72,11 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     if (insufficient) { toast.error("Solde insuffisant, veuillez recharger"); return setError("Solde insuffisant, veuillez recharger. Jereo ny commandes ao amin'ny compte-nao"); }
     setBusy(true);
     try {
-      const { error: err } = await supabase.rpc("place_order", {
+      const { error: err } = isCustomComments
+        ? await (supabase.rpc as any)("place_custom_comment_order", { // eslint-disable-line @typescript-eslint/no-explicit-any
+            _service_id: service.id, _link: url.toString(), _comments: commentLines.join("\n"),
+          })
+        : await supabase.rpc("place_order", {
         _service_id: service.id,
         _quantity: quantity,
         _link: url.toString(),
@@ -81,12 +88,13 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         toast.error("Commande refusée", { description: err.message });
         return;
       }
-      showOrderSent(`${isFacebookGasy ? gasyType : name} × ${quantity}`, formatAr(balance - cost));
-      try { await fulfillNow({ data: undefined as never }); }
-      catch { /* The order remains queued for the next cycle. */ }
-      await refresh();
+      const label = `${isFacebookGasy ? gasyType : name} × ${quantity}`;
+      const newBalance = formatAr(balance - cost);
       onOrdered?.();
       onClose();
+      window.setTimeout(() => showOrderSent(label, newBalance), 150);
+      void fulfillNow({ data: undefined as never }).catch(() => { /* queued for next cycle */ });
+      void refresh();
     } catch {
       setError("La commande n'a pas pu être envoyée. Réessayez.");
     } finally {
@@ -153,7 +161,11 @@ export function ServiceForm({ group, onClose, onOrdered }: {
           </Button>)}
         </div>
       </fieldset>}
-      <div>
+      {isCustomComments ? <div>
+        <label htmlFor="service-comments" className="text-xs text-muted-foreground">Commentaires (1 par ligne, min. {min})</label>
+        <textarea id="service-comments" rows={6} value={commentsText} onChange={e => setCommentsText(e.target.value)} className="bsm-input mt-1 h-auto py-2" placeholder={"Super !\nTrop bien 🔥"} />
+        <p className={`mt-1 text-xs ${belowMin ? "text-destructive" : "text-muted-foreground"}`}>{quantity} commentaire(s)</p>
+      </div> : <div>
         <label htmlFor="service-quantity" className="text-xs text-muted-foreground">Quantité (min. {min})</label>
         <input id="service-quantity" type="number" min={min} step="1" value={quantityText} onChange={e => setQuantityText(e.target.value)} className="bsm-input mt-1" />
         <p className={`mt-1 text-xs ${belowMin ? "text-destructive" : "text-muted-foreground"}`}>
@@ -166,7 +178,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
             {value.toLocaleString("fr-FR")}
           </Button>)}
         </div>
-      </div>
+      </div>}
       <div className="rounded-md border border-border bg-secondary p-3 text-sm">
         <div className="flex items-center justify-between gap-2"><span>Mon solde</span><strong className="text-primary">{formatAr(balance)}</strong></div>
         <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2"><span>Total à payer</span><strong className="text-lg text-primary">{formatAr(cost)}</strong></div>

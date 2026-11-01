@@ -2,17 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
 import { ProfileHeader, InviteCard } from "@/components/ProfileGame";
-import { LotteryDraw } from "@/components/LotteryDraw";
+import { WheelGame } from "@/components/WheelGame";
 
 export const Route = createFileRoute("/profil")({
   head: () => ({
     meta: [
-      { title: "Mon profil et tirage solde — BOOST SERVICE MADA" },
-      { name: "description", content: "Consultez votre solde, rechargez, invitez vos amis et participez au tirage de 19h30." },
+      { title: "Mon profil et roue des gains — BOOST SERVICE MADA" },
+      { name: "description", content: "Consultez votre solde, rechargez, invitez vos amis et jouez à la roue du samedi 18h." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { property: "og:title", content: "Mon profil et tirage solde — BOOST SERVICE MADA" },
-      { property: "og:description", content: "Solde, recharge, invitation et tirage quotidien de 19h30." },
+      { property: "og:title", content: "Mon profil et roue des gains — BOOST SERVICE MADA" },
+      { property: "og:description", content: "Solde, recharge, invitation et roue hebdomadaire du samedi 18h." },
     ],
   }),
   component: ProfilPage,
@@ -34,7 +34,7 @@ function ProfilPage() {
               </Link>
             </div>
             <InviteCard />
-            <LotteryDraw />
+            <WheelGame />
           </div>
         </Section>
       </Layout>
