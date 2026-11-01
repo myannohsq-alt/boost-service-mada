@@ -16,6 +16,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/useAuth";
 import { Toaster } from "@/components/ui/sonner";
 import { OrderSentOverlay } from "@/components/OrderSentOverlay";
+import { AppSplash } from "@/components/AppSplash";
 import { AnimatedEmojis } from "@/components/AnimatedEmojis";
 
 function NotFoundComponent() {
@@ -130,6 +131,7 @@ function RootComponent() {
             <Outlet />
             <Toaster position="top-center" richColors />
             <OrderSentOverlay />
+            <AppSplash />
             <AnimatedEmojis />
           </AuthProvider>
         </I18nProvider>
