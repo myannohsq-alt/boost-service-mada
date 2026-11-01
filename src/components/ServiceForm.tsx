@@ -177,7 +177,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
             className={`h-9 min-w-0 px-1 text-xs ${quantity === value ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
             {value.toLocaleString("fr-FR")}
           </Button>)}
-        </div>
+      </div>}
       </div>
       <div className="rounded-md border border-border bg-secondary p-3 text-sm">
         <div className="flex items-center justify-between gap-2"><span>Mon solde</span><strong className="text-primary">{formatAr(balance)}</strong></div>
