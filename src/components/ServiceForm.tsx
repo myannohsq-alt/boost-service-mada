@@ -72,7 +72,11 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     if (insufficient) { toast.error("Solde insuffisant, veuillez recharger"); return setError("Solde insuffisant, veuillez recharger. Jereo ny commandes ao amin'ny compte-nao"); }
     setBusy(true);
     try {
-      const { error: err } = await supabase.rpc("place_order", {
+      const { error: err } = isCustomComments
+        ? await (supabase.rpc as any)("place_custom_comment_order", { // eslint-disable-line @typescript-eslint/no-explicit-any
+            _service_id: service.id, _link: url.toString(), _comments: commentLines.join("\n"),
+          })
+        : await supabase.rpc("place_order", {
         _service_id: service.id,
         _quantity: quantity,
         _link: url.toString(),
@@ -84,12 +88,13 @@ export function ServiceForm({ group, onClose, onOrdered }: {
         toast.error("Commande refusée", { description: err.message });
         return;
       }
-      showOrderSent(`${isFacebookGasy ? gasyType : name} × ${quantity}`, formatAr(balance - cost));
-      try { await fulfillNow({ data: undefined as never }); }
-      catch { /* The order remains queued for the next cycle. */ }
-      await refresh();
+      const label = `${isFacebookGasy ? gasyType : name} × ${quantity}`;
+      const newBalance = formatAr(balance - cost);
       onOrdered?.();
       onClose();
+      window.setTimeout(() => showOrderSent(label, newBalance), 150);
+      void fulfillNow({ data: undefined as never }).catch(() => { /* queued for next cycle */ });
+      void refresh();
     } catch {
       setError("La commande n'a pas pu être envoyée. Réessayez.");
     } finally {
