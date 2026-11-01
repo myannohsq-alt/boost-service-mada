@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 import { Clock, Trophy, Star, Play, History, BarChart3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
@@ -36,7 +37,8 @@ function weekEnd(now = new Date()) {
 const prizeText = (t: string, v: number) => t === "ar" ? `${v} Ar` : `${v} ${t === "trophy" ? "🏆" : "⭐"}`;
 
 export function WheelGame() {
-  const { user, refresh } = useAuth();
+  const { user, profile, refresh } = useAuth();
+  const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
   const [rot, setRot] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -65,16 +67,31 @@ export function WheelGame() {
   const mm = String(Math.floor((left % 3600e3) / 60e3)).padStart(2, "0");
   const ss = String(Math.floor((left % 60e3) / 1e3)).padStart(2, "0");
 
+  const mySpins = spins.filter((s) => s.is_me);
+  const paidThisWeek = mySpins.length > 0;
+  const todayMg = new Date(now.getTime() + 3 * 3600e3).toISOString().slice(0, 10);
+  const playedToday = mySpins.some((s) => s.created_at && new Date(new Date(s.created_at).getTime() + 3 * 3600e3).toISOString().slice(0, 10) === todayMg);
+
+  const askRecharge = () => {
+    toast.error("Tsy ampy ny solde (200 Ar ilaina). Manaova RECHARGE 🙏");
+    navigate({ to: "/depot" });
+  };
+
   async function play() {
     if (!user) return void toast.error("Midira aloha");
+    if (!paidThisWeek && Number((profile as any)?.balance ?? 0) < FEE) return askRecharge();
     setBusy(true);
     const { data, error } = await db.rpc("play_wheel_game");
-    if (error) { setBusy(false); return void toast.error(error.message); }
+    if (error) {
+      setBusy(false);
+      if (/solde/i.test(error.message)) return askRecharge();
+      return void toast.error(error.message);
+    }
     const center = data.segment * 60 + 30;
     setRot((r) => r - (r % 360) + 360 * 6 + (360 - center));
     window.setTimeout(async () => {
       setBusy(false);
-      toast.success(`🎉 Nahazo ${prizeText(data.type, data.value)} ianao!`);
+      toast.success(`🎉 Nahazo ${prizeText(data.type, data.value)} ianao!${data.fee ? " (-200 Ar)" : " (gratuit)"}`);
       await Promise.all([load(), refresh()]);
     }, 4200);
   }
@@ -134,7 +151,7 @@ export function WheelGame() {
               <p className="font-display text-xl font-black text-gold">⭐ 1000 Ar</p>
               <p className="text-[10px] text-muted-foreground">Ho an'ny mpandresy ⭐ betsaka indrindra</p>
             </div>
-            <div className="col-span-2 rounded-xl border border-primary/40 bg-background/50 p-2 text-center sm:col-span-1">
+            <div className="col-span-2 rounded-xl border border-primary/40 bg-background/50 p-2 text-center">
               <p className="text-sm font-black text-primary">🥉 3ème place : 500 Ar</p>
               <p className="text-[10px] text-muted-foreground">Ho an'ny nahazo Ariary betsaka indrindra</p>
             </div>
