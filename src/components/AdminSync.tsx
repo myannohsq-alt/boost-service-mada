@@ -200,7 +200,7 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
       <div className="bsm-card space-y-3 p-4">
         <h3 className="font-display text-sm font-bold">🇲🇬 Connexion Smmfollows (Boost Malagasy YouTube)</h3>
         <p className="text-xs text-muted-foreground">
-          Utilisée uniquement pour « Boost Malagasy — YouTube Likes ». {s?.has_smmfollows_key ? "✅ Clé configurée" : "⚠️ Clé non configurée"}
+          Utilisée uniquement pour « Boost Malagasy — Réactions YouTube ». {s?.has_smmfollows_key ? "✅ Clé configurée" : "⚠️ Clé non configurée"}
         </p>
         <input
           className="bsm-input w-full"
