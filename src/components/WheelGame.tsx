@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 import { Clock, Trophy, Star, Play, History, BarChart3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
@@ -36,7 +37,8 @@ function weekEnd(now = new Date()) {
 const prizeText = (t: string, v: number) => t === "ar" ? `${v} Ar` : `${v} ${t === "trophy" ? "🏆" : "⭐"}`;
 
 export function WheelGame() {
-  const { user, refresh } = useAuth();
+  const { user, profile, refresh } = useAuth();
+  const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
   const [rot, setRot] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -65,16 +67,31 @@ export function WheelGame() {
   const mm = String(Math.floor((left % 3600e3) / 60e3)).padStart(2, "0");
   const ss = String(Math.floor((left % 60e3) / 1e3)).padStart(2, "0");
 
+  const mySpins = spins.filter((s) => s.is_me);
+  const paidThisWeek = mySpins.length > 0;
+  const todayMg = new Date(now.getTime() + 3 * 3600e3).toISOString().slice(0, 10);
+  const playedToday = mySpins.some((s) => s.created_at && new Date(new Date(s.created_at).getTime() + 3 * 3600e3).toISOString().slice(0, 10) === todayMg);
+
+  const askRecharge = () => {
+    toast.error("Tsy ampy ny solde (200 Ar ilaina). Manaova RECHARGE 🙏");
+    navigate({ to: "/depot" });
+  };
+
   async function play() {
     if (!user) return void toast.error("Midira aloha");
+    if (!paidThisWeek && Number((profile as any)?.balance ?? 0) < FEE) return askRecharge();
     setBusy(true);
     const { data, error } = await db.rpc("play_wheel_game");
-    if (error) { setBusy(false); return void toast.error(error.message); }
+    if (error) {
+      setBusy(false);
+      if (/solde/i.test(error.message)) return askRecharge();
+      return void toast.error(error.message);
+    }
     const center = data.segment * 60 + 30;
     setRot((r) => r - (r % 360) + 360 * 6 + (360 - center));
     window.setTimeout(async () => {
       setBusy(false);
-      toast.success(`🎉 Nahazo ${prizeText(data.type, data.value)} ianao!`);
+      toast.success(`🎉 Nahazo ${prizeText(data.type, data.value)} ianao!${data.fee ? " (-200 Ar)" : " (gratuit)"}`);
       await Promise.all([load(), refresh()]);
     }, 4200);
   }
@@ -95,35 +112,37 @@ export function WheelGame() {
         <p className="mx-auto mt-1 w-fit rounded-full bg-gradient-to-r from-primary to-gold px-3 py-1 text-[11px] font-bold text-primary-foreground">⭐ Loka lehibe sy maro amin'ny participation!</p>
         <p className="mt-2 text-center text-xs text-muted-foreground">Fifaninanana mifarana afaka <b className="tabular-nums text-foreground">{dd}j {hh}:{mm}:{ss}</b> — miverina 0 ny isa rehetra isaky ny herinandro</p>
 
-        <div className="mt-4 grid grid-cols-[1fr_auto] items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
-          <div className="rounded-xl border border-primary/40 bg-background/50 p-3 text-center">
-            <p className="text-[11px] font-bold text-primary">Fandraisana anjara</p>
-            <p className="font-display text-2xl font-black">{formatAr(FEE)}</p>
-            <button disabled={busy} onClick={() => void play()}
-              className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-gold px-3 py-2 text-sm font-extrabold text-primary-foreground shadow-md active:scale-95 disabled:opacity-60">
-              <Play className="h-4 w-4 fill-current" /> {busy ? "Mihodina…" : "Participer"}
-            </button>
-            <p className="mt-1 text-[10px] italic text-muted-foreground">Milalao indray isan'andro! 🚀</p>
-          </div>
-
-          <div className="relative mx-auto h-44 w-44 sm:h-52 sm:w-52">
+        <div className="mt-4 flex flex-col items-center gap-4">
+          <div className="relative mx-auto h-64 w-64">
             <div className="absolute left-1/2 top-[-10px] z-10 h-0 w-0 -translate-x-1/2 border-x-[12px] border-t-[20px] border-x-transparent border-t-gold drop-shadow" />
             <div className="h-full w-full rounded-full border-4 border-gold p-0.5 shadow-[0_0_25px_var(--gold)]">
               <div className="relative h-full w-full rounded-full" style={{ background: wheelBg, transform: `rotate(${rot}deg)`, transition: "transform 4s cubic-bezier(.17,.67,.12,.99)" }}>
                 {SEGMENTS.map((s, i) => (
                   <div key={i} className="absolute inset-0" style={{ transform: `rotate(${i * 60 + 30}deg)` }}>
-                    <div className="mx-auto mt-2 flex w-12 flex-col items-center text-center leading-none text-foreground" style={{ textShadow: "0 1px 3px var(--background)" }}>
-                      <span className="text-base">{s.icon}</span>
-                      <span className="text-xs font-black">{s.label}</span>
+                    <div className="mx-auto mt-3 flex w-14 flex-col items-center text-center leading-none text-foreground" style={{ textShadow: "0 1px 3px var(--background)" }}>
+                      <span className="text-xl">{s.icon}</span>
+                      <span className="text-sm font-black">{s.label}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-4 border-gold bg-card text-[9px] font-black text-gold">👑<span>ADMIN</span></div>
+            <div className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-4 border-gold bg-card text-[10px] font-black text-gold">👑<span>ADMIN</span></div>
           </div>
 
-          <div className="col-span-2 grid grid-cols-2 gap-2 sm:col-span-1 sm:grid-cols-1">
+          <div className="w-full max-w-xs rounded-xl border border-primary/40 bg-background/50 p-3 text-center">
+            <p className="text-[11px] font-bold text-primary">Fandraisana anjara</p>
+            <p className="font-display text-2xl font-black">{paidThisWeek ? "GRATUIT 🎁" : formatAr(FEE)}</p>
+            <button disabled={busy || playedToday} onClick={() => void play()}
+              className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-gold px-3 py-2.5 text-sm font-extrabold text-primary-foreground shadow-md active:scale-95 disabled:opacity-60">
+              <Play className="h-4 w-4 fill-current" /> {busy ? "Mihodina…" : playedToday ? "Miverena rahampitso" : paidThisWeek ? "Manodina gratuit" : "Participer"}
+            </button>
+            <p className="mt-1 text-[10px] italic text-muted-foreground">
+              {paidThisWeek ? "Efa nandoa ianao: 1× gratuit isan'andro hatramin'ny Samedi 18h 🚀" : "Aloa indray mandeha 200 Ar → 1× gratuit isan'andro hatramin'ny Samedi 18h 🚀"}
+            </p>
+          </div>
+
+          <div className="grid w-full grid-cols-2 gap-2">
             <div className="rounded-xl border border-gold/50 bg-background/50 p-2.5 text-center">
               <p className="font-display text-xl font-black text-gold">🏆 1200 Ar</p>
               <p className="text-[10px] text-muted-foreground">Ho an'ny mpandresy 🏆 betsaka indrindra</p>
@@ -132,7 +151,7 @@ export function WheelGame() {
               <p className="font-display text-xl font-black text-gold">⭐ 1000 Ar</p>
               <p className="text-[10px] text-muted-foreground">Ho an'ny mpandresy ⭐ betsaka indrindra</p>
             </div>
-            <div className="col-span-2 rounded-xl border border-primary/40 bg-background/50 p-2 text-center sm:col-span-1">
+            <div className="col-span-2 rounded-xl border border-primary/40 bg-background/50 p-2 text-center">
               <p className="text-sm font-black text-primary">🥉 3ème place : 500 Ar</p>
               <p className="text-[10px] text-muted-foreground">Ho an'ny nahazo Ariary betsaka indrindra</p>
             </div>

@@ -141,6 +141,13 @@
       "when": 1793514985415,
       "tag": "0019_boost_malagasy_min_500",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1793515482186,
+      "tag": "0020_wheel_weekly_pass",
+      "breakpoints": true
     }
   ]
 }
