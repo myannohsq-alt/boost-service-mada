@@ -667,6 +667,7 @@ export type Database = {
           last_synced_at: string | null
           next_retry_at: string | null
           notes: string
+          provider: string
           provider_charge: number | null
           provider_error: string
           provider_order_id: string | null
@@ -694,6 +695,7 @@ export type Database = {
           last_synced_at?: string | null
           next_retry_at?: string | null
           notes?: string
+          provider?: string
           provider_charge?: number | null
           provider_error?: string
           provider_order_id?: string | null
@@ -721,6 +723,7 @@ export type Database = {
           last_synced_at?: string | null
           next_retry_at?: string | null
           notes?: string
+          provider?: string
           provider_charge?: number | null
           provider_error?: string
           provider_order_id?: string | null
@@ -953,6 +956,7 @@ export type Database = {
           rate_limited_until: string | null
           services_synced_at: string | null
           singleton: boolean
+          smmfollows_api_key: string
           sync_url: string
           updated_at: string
         }
@@ -975,6 +979,7 @@ export type Database = {
           rate_limited_until?: string | null
           services_synced_at?: string | null
           singleton?: boolean
+          smmfollows_api_key?: string
           sync_url?: string
           updated_at?: string
         }
@@ -997,6 +1002,7 @@ export type Database = {
           rate_limited_until?: string | null
           services_synced_at?: string | null
           singleton?: boolean
+          smmfollows_api_key?: string
           sync_url?: string
           updated_at?: string
         }

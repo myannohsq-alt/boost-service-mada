@@ -40,6 +40,7 @@ export const getSyncOverview = createServerFn({ method: "POST" })
             api_url: s.api_url,
             has_key: Boolean(s.api_key),
             key_hint: s.api_key ? `••••${s.api_key.slice(-4)}` : "",
+            has_smmfollows_key: Boolean((s as { smmfollows_api_key?: string }).smmfollows_api_key),
             ar_per_usd: Number(s.ar_per_usd),
             markup_percent: s.markup_percent,
             auto_fulfill: s.auto_fulfill,
@@ -60,6 +61,7 @@ export const saveProviderSettings = createServerFn({ method: "POST" })
   .inputValidator((d: {
     api_url: string;
     api_key?: string;
+    smmfollows_api_key?: string;
     ar_per_usd: number;
     markup_percent: number;
     auto_fulfill: boolean;
@@ -75,6 +77,7 @@ export const saveProviderSettings = createServerFn({ method: "POST" })
       markup_percent: number;
       auto_fulfill: boolean;
       api_key?: string;
+      smmfollows_api_key?: string;
     } = {
       api_url: data.api_url.trim(),
       ar_per_usd: Number(data.ar_per_usd) || 4500,
@@ -82,6 +85,7 @@ export const saveProviderSettings = createServerFn({ method: "POST" })
       auto_fulfill: data.auto_fulfill,
     };
     if (data.api_key && data.api_key.trim()) patch.api_key = data.api_key.trim();
+    if (data.smmfollows_api_key && data.smmfollows_api_key.trim()) patch.smmfollows_api_key = data.smmfollows_api_key.trim();
     const { error } = await supabaseAdmin.from("provider_settings").update(patch).eq("id", row.id);
     if (error) throw new Error(error.message);
     return { ok: true };

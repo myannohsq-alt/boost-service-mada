@@ -93,6 +93,7 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
 
   const [apiUrl, setApiUrl] = useState<string | null>(null);
   const [apiKey, setApiKey] = useState("");
+  const [sfKey, setSfKey] = useState("");
   const [rate, setRate] = useState<string | null>(null);
   const [markup, setMarkup] = useState<string | null>(null);
   const [auto, setAuto] = useState<boolean | null>(null);
@@ -111,6 +112,7 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
         data: {
           api_url: url,
           api_key: apiKey,
+          smmfollows_api_key: sfKey,
           ar_per_usd: Number(arPerUsd) || 4500,
           markup_percent: Number(markupPct) || 0,
           auto_fulfill: autoFulfill,
@@ -118,6 +120,7 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
       }),
     onSuccess: async () => {
       setApiKey("");
+      setSfKey("");
       onDone("✅ Réglages SMMGen enregistrés");
       await refresh();
     },
@@ -191,6 +194,28 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
           onClick={() => save.mutate()}
         >
           💾 Enregistrer
+        </button>
+      </div>
+
+      <div className="bsm-card space-y-3 p-4">
+        <h3 className="font-display text-sm font-bold">🇲🇬 Connexion Smmfollows (Boost Malagasy YouTube)</h3>
+        <p className="text-xs text-muted-foreground">
+          Utilisée uniquement pour « Boost Malagasy — YouTube Likes ». {s?.has_smmfollows_key ? "✅ Clé configurée" : "⚠️ Clé non configurée"}
+        </p>
+        <input
+          className="bsm-input w-full"
+          type="password"
+          autoComplete="off"
+          placeholder="Coller la clé API Smmfollows"
+          value={sfKey}
+          onChange={(e) => setSfKey(e.target.value)}
+        />
+        <button
+          className="bsm-btn bsm-btn-primary !py-2 !text-xs"
+          disabled={save.isPending || !sfKey.trim()}
+          onClick={() => save.mutate()}
+        >
+          💾 Enregistrer la clé Smmfollows
         </button>
       </div>
 

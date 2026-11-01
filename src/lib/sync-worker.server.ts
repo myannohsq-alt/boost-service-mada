@@ -4,6 +4,7 @@
 import { smmgen, mapProviderStatus, isRateLimit, RateLimitError, type SmmgenService } from "./smmgen.server";
 import { isReactionService, reactionProviderId } from "./reaction-options";
 
+const SMMFOLLOWS_URL = "https://smmfollows.com/api/v2";
 const LOCK_NAME = "smmgen-worker";
 const LOCK_SECONDS = 240;
 const MAX_JOBS_PER_RUN = 8;
@@ -227,6 +228,11 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
     }
 
     if (!blocked && !rateLimited && !paused) {
+      if (settings.smmfollows_api_key) {
+        const f = await reconcileOrders(db, smmgen(SMMFOLLOWS_URL, settings.smmfollows_api_key), "smmfollows");
+        processed += f.updated;
+        if (f.error) notes.push(`Smmfollows: ${f.error.slice(0, 120)}`);
+      }
       const r = await reconcileOrders(db, api);
       processed += r.updated;
       if (r.error) {
@@ -293,6 +299,7 @@ type Settings = {
   id: string;
   api_url: string;
   api_key: string;
+  smmfollows_api_key?: string;
   ar_per_usd: number;
   markup_percent: number;
   auto_fulfill: boolean;
@@ -442,18 +449,24 @@ async function submitOrder(
   const { data: service } = order.service_id
     ? await db
         .from("services")
-        .select("provider_service_id, provider_min, provider_max, platform, name_fr")
+        .select("provider_service_id, provider_min, provider_max, platform, name_fr, provider_name")
         .eq("id", order.service_id)
         .maybeSingle()
     : { data: null };
 
+  // Services marked "Smmfollows" go to that panel with its own API key.
+  const viaSmmfollows = (service?.provider_name ?? "").toLowerCase() === "smmfollows";
+  if (viaSmmfollows) {
+    if (!settings.smmfollows_api_key) throw new Error("Clé API Smmfollows non configurée");
+    api = smmgen(SMMFOLLOWS_URL, settings.smmfollows_api_key);
+  }
   // --- mapping + input validation before touching the provider ---
   let providerServiceId = service?.provider_service_id;
   let min = service?.provider_min ?? 1;
   let max = service?.provider_max ?? Number.MAX_SAFE_INTEGER;
   // Accept extra ;key:value parts (target, cible, tier…) used by the comment-reaction form.
   const reactionNote = /^reaction:([a-z-]+)(?:;[a-z]+:[^;]{0,100})*$/.exec(order.notes ?? "");
-  if (service && isReactionService(service.platform, service.name_fr) && reactionNote) {
+  if (!viaSmmfollows && service && isReactionService(service.platform, service.name_fr) && reactionNote) {
     providerServiceId = reactionProviderId(reactionNote[1] ?? "", service.name_fr, /;visibility:invisible/.test(order.notes ?? ""));
     if (!providerServiceId) throw new Error("Type de réaction invalide");
     const { data: matched } = await db.from("provider_services")
@@ -480,7 +493,7 @@ async function submitOrder(
   }
 
   // Réaction Mix on posts: split evenly into 👍 J'aime, ❤️ J'adore, 🥰 Solidaire only.
-  const isPostMix = !!(service && reactionNote?.[1] === "mix" && !/commentaire|comment/i.test(service.name_fr));
+  const isPostMix = !!(!viaSmmfollows && service && reactionNote?.[1] === "mix" && !/commentaire|comment/i.test(service.name_fr));
   let res: Awaited<ReturnType<typeof api.add>>;
   if (isPostMix) {
     const invisible = /;visibility:invisible/.test(order.notes ?? "");
@@ -499,8 +512,15 @@ async function submitOrder(
     res = { ...(first as object), mix_parts: subs } as unknown as typeof res;
   } else {
     // Reaction orders store the commenter's name in `comments`; SMMGen must get a quantity, not custom comments.
-    const isReaction = !!(service && isReactionService(service.platform, service.name_fr) && reactionNote);
-    res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, isReaction ? undefined : order.comments || undefined);
+    const isReaction = !!(!viaSmmfollows && service && isReactionService(service.platform, service.name_fr) && reactionNote);
+    try {
+      res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, isReaction ? undefined : order.comments || undefined);
+    } catch (e) {
+      if (!viaSmmfollows) throw e;
+      // Don't let a Smmfollows-only problem pause the whole SMMGen worker.
+      const m = e instanceof Error ? e.message : String(e);
+      throw new Error("Smmfollows: " + m.replace(/not enough funds|insufficient|invalid api key|unauthori[sz]ed|incorrect request/gi, "solde ou clé Smmfollows à vérifier"));
+    }
   }
   const providerOrderId = res?.order === undefined || res.order === null ? "" : String(res.order);
   if (!providerOrderId) {
@@ -521,6 +541,7 @@ async function submitOrder(
     .from("orders")
     .update({
       provider_order_id: providerOrderId,
+      provider: viaSmmfollows ? "smmfollows" : "smmgen",
       provider_status: "Pending",
       status: "processing",
       provider_error: "",
@@ -536,10 +557,11 @@ async function submitOrder(
   return `commande ${orderId} envoyée (SMMGen #${providerOrderId})`;
 }
 
-async function reconcileOrders(db: Admin, api: ReturnType<typeof smmgen>) {
+async function reconcileOrders(db: Admin, api: ReturnType<typeof smmgen>, provider = "smmgen") {
   const { data: orders } = await db
     .from("orders")
     .select("id, provider_order_id, status, provider_status")
+    .eq("provider", provider)
     .not("provider_order_id", "is", null)
     .in("status", ["pending", "processing"])
     .order("last_sync_at", { ascending: true, nullsFirst: true })
