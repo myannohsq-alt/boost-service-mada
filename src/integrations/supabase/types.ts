@@ -88,6 +88,21 @@ export type Database = {
           },
         ]
       }
+      app_secrets: {
+        Row: {
+          name: string
+          value: string
+        }
+        Insert: {
+          name: string
+          value: string
+        }
+        Update: {
+          name?: string
+          value?: string
+        }
+        Relationships: []
+      }
       assistant_messages: {
         Row: {
           content: string

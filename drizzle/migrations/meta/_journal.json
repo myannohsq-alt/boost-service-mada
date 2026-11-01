@@ -127,6 +127,13 @@
       "when": 1793492021103,
       "tag": "0017_wheel_game_referral_x_spotify",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1793494891147,
+      "tag": "0018_security_hardening_referral_roles_sms",
+      "breakpoints": true
     }
   ]
 }
