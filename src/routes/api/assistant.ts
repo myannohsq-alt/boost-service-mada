@@ -22,9 +22,9 @@ export const Route = createFileRoute("/api/assistant")({
         let body: { messages?: Msg[] };
         try { body = await request.json(); } catch { return new Response("Bad request", { status: 400 }); }
         const history = (body.messages ?? [])
-          .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+          .filter((m) => m.role === "user" && typeof m.content === "string")
           .slice(-20)
-          .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }));
+          .map((m) => ({ role: "user" as const, content: m.content.slice(0, 1000) }));
         if (!history.length) return new Response("Bad request", { status: 400 });
 
         const { data: services } = await sb

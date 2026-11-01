@@ -136,13 +136,13 @@ export function InviteCard() {
       <p className="font-semibold">🎁 Lien d'invitation</p>
       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
         <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-primary to-gold px-3 py-1 font-extrabold text-primary-foreground shadow-md animate-pulse">
-          👥 1 ami inscrit = +100 Ar 💰
+          👥 1 ami (1er dépôt) = +100 Ar 💰
         </span>
         <span className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 font-semibold text-foreground">
           Amis invités : <strong className="text-primary">{count}</strong>
         </span>
       </div>
-      <p className="mt-1 text-[11px] text-muted-foreground">Ajoutés automatiquement à votre solde dès l'inscription de votre ami.</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">Ajoutés automatiquement à votre solde dès le premier dépôt validé de votre ami.</p>
       <input readOnly value={link} className="bsm-input mt-3 !text-xs" onFocus={(e) => e.target.select()} />
       <div className="mt-2 grid grid-cols-3 gap-2">
         <button onClick={() => { void navigator.clipboard.writeText(link); toast.success("Lien copié !"); }} className="bsm-btn bsm-btn-primary !py-2 !text-xs"><Copy className="h-3.5 w-3.5" /> Copier</button>

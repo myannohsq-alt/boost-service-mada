@@ -88,6 +88,21 @@ export type Database = {
           },
         ]
       }
+      app_secrets: {
+        Row: {
+          name: string
+          value: string
+        }
+        Insert: {
+          name: string
+          value: string
+        }
+        Update: {
+          name?: string
+          value?: string
+        }
+        Relationships: []
+      }
       assistant_messages: {
         Row: {
           content: string
@@ -1387,6 +1402,17 @@ export type Database = {
           is_me: boolean
           prize_type: string
           value: number
+        }[]
+      }
+      game_recent_winners: {
+        Args: { _limit?: number }
+        Returns: {
+          author_name: string
+          category: string
+          id: string
+          prize: number
+          score: number
+          week_end: string
         }[]
       }
       game_week_board: {

@@ -19,8 +19,11 @@ export const Route = createFileRoute("/api/public/order-sms")({
         // Always require the hook header; compare to env secret when configured.
         const got = request.headers.get("x-hook-secret") ?? "";
         if (got.length < 32) return new Response("Unauthorized", { status: 401 });
-        const secret = process.env["ORDER_SMS_HOOK_SECRET"];
-        if (secret && got !== secret) return new Response("Unauthorized", { status: 401 });
+        const { supabaseAdmin: sbHook } = await import("@/integrations/supabase/client.server");
+        const { data: hook } = await (sbHook as any)
+          .from("app_secrets").select("value").eq("name", "order_sms_hook").maybeSingle();
+        const secret = String(hook?.value ?? "");
+        if (!secret || got !== secret) return new Response("Unauthorized", { status: 401 });
 
         const apiKey = process.env["INFINIREACH_KEY"];
         if (!apiKey) return new Response("Missing INFINIREACH_KEY", { status: 500 });
