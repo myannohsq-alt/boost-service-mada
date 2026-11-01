@@ -228,6 +228,11 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
     }
 
     if (!blocked && !rateLimited && !paused) {
+      if (settings.smmfollows_api_key) {
+        const f = await reconcileOrders(db, smmgen(SMMFOLLOWS_URL, settings.smmfollows_api_key), "smmfollows");
+        processed += f.updated;
+        if (f.error) notes.push(`Smmfollows: ${f.error.slice(0, 120)}`);
+      }
       const r = await reconcileOrders(db, api);
       processed += r.updated;
       if (r.error) {
@@ -508,7 +513,14 @@ async function submitOrder(
   } else {
     // Reaction orders store the commenter's name in `comments`; SMMGen must get a quantity, not custom comments.
     const isReaction = !!(!viaSmmfollows && service && isReactionService(service.platform, service.name_fr) && reactionNote);
-    res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, isReaction ? undefined : order.comments || undefined);
+    try {
+      res = await api.add(providerServiceId, order.target_link, order.quantity, orderId, isReaction ? undefined : order.comments || undefined);
+    } catch (e) {
+      if (!viaSmmfollows) throw e;
+      // Don't let a Smmfollows-only problem pause the whole SMMGen worker.
+      const m = e instanceof Error ? e.message : String(e);
+      throw new Error("Smmfollows: " + m.replace(/not enough funds|insufficient|invalid api key|unauthori[sz]ed|incorrect request/gi, "solde ou clé Smmfollows à vérifier"));
+    }
   }
   const providerOrderId = res?.order === undefined || res.order === null ? "" : String(res.order);
   if (!providerOrderId) {
