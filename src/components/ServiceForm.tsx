@@ -161,7 +161,11 @@ export function ServiceForm({ group, onClose, onOrdered }: {
           </Button>)}
         </div>
       </fieldset>}
-      <div>
+      {isCustomComments ? <div>
+        <label htmlFor="service-comments" className="text-xs text-muted-foreground">Commentaires (1 par ligne, min. {min})</label>
+        <textarea id="service-comments" rows={6} value={commentsText} onChange={e => setCommentsText(e.target.value)} className="bsm-input mt-1 h-auto py-2" placeholder={"Super !\nTrop bien 🔥"} />
+        <p className={`mt-1 text-xs ${belowMin ? "text-destructive" : "text-muted-foreground"}`}>{quantity} commentaire(s)</p>
+      </div> : <div>
         <label htmlFor="service-quantity" className="text-xs text-muted-foreground">Quantité (min. {min})</label>
         <input id="service-quantity" type="number" min={min} step="1" value={quantityText} onChange={e => setQuantityText(e.target.value)} className="bsm-input mt-1" />
         <p className={`mt-1 text-xs ${belowMin ? "text-destructive" : "text-muted-foreground"}`}>
