@@ -405,6 +405,78 @@ export type Database = {
         }
         Relationships: []
       }
+      game_spins: {
+        Row: {
+          author_name: string
+          avatar_url: string
+          created_at: string
+          fee: number
+          id: string
+          prize_type: string
+          segment: number
+          user_id: string
+          value: number
+          week_end: string
+        }
+        Insert: {
+          author_name?: string
+          avatar_url?: string
+          created_at?: string
+          fee?: number
+          id?: string
+          prize_type: string
+          segment: number
+          user_id: string
+          value: number
+          week_end: string
+        }
+        Update: {
+          author_name?: string
+          avatar_url?: string
+          created_at?: string
+          fee?: number
+          id?: string
+          prize_type?: string
+          segment?: number
+          user_id?: string
+          value?: number
+          week_end?: string
+        }
+        Relationships: []
+      }
+      game_week_winners: {
+        Row: {
+          author_name: string
+          category: string
+          created_at: string
+          id: string
+          prize: number
+          score: number
+          user_id: string
+          week_end: string
+        }
+        Insert: {
+          author_name: string
+          category: string
+          created_at?: string
+          id?: string
+          prize: number
+          score: number
+          user_id: string
+          week_end: string
+        }
+        Update: {
+          author_name?: string
+          category?: string
+          created_at?: string
+          id?: string
+          prize?: number
+          score?: number
+          user_id?: string
+          week_end?: string
+        }
+        Relationships: []
+      }
       lottery_draws: {
         Row: {
           created_at: string
@@ -1299,6 +1371,33 @@ export type Database = {
         Returns: undefined
       }
       claim_referral: { Args: { _code: string }; Returns: boolean }
+      game_recent_spins: {
+        Args: { _limit?: number }
+        Returns: {
+          author_name: string
+          avatar_url: string
+          created_at: string
+          id: string
+          is_me: boolean
+          prize_type: string
+          value: number
+        }[]
+      }
+      game_week_board: {
+        Args: { _limit?: number }
+        Returns: {
+          ar: number
+          author_name: string
+          avatar_url: string
+          is_me: boolean
+          plays: number
+          score: number
+          stars: number
+          trophies: number
+          user_id: string
+        }[]
+      }
+      game_week_end: { Args: { _ts?: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1361,6 +1460,10 @@ export type Database = {
         Args: { _comments: string; _link: string }
         Returns: string
       }
+      place_custom_comment_order: {
+        Args: { _comments: string; _link: string; _service_id: string }
+        Returns: string
+      }
       place_order: {
         Args: {
           _link: string
@@ -1371,6 +1474,7 @@ export type Database = {
         }
         Returns: string
       }
+      play_wheel_game: { Args: never; Returns: Json }
       public_stats: { Args: never; Returns: Json }
       recent_saturday_winners: {
         Args: { _limit?: number }
@@ -1421,6 +1525,7 @@ export type Database = {
         Returns: string
       }
       set_display_name: { Args: { _name: string }; Returns: string }
+      settle_game_weeks: { Args: never; Returns: undefined }
       settle_lottery: { Args: never; Returns: undefined }
       spin_wheel: { Args: never; Returns: Json }
       trigger_smmgen_sync: { Args: never; Returns: undefined }
