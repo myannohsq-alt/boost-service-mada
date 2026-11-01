@@ -134,6 +134,13 @@
       "when": 1793494891147,
       "tag": "0018_security_hardening_referral_roles_sms",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793514985415,
+      "tag": "0019_boost_malagasy_min_500",
+      "breakpoints": true
     }
   ]
 }

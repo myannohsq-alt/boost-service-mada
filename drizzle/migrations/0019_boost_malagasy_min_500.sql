@@ -1,0 +1,1 @@
+UPDATE public.services SET name_fr='Boost Malagasy 🇲🇬 Réaction YouTube (Likes 👍)', name_mg='Boost Malagasy 🇲🇬 Réaction YouTube (Likes 👍)', provider_min=500, note='🇲🇬 Réaction Malagasy tena izy • Min 500' WHERE id='708744ce-f662-4429-ab1f-d6031f9331b6';
