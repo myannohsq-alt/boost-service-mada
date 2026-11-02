@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import type { ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
+import { showOrderSent } from "@/components/OrderSentOverlay";
 
 const REACTION_CHOICES = [
   { key: "like", label: "Like 👍" },
@@ -61,9 +62,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
         toast.error("Commande refusée", { description: err.message });
         return;
       }
-      toast.success(`Commande réussie ! Nouveau solde : ${formatAr(balance - cost)}`, {
-        description: `Réaction ${reaction} sur commentaire × ${quantity} — statut : En cours`,
-      });
+      window.setTimeout(() => showOrderSent(`Réaction ${reaction} sur commentaire × ${quantity}`, formatAr(balance - cost)), 150);
       try { await fulfillNow({ data: undefined as never }); }
       catch { /* La commande reste en file pour le prochain cycle. */ }
       await refresh();
