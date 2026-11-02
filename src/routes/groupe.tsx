@@ -8,6 +8,7 @@ import { DisplayName } from "@/components/AdminBadge";
 import { useAuth } from "@/lib/useAuth";
 import { formatAr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import { useChatFee } from "@/components/ChatFeeToggle";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any;
@@ -138,11 +139,12 @@ function GroupPage() {
   };
   const clearImage = () => { if (preview) URL.revokeObjectURL(preview); setPreview(null); setFile(null); };
 
+  const feeOn = useChatFee().data ?? true;
   const send = async () => {
     if (!user || sending.current) return;
     const value = text.trim();
     if (!file && !value) return;
-    if (value && !isAdmin && (profile?.balance ?? 0) < 1) { toast.error("Solde insuffisant, rechargez"); return; }
+    if (value && feeOn && !isAdmin && (profile?.balance ?? 0) < 1) { toast.error("Solde insuffisant, rechargez"); return; }
     sending.current = true; setBusy(true);
     try {
       if (file) {
