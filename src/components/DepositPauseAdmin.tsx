@@ -11,7 +11,7 @@ export function useDepositPauses() {
   return useQuery({
     queryKey: ["deposit-pauses"],
     queryFn: async () => {
-      const { data } = await supabase.from("deposit_pauses").select("method, paused_until");
+      const { data } = await supabase.rpc("get_deposit_pauses");
       const map: Record<string, Date | null> = {};
       for (const r of data ?? []) {
         const d = r.paused_until ? new Date(r.paused_until) : null;
