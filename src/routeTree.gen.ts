@@ -40,6 +40,7 @@ import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-g
 import { Route as ApiOrangeDotphpRouteImport } from './routes/api/orange[.]php'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as ApiPublicOrderSmsRouteImport } from './routes/api/public/order-sms'
+import { Route as ApiPublicPushDrainRouteImport } from './routes/api/public/push-drain'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -198,6 +199,11 @@ const ApiPublicOrderSmsRoute = ApiPublicOrderSmsRouteImport.update({
   path: '/api/public/order-sms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPushDrainRoute = ApiPublicPushDrainRouteImport.update({
+  id: '/api/public/push-drain',
+  path: '/api/public/push-drain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSmmgenSyncRoute = ApiPublicSmmgenSyncRouteImport.update({
   id: '/api/public/smmgen-sync',
   path: '/api/public/smmgen-sync',
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
+  '/api/public/push-drain': typeof ApiPublicPushDrainRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesByTo {
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
+  '/api/public/push-drain': typeof ApiPublicPushDrainRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRoutesById {
@@ -305,6 +313,7 @@ export interface FileRoutesById {
   '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
+  '/api/public/push-drain': typeof ApiPublicPushDrainRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
 export interface FileRouteTypes {
@@ -341,6 +350,7 @@ export interface FileRouteTypes {
     | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
+    | '/api/public/push-drain'
     | '/api/public/smmgen-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
+    | '/api/public/push-drain'
     | '/api/public/smmgen-sync'
   id:
     | '__root__'
@@ -409,6 +420,7 @@ export interface FileRouteTypes {
     | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
+    | '/api/public/push-drain'
     | '/api/public/smmgen-sync'
   fileRoutesById: FileRoutesById
 }
@@ -444,6 +456,7 @@ export interface RootRouteChildren {
   ApiOrangeDotphpRoute: typeof ApiOrangeDotphpRoute
   InviteCodeRoute: typeof InviteCodeRoute
   ApiPublicOrderSmsRoute: typeof ApiPublicOrderSmsRoute
+  ApiPublicPushDrainRoute: typeof ApiPublicPushDrainRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
 }
 
@@ -666,6 +679,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOrderSmsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/push-drain': {
+      id: '/api/public/push-drain'
+      path: '/api/public/push-drain'
+      fullPath: '/api/public/push-drain'
+      preLoaderRoute: typeof ApiPublicPushDrainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/smmgen-sync': {
       id: '/api/public/smmgen-sync'
       path: '/api/public/smmgen-sync'
@@ -708,6 +728,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiOrangeDotphpRoute: ApiOrangeDotphpRoute,
   InviteCodeRoute: InviteCodeRoute,
   ApiPublicOrderSmsRoute: ApiPublicOrderSmsRoute,
+  ApiPublicPushDrainRoute: ApiPublicPushDrainRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
 }
 export const routeTree = rootRouteImport

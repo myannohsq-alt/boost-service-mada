@@ -1023,6 +1023,90 @@ export type Database = {
         }
         Relationships: []
       }
+      push_config: {
+        Row: {
+          drain_url: string
+          hook_secret: string
+          id: number
+          vapid_private: string
+          vapid_public: string
+        }
+        Insert: {
+          drain_url: string
+          hook_secret: string
+          id?: number
+          vapid_private: string
+          vapid_public: string
+        }
+        Update: {
+          drain_url?: string
+          hook_secret?: string
+          id?: number
+          vapid_private?: string
+          vapid_public?: string
+        }
+        Relationships: []
+      }
+      push_queue: {
+        Row: {
+          body: string
+          created_at: string
+          exclude_user: string | null
+          id: string
+          sent_at: string | null
+          target: string
+          title: string
+          url: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          exclude_user?: string | null
+          id?: string
+          sent_at?: string | null
+          target?: string
+          title: string
+          url?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          exclude_user?: string | null
+          id?: string
+          sent_at?: string | null
+          target?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       recharges: {
         Row: {
           amount: number
@@ -1508,6 +1592,7 @@ export type Database = {
       }
       play_wheel_game: { Args: never; Returns: Json }
       public_stats: { Args: never; Returns: Json }
+      queue_daily_push: { Args: { _slot: number }; Returns: undefined }
       recent_saturday_winners: {
         Args: { _limit?: number }
         Returns: {

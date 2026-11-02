@@ -148,6 +148,13 @@
       "when": 1793515482186,
       "tag": "0020_wheel_weekly_pass",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793627652316,
+      "tag": "0021_web_push_notifications",
+      "breakpoints": true
     }
   ]
 }

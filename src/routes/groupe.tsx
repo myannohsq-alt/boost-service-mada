@@ -206,12 +206,12 @@ function GroupPage() {
   return (
     <AuthGate>
       <Layout hideAnnouncement>
-        <section className="mx-auto flex h-[calc(100dvh-60px)] w-full max-w-3xl flex-col px-2 py-2">
-          <div className="flex items-center gap-3 rounded-t-2xl border border-border bg-card px-3 py-3">
+        <section className="fixed inset-0 z-40 mx-auto flex h-[100dvh] w-full max-w-3xl flex-col bg-background">
+          <div className="flex items-center gap-3 border-b border-border bg-card/95 px-3 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] shadow-md backdrop-blur">
             <Link to="/services" aria-label="Retour" className="rounded-full p-1.5 hover:bg-secondary"><ArrowLeft className="h-5 w-5" /></Link>
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary"><MessagesSquare className="h-5 w-5" /></span>
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-bold">Groupe BOOST SERVICE MADA</h1>
+              <h1 className="truncate text-base font-bold">Groupe BOOST SERVICE MADA</h1>
               <p className="text-[11px] text-muted-foreground">Discussion publique · 1 Ar / message texte</p>
             </div>
             <span className="shrink-0 rounded-full border border-border bg-background px-2.5 py-1 text-[11px]">
@@ -219,7 +219,7 @@ function GroupPage() {
             </span>
           </div>
 
-          <div ref={messagesRef} className="flex-1 space-y-3 overflow-y-auto border-x border-border bg-background/60 px-3 py-3">
+          <div ref={messagesRef} className="flex-1 space-y-3 overflow-y-auto overscroll-contain bg-background px-3 py-3">
             {all.map((m) => {
               const mine = m.user_id === user?.id;
               const imgUrl = m.media_path ? urls[m.media_path] : undefined;
@@ -275,7 +275,7 @@ function GroupPage() {
           </div>
 
           {replyTo ? (
-            <div className="flex items-center gap-2 border-x border-t border-border bg-card px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 border-t border-border bg-card px-3 py-2 text-xs">
               <div className="flex-1 border-l-4 border-primary pl-2">
                 <p className="font-semibold text-primary">↰ Répondre à {avatars[replyTo.user_id]?.name || replyTo.author_name}</p>
                 <p className="line-clamp-1 text-muted-foreground">{replyTo.content || "📷 Photo"}</p>
@@ -284,13 +284,13 @@ function GroupPage() {
             </div>
           ) : null}
           {preview ? (
-            <div className="flex items-start gap-2 border-x border-t border-border bg-card px-3 py-2">
+            <div className="flex items-start gap-2 border-t border-border bg-card px-3 py-2">
               <img src={preview} alt="Aperçu" className="max-h-40 max-w-[180px] rounded-lg object-contain" />
               <button type="button" aria-label="Retirer l'image" onClick={clearImage} className="rounded-full p-1 hover:bg-secondary"><X className="h-4 w-4" /></button>
             </div>
           ) : null}
 
-          <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="sticky bottom-0 flex items-end gap-2 rounded-b-2xl border border-border bg-card px-3 py-2">
+          <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="flex items-end gap-2 border-t border-border bg-card px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
             <label aria-label="Joindre une image" className="cursor-pointer rounded-full p-2 text-primary hover:bg-secondary">
               <ImagePlus className="h-5 w-5" />
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) pickImage(f); }} />
