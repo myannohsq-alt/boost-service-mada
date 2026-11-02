@@ -17,7 +17,7 @@ export function ChatFeeToggle() {
   const { data: on = true } = useChatFee();
   const toggle = async () => {
     const { error } = await supabase.from("chat_settings").update({ fee_enabled: !on, updated_at: new Date().toISOString() }).eq("id", 1);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(!on ? "1 Ar / message activé" : "Messages gratuits dans le groupe");
     await qc.invalidateQueries({ queryKey: ["chat-fee"] });
   };
