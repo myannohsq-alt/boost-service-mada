@@ -6,8 +6,8 @@ export function useChatFee() {
   return useQuery({
     queryKey: ["chat-fee"],
     queryFn: async () => {
-      const { data } = await supabase.from("chat_settings").select("fee_enabled").eq("id", 1).maybeSingle();
-      return data?.fee_enabled ?? true;
+      const { data } = await supabase.rpc("get_chat_fee_enabled");
+      return data ?? true;
     },
   });
 }

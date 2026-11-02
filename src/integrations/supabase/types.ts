@@ -1532,6 +1532,14 @@ export type Database = {
         }[]
       }
       game_week_end: { Args: { _ts?: string }; Returns: string }
+      get_chat_fee_enabled: { Args: never; Returns: boolean }
+      get_deposit_pauses: {
+        Args: never
+        Returns: {
+          method: string
+          paused_until: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
