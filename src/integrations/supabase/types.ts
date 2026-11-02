@@ -302,6 +302,24 @@ export type Database = {
           },
         ]
       }
+      chat_settings: {
+        Row: {
+          fee_enabled: boolean
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          fee_enabled?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          fee_enabled?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       community_comments: {
         Row: {
           author_name: string

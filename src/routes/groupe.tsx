@@ -8,6 +8,7 @@ import { DisplayName } from "@/components/AdminBadge";
 import { useAuth } from "@/lib/useAuth";
 import { formatAr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import { useChatFee } from "@/components/ChatFeeToggle";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any;
@@ -138,11 +139,12 @@ function GroupPage() {
   };
   const clearImage = () => { if (preview) URL.revokeObjectURL(preview); setPreview(null); setFile(null); };
 
+  const feeOn = useChatFee().data ?? true;
   const send = async () => {
     if (!user || sending.current) return;
     const value = text.trim();
     if (!file && !value) return;
-    if (value && !isAdmin && (profile?.balance ?? 0) < 1) { toast.error("Solde insuffisant, rechargez"); return; }
+    if (value && feeOn && !isAdmin && (profile?.balance ?? 0) < 1) { toast.error("Solde insuffisant, rechargez"); return; }
     sending.current = true; setBusy(true);
     try {
       if (file) {
@@ -212,7 +214,7 @@ function GroupPage() {
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary"><MessagesSquare className="h-5 w-5" /></span>
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-base font-bold">Groupe BOOST SERVICE MADA</h1>
-              <p className="text-[11px] text-muted-foreground">Discussion publique · 1 Ar / message texte</p>
+              <p className="text-[11px] text-muted-foreground">Discussion publique · {feeOn ? "1 Ar / message texte" : "Messages gratuits"}</p>
             </div>
             <span className="shrink-0 rounded-full border border-border bg-background px-2.5 py-1 text-[11px]">
               <strong className="text-primary">{formatAr(profile?.balance ?? 0)}</strong>
