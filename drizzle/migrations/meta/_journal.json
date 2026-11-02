@@ -162,6 +162,13 @@
       "when": 1793629049541,
       "tag": "0022_chat_fee_toggle",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793629199957,
+      "tag": "0023_scope_settings_reads",
+      "breakpoints": true
     }
   ]
 }
