@@ -1185,6 +1185,48 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_contests: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          min_invites: number
+          prize: number
+          settled: boolean
+          starts_at: string
+          title: string
+          winner_id: string | null
+          winner_invites: number
+          winner_name: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          min_invites?: number
+          prize?: number
+          settled?: boolean
+          starts_at?: string
+          title?: string
+          winner_id?: string | null
+          winner_invites?: number
+          winner_name?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          min_invites?: number
+          prize?: number
+          settled?: boolean
+          starts_at?: string
+          title?: string
+          winner_id?: string | null
+          winner_invites?: number
+          winner_name?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           approved: boolean
@@ -1492,6 +1534,7 @@ export type Database = {
         Returns: boolean
       }
       admin_cancel_order: { Args: { _id: string }; Returns: undefined }
+      app_user_stats: { Args: never; Returns: Json }
       approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
       auto_approve_recharge: {
@@ -1525,6 +1568,15 @@ export type Database = {
         Returns: undefined
       }
       claim_referral: { Args: { _code: string }; Returns: boolean }
+      contest_board: {
+        Args: { _limit?: number }
+        Returns: {
+          author_name: string
+          eligible: boolean
+          invites: number
+          is_me: boolean
+        }[]
+      }
       game_recent_spins: {
         Args: { _limit?: number }
         Returns: {
@@ -1656,6 +1708,7 @@ export type Database = {
       }
       play_wheel_game: { Args: never; Returns: Json }
       public_stats: { Args: never; Returns: Json }
+      queue_contest_push: { Args: never; Returns: undefined }
       queue_daily_push: { Args: { _slot: number }; Returns: undefined }
       recent_saturday_winners: {
         Args: { _limit?: number }
@@ -1708,6 +1761,7 @@ export type Database = {
       set_display_name: { Args: { _name: string }; Returns: string }
       settle_game_weeks: { Args: never; Returns: undefined }
       settle_lottery: { Args: never; Returns: undefined }
+      settle_referral_contest: { Args: never; Returns: undefined }
       spin_wheel: { Args: never; Returns: Json }
       trigger_smmgen_sync: { Args: never; Returns: undefined }
     }
