@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { depotsClient, normDepot } from "@/lib/external-depots";
+import { depotsClient, isOfficialOrangeSms, normDepot } from "@/lib/external-depots";
 import { formatAr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin_/depots")({
@@ -63,7 +63,7 @@ function AdminDepots() {
                 <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("fr-FR")}</span>
               </div>
               <p className="mt-1 break-words text-muted-foreground">{r.message}</p>
-              <p className="mt-1 text-xs">{r.claimedBy ? "✅ Crédité" : "⏳ Non réclamé"}</p>
+              <p className="mt-1 text-xs">{r.claimedBy ? "✅ Crédité" : "⏳ Non réclamé"}{isOfficialOrangeSms(r.message) ? "" : " · 🚫 SMS non officiel (ignoré)"}</p>
             </div>
           ))}
           {!list.length ? <p className="text-sm text-muted-foreground">Aucun dépôt.</p> : null}
