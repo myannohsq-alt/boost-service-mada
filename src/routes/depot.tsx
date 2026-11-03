@@ -414,7 +414,7 @@ function DepotPage() {
                   onClick={() => void submit()}
                   className="w-full rounded-full bg-gold py-2.5 text-sm font-extrabold text-background disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {pausedUntil ? `⏸️ ${active.label} suspendu jusqu'à ${pausedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : busy ? "Envoi…" : "✅ Envoyer la demande"}
+                  {busy ? "Envoi…" : "✅ Envoyer la demande"}
                 </button>
                 <p className="text-center text-[10px] text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
                 <p className={`mx-auto w-fit rounded-full px-3 py-1 text-center text-xs font-bold ${autoMap?.[active.id] ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
