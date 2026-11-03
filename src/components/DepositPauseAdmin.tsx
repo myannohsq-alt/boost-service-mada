@@ -23,6 +23,40 @@ export function useDepositPauses() {
   });
 }
 
+export function useDepositAuto() {
+  return useQuery({
+    queryKey: ["deposit-auto"],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("get_deposit_auto");
+      const map: Record<string, boolean> = {};
+      for (const r of data ?? []) map[r.method] = !!r.auto_enabled;
+      return map;
+    },
+    refetchInterval: 30_000,
+  });
+}
+
+function OrangeAutoToggle() {
+  const qc = useQueryClient();
+  const { data } = useDepositAuto();
+  const on = !!data?.orange;
+  const toggle = async () => {
+    const { error } = await supabase.from("deposit_pauses").update({ auto_enabled: !on }).eq("method", "orange");
+    if (error) { toast.error(error.message); return; }
+    toast.success(!on ? "Orange Money : Automatique ⚡" : "Orange Money : Manuel ✋");
+    await qc.invalidateQueries({ queryKey: ["deposit-auto"] });
+  };
+  return (
+    <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-background/40 p-2.5">
+      <span className="flex-1 text-sm font-semibold">Paiement Orange Money</span>
+      <button onClick={() => void toggle()}
+        className={`rounded-full px-3 py-1 text-xs font-bold ${on ? "bg-primary text-primary-foreground" : "border border-border bg-secondary"}`}>
+        {on ? "⚡ Automatique" : "✋ Manuel"}
+      </button>
+    </div>
+  );
+}
+
 export function DepositPauseAdmin() {
   const qc = useQueryClient();
   const { data } = useDepositPauses();
@@ -40,6 +74,7 @@ export function DepositPauseAdmin() {
   return (
     <div className="mb-4 space-y-3 rounded-2xl border border-primary/50 bg-card p-4 shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_25%,transparent)]">
       <p className="flex items-center gap-2 text-sm font-bold"><Landmark className="h-5 w-5 text-primary" /> Suspendre les dépôts par opérateur</p>
+      <OrangeAutoToggle />
       {Object.keys(LABELS).map((m) => {
         const until = data?.[m];
         const v = mins[m] ?? STEP;

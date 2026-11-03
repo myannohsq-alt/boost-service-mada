@@ -8,8 +8,9 @@ import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { OPERATORS, operatorById, type Operator } from "@/lib/payment-operators";
 import { supabase } from "@/integrations/supabase/client";
-import { useDepositPauses } from "@/components/DepositPauseAdmin";
-import { VerifyDepot } from "@/components/VerifyDepot";
+import { useDepositPauses, useDepositAuto } from "@/components/DepositPauseAdmin";
+import { useServerFn } from "@tanstack/react-start";
+import { autoRecharge } from "@/lib/depots.functions";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -65,6 +66,9 @@ function DepotPage() {
 
   const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0]!;
   const { data: pauses } = useDepositPauses();
+  const { data: autoMap } = useDepositAuto();
+  const runAuto = useServerFn(autoRecharge);
+  const [autoState, setAutoState] = useState<"idle" | "waiting" | "ok" | "manual">("idle");
   const pausedUntil = pauses?.[active.id] ?? null;
 
   useEffect(
@@ -125,13 +129,13 @@ function DepotPage() {
     }
 
     setBusy(true);
-    const { error } = await supabase.from("recharges").insert({
+    const { data: inserted, error } = await supabase.from("recharges").insert({
       user_id: user!.id,
       sender_phone: sender.replace(/\D/g, ""),
       reference: reference.trim(),
       amount: value,
       method: active.id,
-    });
+    }).select("id").single();
     setBusy(false);
 
     if (error) {
@@ -139,7 +143,29 @@ function DepotPage() {
       toast.error(dup ? "⚠️ Cette référence a déjà été utilisée." : `❌ ${error.message}`, { duration: 6000 });
       return;
     }
-    toast.success("✅ Demande envoyée ! Votre solde sera crédité après validation.");
+    const isAuto = !!autoMap?.[active.id];
+    if (isAuto && inserted?.id) {
+      setAutoState("waiting");
+      toast.success("⚡ Vérification automatique en cours…");
+      void (async () => {
+        for (let i = 0; i < 36; i++) {
+          try {
+            const r = await runAuto({ data: { rechargeId: inserted.id } });
+            if (r.ok) {
+              setAutoState("ok");
+              toast.success(`Dépôt confirmé ${r.montant} Ar ✅ Solde crédité !`);
+              await Promise.all([refresh(), qc.invalidateQueries({ queryKey: ["my-recharges"] })]);
+              return;
+            }
+            if ("manual" in r && r.manual) break;
+          } catch { /* retry */ }
+          await new Promise((res) => setTimeout(res, 5000));
+        }
+        setAutoState("manual");
+      })();
+    } else {
+      toast.success("✅ Demande envoyée ! Votre solde sera crédité après validation.");
+    }
     setAmount("");
     setSender("");
     setReference("");
@@ -383,8 +409,12 @@ function DepotPage() {
                   {pausedUntil ? `⏸️ ${active.label} suspendu jusqu'à ${pausedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : busy ? "Envoi…" : "✅ Envoyer la demande"}
                 </button>
                 <p className="text-center text-[10px] text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
-                <p className="pt-2 text-center text-xs font-semibold">J'ai payé — vérification automatique par SMS :</p>
-                <VerifyDepot phone={sender} montant={Number(amount) || 0} onCredited={() => void refresh()} />
+                <p className={`mx-auto w-fit rounded-full px-3 py-1 text-center text-xs font-bold ${autoMap?.[active.id] ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                  Paiement {active.label} : {autoMap?.[active.id] ? "⚡ Automatique" : "✋ Manuel"}
+                </p>
+                {autoState === "waiting" ? <p className="animate-pulse text-center text-sm text-muted-foreground">⏳ Vérification automatique du SMS…</p> : null}
+                {autoState === "ok" ? <p className="bsm-card p-3 text-center font-bold text-primary">Dépôt confirmé ✅ Solde crédité</p> : null}
+                {autoState === "manual" ? <p className="text-center text-xs text-muted-foreground">SMS pas encore reçu — votre demande sera validée par l'admin.</p> : null}
               </div>
             );
           })()}
