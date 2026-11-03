@@ -35,6 +35,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SuiviCommentairesRouteImport } from './routes/suivi-commentaires'
 import { Route as TutorielRouteImport } from './routes/tutoriel'
 import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]well-known.assetlinks[.]json'
+import { Route as AdminDepotsRouteImport } from './routes/admin_.depots'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-generate'
 import { Route as ApiOrangeDotphpRouteImport } from './routes/api/orange[.]php'
@@ -174,6 +175,11 @@ const DotwellKnownAssetlinksDotjsonRoute =
     path: '/.well-known/assetlinks.json',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminDepotsRoute = AdminDepotsRouteImport.update({
+  id: '/admin_/depots',
+  path: '/admin/depots',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAssistantRoute = ApiAssistantRouteImport.update({
   id: '/api/assistant',
   path: '/api/assistant',
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
+  '/admin/depots': typeof AdminDepotsRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/orange.php': typeof ApiOrangeDotphpRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
+  '/admin/depots': typeof AdminDepotsRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/orange.php': typeof ApiOrangeDotphpRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/suivi-commentaires': typeof SuiviCommentairesRoute
   '/tutoriel': typeof TutorielRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
+  '/admin_/depots': typeof AdminDepotsRoute
   '/api/assistant': typeof ApiAssistantRoute
   '/api/comments-generate': typeof ApiCommentsGenerateRoute
   '/api/orange.php': typeof ApiOrangeDotphpRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/suivi-commentaires'
     | '/tutoriel'
     | '/.well-known/assetlinks.json'
+    | '/admin/depots'
     | '/api/assistant'
     | '/api/comments-generate'
     | '/api/orange.php'
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/suivi-commentaires'
     | '/tutoriel'
     | '/.well-known/assetlinks.json'
+    | '/admin/depots'
     | '/api/assistant'
     | '/api/comments-generate'
     | '/api/orange.php'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/suivi-commentaires'
     | '/tutoriel'
     | '/.well-known/assetlinks.json'
+    | '/admin_/depots'
     | '/api/assistant'
     | '/api/comments-generate'
     | '/api/orange.php'
@@ -451,6 +463,7 @@ export interface RootRouteChildren {
   SuiviCommentairesRoute: typeof SuiviCommentairesRoute
   TutorielRoute: typeof TutorielRoute
   DotwellKnownAssetlinksDotjsonRoute: typeof DotwellKnownAssetlinksDotjsonRoute
+  AdminDepotsRoute: typeof AdminDepotsRoute
   ApiAssistantRoute: typeof ApiAssistantRoute
   ApiCommentsGenerateRoute: typeof ApiCommentsGenerateRoute
   ApiOrangeDotphpRoute: typeof ApiOrangeDotphpRoute
@@ -644,6 +657,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotwellKnownAssetlinksDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/depots': {
+      id: '/admin_/depots'
+      path: '/admin/depots'
+      fullPath: '/admin/depots'
+      preLoaderRoute: typeof AdminDepotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/assistant': {
       id: '/api/assistant'
       path: '/api/assistant'
@@ -723,6 +743,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuiviCommentairesRoute: SuiviCommentairesRoute,
   TutorielRoute: TutorielRoute,
   DotwellKnownAssetlinksDotjsonRoute: DotwellKnownAssetlinksDotjsonRoute,
+  AdminDepotsRoute: AdminDepotsRoute,
   ApiAssistantRoute: ApiAssistantRoute,
   ApiCommentsGenerateRoute: ApiCommentsGenerateRoute,
   ApiOrangeDotphpRoute: ApiOrangeDotphpRoute,
