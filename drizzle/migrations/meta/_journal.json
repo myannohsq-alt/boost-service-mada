@@ -176,6 +176,13 @@
       "when": 1793670706784,
       "tag": "0024_external_depot_claims",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793671731843,
+      "tag": "0025_orange_auto_deposit",
+      "breakpoints": true
     }
   ]
 }

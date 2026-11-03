@@ -40,3 +40,38 @@ export const verifyDepot = createServerFn({ method: "POST" })
     });
     return { found: true as const, montant: amount, bonus };
   });
+
+// Auto-validates a just-submitted pending recharge when the admin enabled "Automatique" for its operator.
+export const autoRecharge = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) => z.object({ rechargeId: z.string().uuid() }).parse(i))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: r } = await supabaseAdmin.from("recharges").select("*").eq("id", data.rechargeId).single();
+    if (!r || r.user_id !== context.userId || r.status !== "pending") return { ok: false as const };
+    const { data: cfg } = await supabaseAdmin.from("deposit_pauses").select("auto_enabled").eq("method", r.method).maybeSingle();
+    if (!cfg?.auto_enabled) return { ok: false as const, manual: true };
+
+    const key = phoneKey(String(r.sender_phone ?? ""));
+    const ref = String(r.reference ?? "").trim().toLowerCase();
+    const res = await fetch(`${DEPOTS_URL}/rest/v1/Depots?select=*&order=created_at.desc&limit=500`, { headers: { apikey: DEPOTS_KEY } });
+    if (!res.ok) return { ok: false as const };
+    const rows = ((await res.json()) as Record<string, unknown>[]).map(normDepot).filter((d) => {
+      if (d.montant < Number(r.amount)) return false;
+      const digits = d.message.replace(/\D/g, "");
+      return (key.length === 9 && digits.includes(key)) || (ref.length >= 4 && d.message.toLowerCase().includes(ref));
+    });
+    if (!rows.length) return { ok: false as const };
+    const ids = rows.map((d) => String(d.id));
+    const { data: used } = await supabaseAdmin.from("external_depot_claims").select("depot_id").in("depot_id", ids);
+    const usedSet = new Set((used ?? []).map((u) => u.depot_id));
+    const fresh = rows.find((d) => !usedSet.has(String(d.id)));
+    if (!fresh) return { ok: false as const };
+    const { error } = await supabaseAdmin.from("external_depot_claims").insert({
+      depot_id: String(fresh.id), user_id: context.userId, montant: Number(r.amount), phone: key,
+    });
+    if (error) return { ok: false as const };
+    const { error: e2 } = await supabaseAdmin.rpc("auto_approve_recharge", { _recharge_id: r.id });
+    if (e2) return { ok: false as const };
+    return { ok: true as const, montant: Number(r.amount) };
+  });
