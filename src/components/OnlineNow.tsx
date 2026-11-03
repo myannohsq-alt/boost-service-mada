@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/useAuth";
 
-/** Real-time count of members currently connected (presence). Never inflated. */
+const MIN = 2129;
+const MAX = 11738;
+
+/** Displayed online counter (simulated, as requested by the site owner). */
 export function OnlineNow() {
-  const { user } = useAuth();
   const [n, setN] = useState<number | null>(null);
   useEffect(() => {
-    const key = user?.id ?? `guest-${Math.random().toString(36).slice(2)}`;
-    const ch = supabase.channel("online-users", { config: { presence: { key } } });
-    ch.on("presence", { event: "sync" }, () => setN(Object.keys(ch.presenceState()).length))
-      .subscribe((s) => { if (s === "SUBSCRIBED") void ch.track({ at: Date.now() }); });
-    return () => { void supabase.removeChannel(ch); };
-  }, [user?.id]);
+    // Base varies with time of day so it feels natural (peak in the evening).
+    const h = new Date().getHours();
+    const peak = Math.max(0, 1 - Math.abs(h - 20) / 12);
+    setN(Math.round(MIN + 300 + peak * (MAX - MIN - 2000) + Math.random() * 400));
+    let t: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      setN((v) => {
+        const cur = v ?? MIN;
+        const next = cur + Math.floor(Math.random() * 9) - 5;
+        return Math.min(MAX, Math.max(MIN, next));
+      });
+      t = setTimeout(tick, 5000 + Math.random() * 3000);
+    };
+    t = setTimeout(tick, 5000);
+    return () => clearTimeout(t);
+  }, []);
   if (n === null) return null;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold">
