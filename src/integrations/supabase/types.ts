@@ -422,16 +422,19 @@ export type Database = {
       }
       deposit_pauses: {
         Row: {
+          auto_enabled: boolean
           method: string
           paused_until: string | null
           updated_at: string
         }
         Insert: {
+          auto_enabled?: boolean
           method: string
           paused_until?: string | null
           updated_at?: string
         }
         Update: {
+          auto_enabled?: boolean
           method?: string
           paused_until?: string | null
           updated_at?: string
@@ -1491,6 +1494,10 @@ export type Database = {
       admin_cancel_order: { Args: { _id: string }; Returns: undefined }
       approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
+      auto_approve_recharge: {
+        Args: { _recharge_id: string }
+        Returns: undefined
+      }
       available_missions: {
         Args: never
         Returns: {
@@ -1557,6 +1564,13 @@ export type Database = {
       }
       game_week_end: { Args: { _ts?: string }; Returns: string }
       get_chat_fee_enabled: { Args: never; Returns: boolean }
+      get_deposit_auto: {
+        Args: never
+        Returns: {
+          auto_enabled: boolean
+          method: string
+        }[]
+      }
       get_deposit_pauses: {
         Args: never
         Returns: {
