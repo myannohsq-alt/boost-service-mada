@@ -10,7 +10,7 @@ export const verifyDepot = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const key = phoneKey(data.phone);
     if (key.length !== 9) return { found: false as const };
-    const url = `${DEPOTS_URL}/rest/v1/Depots?select=*&message=ilike.*${key.slice(0, 2)}*${key.slice(2)}*&montant=gte.${data.montant}&order=created_at.desc&limit=20`;
+    const url = `${DEPOTS_URL}/rest/v1/Depots?select=*&montant=gte.${data.montant}&order=created_at.desc&limit=200`;
     const res = await fetch(url, { headers: { apikey: DEPOTS_KEY } });
     if (!res.ok) throw new Error("Depots indisponible");
     const rows = ((await res.json()) as Depot[]).filter((r) => (r.message ?? "").replace(/\D/g, "").includes(key));
