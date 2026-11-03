@@ -39,7 +39,7 @@ export function useDepositAuto() {
 function OrangeAutoToggle() {
   const qc = useQueryClient();
   const { data } = useDepositAuto();
-  const on = !!data?.orange;
+  const on = !!data?.["orange"];
   const toggle = async () => {
     const { error } = await supabase.from("deposit_pauses").update({ auto_enabled: !on }).eq("method", "orange");
     if (error) { toast.error(error.message); return; }
