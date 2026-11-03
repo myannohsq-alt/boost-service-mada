@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { DEPOTS_KEY, DEPOTS_URL, normDepot, phoneKey } from "@/lib/external-depots";
+import { DEPOTS_KEY, DEPOTS_URL, isOfficialOrangeSms, normDepot, phoneKey } from "@/lib/external-depots";
 
 // Server-side verification: re-reads the external Depots table, prevents replay, then credits.
 export const verifyDepot = createServerFn({ method: "POST" })
@@ -14,7 +14,7 @@ export const verifyDepot = createServerFn({ method: "POST" })
     const res = await fetch(url, { headers: { apikey: DEPOTS_KEY } });
     if (!res.ok) throw new Error("Depots indisponible");
     const rows = ((await res.json()) as Record<string, unknown>[]).map(normDepot)
-      .filter((r) => r.montant >= data.montant && r.message.replace(/\D/g, "").includes(key))
+      .filter((r) => isOfficialOrangeSms(r.message) && r.montant >= data.montant && r.message.replace(/\D/g, "").includes(key))
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
     if (!rows.length) return { found: false as const };
 
@@ -58,6 +58,7 @@ export const autoRecharge = createServerFn({ method: "POST" })
     if (!res.ok) return { ok: false as const };
     // Match the SMS by sender number or reference, regardless of amount.
     const rows = ((await res.json()) as Record<string, unknown>[]).map(normDepot).filter((d) => {
+      if (!isOfficialOrangeSms(d.message)) return false;
       const digits = d.message.replace(/\D/g, "");
       return (key.length === 9 && digits.includes(key)) || (ref.length >= 4 && d.message.toLowerCase().includes(ref));
     });
