@@ -157,6 +157,12 @@ function DepotPage() {
               await Promise.all([refresh(), qc.invalidateQueries({ queryKey: ["my-recharges"] })]);
               return;
             }
+            if ("rejected" in r && r.rejected) {
+              setAutoState("idle");
+              toast.error(`❌ Refusé : vous avez reçu ${r.received} Ar mais déclaré plus. Refaites la demande avec le bon montant.`, { duration: 8000 });
+              await qc.invalidateQueries({ queryKey: ["my-recharges"] });
+              return;
+            }
             if ("manual" in r && r.manual) break;
           } catch { /* retry */ }
           await new Promise((res) => setTimeout(res, 5000));

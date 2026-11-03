@@ -56,8 +56,8 @@ export const autoRecharge = createServerFn({ method: "POST" })
     const ref = String(r.reference ?? "").trim().toLowerCase();
     const res = await fetch(`${DEPOTS_URL}/rest/v1/Depots?select=*&order=created_at.desc&limit=500`, { headers: { apikey: DEPOTS_KEY } });
     if (!res.ok) return { ok: false as const };
+    // Match the SMS by sender number or reference, regardless of amount.
     const rows = ((await res.json()) as Record<string, unknown>[]).map(normDepot).filter((d) => {
-      if (d.montant < Number(r.amount)) return false;
       const digits = d.message.replace(/\D/g, "");
       return (key.length === 9 && digits.includes(key)) || (ref.length >= 4 && d.message.toLowerCase().includes(ref));
     });
@@ -67,6 +67,16 @@ export const autoRecharge = createServerFn({ method: "POST" })
     const usedSet = new Set((used ?? []).map((u) => u.depot_id));
     const fresh = rows.find((d) => !usedSet.has(String(d.id)));
     if (!fresh) return { ok: false as const };
+    // Rule: declared amount above the amount actually sent => automatic refusal.
+    // Declared amount equal or below => accepted, credited with the declared amount.
+    if (Number(r.amount) > Number(fresh.montant)) {
+      await supabaseAdmin.from("recharges").update({ status: "rejected" }).eq("id", r.id).eq("status", "pending");
+      await supabaseAdmin.from("notifications").insert({
+        user_id: r.user_id, title: "Recharge refusée ❌",
+        body: `Montant déclaré ${r.amount} Ar supérieur au montant reçu ${fresh.montant} Ar. Refaites la demande avec le bon montant.`,
+      });
+      return { ok: false as const, rejected: true as const, received: Number(fresh.montant) };
+    }
     const { error } = await supabaseAdmin.from("external_depot_claims").insert({
       depot_id: String(fresh.id), user_id: context.userId, montant: Number(r.amount), phone: key,
     });
