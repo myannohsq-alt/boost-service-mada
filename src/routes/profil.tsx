@@ -3,6 +3,7 @@ import { Layout, Section } from "@/components/Layout";
 import { AuthGate } from "@/components/AuthGate";
 import { ProfileHeader, InviteCard } from "@/components/ProfileGame";
 import { WheelGame } from "@/components/WheelGame";
+import { ContestCard } from "@/components/ContestCard";
 
 export const Route = createFileRoute("/profil")({
   head: () => ({
@@ -34,6 +35,7 @@ function ProfilPage() {
               </Link>
             </div>
             <InviteCard />
+            <ContestCard />
             <WheelGame />
           </div>
         </Section>

@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDepositPauses, useDepositAuto } from "@/components/DepositPauseAdmin";
 import { useServerFn } from "@tanstack/react-start";
 import { autoRecharge } from "@/lib/depots.functions";
+import { PauseCountdown } from "@/components/PauseCountdown";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -322,6 +323,7 @@ function DepotPage() {
             const box = "rounded-xl border border-neon/30 bg-background/60 p-2.5";
             const field =
               "w-full rounded-xl border border-neon/40 bg-secondary/60 px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-neon focus:shadow-[0_0_10px_var(--color-neon)]";
+            if (pausedUntil) return <div className="mt-4"><PauseCountdown until={pausedUntil} label={active.label} /></div>;
             return (
               <div className="mt-4 space-y-2 rounded-2xl border border-neon/70 bg-card p-3 shadow-[0_0_18px_color-mix(in_oklab,var(--color-neon)_45%,transparent)]">
                 <div className="flex items-center gap-3">
@@ -412,7 +414,7 @@ function DepotPage() {
                   onClick={() => void submit()}
                   className="w-full rounded-full bg-gold py-2.5 text-sm font-extrabold text-background disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {pausedUntil ? `⏸️ ${active.label} suspendu jusqu'à ${pausedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : busy ? "Envoi…" : "✅ Envoyer la demande"}
+                  {busy ? "Envoi…" : "✅ Envoyer la demande"}
                 </button>
                 <p className="text-center text-[10px] text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
                 <p className={`mx-auto w-fit rounded-full px-3 py-1 text-center text-xs font-bold ${autoMap?.[active.id] ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>

@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { Layout } from "@/components/Layout";
+import { OnlineNow } from "@/components/OnlineNow";
 import { AuthGate } from "@/components/AuthGate";
 import { AiAssistant } from "@/components/AiAssistant";
 import { OrderModal, type ServiceCard } from "@/components/OrderModal";
@@ -73,6 +74,7 @@ function ServicesPage() {
             <div className="min-w-0">
               <h1 className="truncate text-lg font-bold">Services</h1>
               <p className="text-[11px] text-muted-foreground">Boostez vos réseaux sociaux — 100% Gasy 🇲🇬</p>
+              <div className="mt-1"><OnlineNow /></div>
             </div>
             <span className="shrink-0 rounded-full border border-border bg-card px-2.5 py-1 text-[11px]">
               Solde <span className="font-bold bsm-neon-text">{formatAr(profile?.balance ?? 0)}</span>

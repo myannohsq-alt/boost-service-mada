@@ -183,6 +183,13 @@
       "when": 1793671731843,
       "tag": "0025_orange_auto_deposit",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793712840271,
+      "tag": "0026_referral_contest_and_varied_push",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
 import { DepositPauseAdmin } from "@/components/DepositPauseAdmin";
 import { ChatFeeToggle } from "@/components/ChatFeeToggle";
+import { AppUserStats } from "@/components/AppUserStats";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,6 +99,7 @@ function AdminPage() {
 
         {tab === "Recharges" ? (
           <div className="space-y-3">
+            <AppUserStats />
             <ChatFeeToggle />
             <DepositPauseAdmin />
             {(data?.recharges ?? []).map((r) => (
