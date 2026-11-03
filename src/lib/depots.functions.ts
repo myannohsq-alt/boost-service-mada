@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { DEPOTS_KEY, DEPOTS_URL, phoneKey, type Depot } from "@/lib/external-depots";
+import { DEPOTS_KEY, DEPOTS_URL, normDepot, phoneKey } from "@/lib/external-depots";
 
 // Server-side verification: re-reads the external Depots table, prevents replay, then credits.
 export const verifyDepot = createServerFn({ method: "POST" })
@@ -10,10 +10,12 @@ export const verifyDepot = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const key = phoneKey(data.phone);
     if (key.length !== 9) return { found: false as const };
-    const url = `${DEPOTS_URL}/rest/v1/Depots?select=*&montant=gte.${data.montant}&order=created_at.desc&limit=200`;
+    const url = `${DEPOTS_URL}/rest/v1/Depots?select=*&limit=1000`;
     const res = await fetch(url, { headers: { apikey: DEPOTS_KEY } });
     if (!res.ok) throw new Error("Depots indisponible");
-    const rows = ((await res.json()) as Depot[]).filter((r) => (r.message ?? "").replace(/\D/g, "").includes(key));
+    const rows = ((await res.json()) as Record<string, unknown>[]).map(normDepot)
+      .filter((r) => r.montant >= data.montant && r.message.replace(/\D/g, "").includes(key))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
     if (!rows.length) return { found: false as const };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

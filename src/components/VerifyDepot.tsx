@@ -37,7 +37,8 @@ export function VerifyDepot({ phone, montant, onCredited }: { phone: string; mon
     const ch = sb
       .channel(`depots-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "Depots" }, (payload) => {
-        const msg = String((payload.new as { message?: string }).message ?? "").replace(/\D/g, "");
+        const n = payload.new as Record<string, unknown>;
+        const msg = String(n.message ?? n.Message ?? "").replace(/\D/g, "");
         if (msg.includes(phone.replace(/\D/g, "").slice(-9))) void check();
       })
       .subscribe();

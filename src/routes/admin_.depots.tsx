@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Layout, Section } from "@/components/Layout";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { depotsClient, type Depot } from "@/lib/external-depots";
+import { depotsClient, normDepot } from "@/lib/external-depots";
 import { formatAr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin_/depots")({
@@ -36,11 +36,11 @@ function AdminDepots() {
     refetchInterval: 15000,
     queryFn: async () => {
       const [{ data: rows }, { data: claims }] = await Promise.all([
-        depotsClient().from("Depots").select("*").order("created_at", { ascending: false }).limit(500),
+        depotsClient().from("Depots").select("*").limit(1000),
         supabase.from("external_depot_claims").select("depot_id,user_id"),
       ]);
       const claimed = new Map((claims ?? []).map((c) => [c.depot_id, c.user_id]));
-      return ((rows ?? []) as Depot[]).map((r) => ({ ...r, claimedBy: claimed.get(String(r.id)) ?? null }));
+      return ((rows ?? []) as Record<string, unknown>[]).map(normDepot).sort((a, b) => b.created_at.localeCompare(a.created_at)).map((r) => ({ ...r, claimedBy: claimed.get(String(r.id)) ?? null }));
     },
   });
 

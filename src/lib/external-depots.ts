@@ -20,3 +20,9 @@ export function depotsClient() {
 export function phoneKey(phone: string) {
   return phone.replace(/\D/g, "").slice(-9);
 }
+
+/** Columns may be capitalised (Message/Montant) — accept both. */
+export function normDepot(r: Record<string, unknown>): Depot {
+  const g = (k: string) => r[k] ?? r[k[0]!.toUpperCase() + k.slice(1)];
+  return { id: g("id") as string, message: String(g("message") ?? ""), montant: Number(g("montant") ?? 0), created_at: String(g("created_at") ?? "") };
+}
