@@ -190,6 +190,13 @@
       "when": 1793712840271,
       "tag": "0026_referral_contest_and_varied_push",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1793713283495,
+      "tag": "0027_scope_contest_reads",
+      "breakpoints": true
     }
   ]
 }
