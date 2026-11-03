@@ -438,6 +438,30 @@ export type Database = {
         }
         Relationships: []
       }
+      external_depot_claims: {
+        Row: {
+          created_at: string
+          depot_id: string
+          montant: number
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          depot_id: string
+          montant: number
+          phone: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          depot_id?: string
+          montant?: number
+          phone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       game_spins: {
         Row: {
           author_name: string

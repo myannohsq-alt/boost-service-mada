@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/useAuth";
 import { OPERATORS, operatorById, type Operator } from "@/lib/payment-operators";
 import { supabase } from "@/integrations/supabase/client";
 import { useDepositPauses } from "@/components/DepositPauseAdmin";
+import { VerifyDepot } from "@/components/VerifyDepot";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -382,6 +383,8 @@ function DepotPage() {
                   {pausedUntil ? `⏸️ ${active.label} suspendu jusqu'à ${pausedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : busy ? "Envoi…" : "✅ Envoyer la demande"}
                 </button>
                 <p className="text-center text-[10px] text-muted-foreground">🛡️ Votre demande sera vérifiée avant validation.</p>
+                <p className="pt-2 text-center text-xs font-semibold">J'ai payé — vérification automatique par SMS :</p>
+                <VerifyDepot phone={sender} montant={Number(amount) || 0} onCredited={() => void refresh()} />
               </div>
             );
           })()}

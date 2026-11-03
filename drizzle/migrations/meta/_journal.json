@@ -169,6 +169,13 @@
       "when": 1793629199957,
       "tag": "0023_scope_settings_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793670706784,
+      "tag": "0024_external_depot_claims",
+      "breakpoints": true
     }
   ]
 }
