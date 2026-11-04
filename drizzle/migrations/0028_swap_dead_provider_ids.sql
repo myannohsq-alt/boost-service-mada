@@ -1,0 +1,2 @@
+UPDATE public.services SET provider_service_id = '18302' WHERE id = '701f2766-0fe8-4e88-a2cc-c86f26697634';
+UPDATE public.services SET provider_service_id = '15562' WHERE id = '14d64a8a-6490-4589-ba10-f619a041b9df';
