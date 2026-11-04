@@ -28,8 +28,8 @@ export function reactionProviderId(key: string, name: string, invisible = false)
     ? // SMMGen Ultrafast comment reactions (~10 000/day).
       { like: "12724", love: "12724", care: "12724", haha: "12724", wow: "12724", sad: "12724", angry: "12724", "photo-love": "12724", mix: "12724" }
     : invisible
-      ? // Hidden data, instant, 10k/day, NO REFILL (~$0.24/1k).
-        { like: "18607", love: "18608", care: "18608", haha: "18611", "photo-love": "18608", wow: "18610", sad: "18612", angry: "18613", mix: "18608" }
+      ? // Hidden data (Cheapest), instant, 10k/day, NO REFILL (~$0.239/1k); mix = 19819 (👍❤️😂) single order.
+        { like: "18375", love: "18376", care: "18376", haha: "18379", "photo-love": "18376", wow: "18378", sad: "18380", angry: "18381", mix: "19819" }
       : // Global Data Cheapest, instant, 50k/day, NO REFILL (~$0.074/1k).
         { like: "17347", love: "17348", care: "17349", haha: "17351", "photo-love": "17348", wow: "17350", sad: "17352", angry: "17353", mix: "17347" };
   return Object.hasOwn(ids, key) ? ids[key as ReactionKey] : null;
