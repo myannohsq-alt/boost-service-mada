@@ -25,8 +25,8 @@ export function reactionProviderId(key: string, name: string, invisible = false)
   const comment = /commentaire|comment/i.test(name);
   // Invisible = SMMGen "Hidden Data" products: count rises, reactor names stay hidden.
   const ids: Record<ReactionKey, string | null> = comment
-    ? // SMMGen Ultrafast comment reactions (~10 000/day).
-      { like: "12724", love: "12724", care: "12724", haha: "12724", wow: "12724", sad: "12724", angry: "12724", "photo-love": "12724", mix: "12724" }
+    ? // SMMGen instant comment reactions (12724 was removed by the provider).
+      { like: "18690", love: "18691", care: "18692", haha: "18694", wow: "18693", sad: "18695", angry: "18696", "photo-love": "18691", mix: "18690" }
     : invisible
       ? // Hidden data (Cheapest), instant, 10k/day, NO REFILL (~$0.239/1k); mix = 19819 (👍❤️😂) single order.
         { like: "18375", love: "18376", care: "18376", haha: "18379", "photo-love": "18376", wow: "18378", sad: "18380", angry: "18381", mix: "19819" }
