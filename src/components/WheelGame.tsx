@@ -153,7 +153,7 @@ export function WheelGame() {
             </div>
             <div className="col-span-2 rounded-xl border border-primary/40 bg-background/50 p-2 text-center">
               <p className="text-sm font-black text-primary">🥉 3ème place : 500 Ar</p>
-              <p className="text-[10px] text-muted-foreground">Ho an'ny nahazo Ariary betsaka indrindra</p>
+              <p className="text-[10px] text-muted-foreground">Ho an'ny faharoa nahazo ⭐ betsaka indrindra (olona hafa amin'ny mpandresy 1 sy 2)</p>
             </div>
           </div>
         </div>
@@ -204,7 +204,7 @@ export function WheelGame() {
           <div className="mt-3 rounded-xl border border-gold/40 bg-background/40 p-3 text-xs">
             <p className="mb-1 font-bold text-gold">🏅 Mpandresy herinandro farany</p>
             {winners.map((w) => (
-              <p key={w.id} className="flex justify-between"><span>{w.category === "trophy" ? "🏆" : w.category === "star" ? "⭐" : "💵"} {w.author_name} ({w.score})</span><b className="text-primary">+{w.prize} Ar</b></p>
+              <p key={w.id} className="flex justify-between"><span>{w.category === "trophy" ? "🏆" : w.category === "star" ? "⭐" : "🥉⭐"} {w.author_name} ({w.score})</span><b className="text-primary">+{w.prize} Ar</b></p>
             ))}
           </div>
         )}
