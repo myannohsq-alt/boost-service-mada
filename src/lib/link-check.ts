@@ -54,7 +54,7 @@ export function platformMismatch(url: URL, platform: string): string | null {
   const host = url.hostname.toLowerCase();
   const expected = PLATFORM_HOSTS[p];
   if (!expected || expected.test(host)) return null;
-  const other = Object.keys(PLATFORM_HOSTS).find((k) => PLATFORM_HOSTS[k].test(host));
+  const other = Object.keys(PLATFORM_HOSTS).find((k) => PLATFORM_HOSTS[k]?.test(host));
   const label = PLATFORM_LABEL[p];
   return other
     ? `Rohy ${PLATFORM_LABEL[other]} ity fa service ${label} no nosafidianao. Apetraho rohy ${label}, na mandehana any amin'ny service ${PLATFORM_LABEL[other]}.`
