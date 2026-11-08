@@ -22,7 +22,8 @@ export const moderateChat = createServerFn({ method: "POST" })
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}`, "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "fetch" },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: "openai/gpt-6-astra",
+          reasoning_effort: "low",
           messages: [
             { role: "system", content: "Tu modères un groupe de discussion malgache (malgache, français, anglais, argot gasy). Réponds UNIQUEMENT en JSON {\"bad\":true|false,\"reason\":\"courte raison en malgache\"}. bad=true seulement pour: insultes, gros mots, vulgarité sexuelle, haine, menaces, harcèlement, arnaque. Les critiques polies, plaintes ou messages longs normaux sont bad=false." },
             { role: "user", content: text },

@@ -9,6 +9,39 @@ import { useAuth } from "@/lib/useAuth";
 import { formatAr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { useChatFee } from "@/components/ChatFeeToggle";
+import { moderateChat } from "@/lib/chat-moderation.functions";
+
+function BanAdmin() {
+  const [list, setList] = useState<{ user_id: string; author_name: string; reason: string; message: string; banned_until: string }[]>([]);
+  const [open, setOpen] = useState(false);
+  const load = async () => {
+    const { data } = await db.from("chat_bans").select("*").gt("banned_until", new Date().toISOString()).order("created_at", { ascending: false });
+    setList(data ?? []);
+  };
+  useEffect(() => { void load(); }, []);
+  const unban = async (id: string) => {
+    const { error } = await db.from("chat_bans").delete().eq("user_id", id);
+    if (error) toast.error(error.message); else { toast.success("Voavaha ✅"); void load(); }
+  };
+  if (!list.length) return null;
+  return (
+    <div className="absolute right-3 top-16 z-50">
+      <button onClick={() => setOpen(!open)} className="rounded-full bg-destructive px-3 py-1 text-[11px] font-bold text-destructive-foreground shadow">🚫 {list.length} voasakana</button>
+      {open ? (
+        <div className="mt-2 max-h-80 w-72 overflow-auto rounded-xl border border-border bg-card p-2 shadow-xl">
+          {list.map((b) => (
+            <div key={b.user_id} className="mb-2 rounded-lg border border-border p-2 text-xs">
+              <p className="font-semibold">{b.author_name || "Membre"}</p>
+              <p className="text-muted-foreground">{b.reason} · hatramin'ny {new Date(b.banned_until).toLocaleDateString("fr-FR")}</p>
+              <p className="mt-1 line-clamp-2 italic opacity-70">« {b.message} »</p>
+              <button onClick={() => void unban(b.user_id)} className="bsm-btn bsm-btn-primary mt-1 !px-2 !py-1 !text-[11px]">🔓 Débloquer</button>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any;
@@ -139,6 +172,13 @@ function GroupPage() {
   };
   const clearImage = () => { if (preview) URL.revokeObjectURL(preview); setPreview(null); setFile(null); };
 
+  const [ban, setBan] = useState<{ until: string; reason: string } | null>(null);
+  const loadBan = async () => {
+    if (!user) return;
+    const { data } = await db.from("chat_bans").select("banned_until,reason").eq("user_id", user.id).gt("banned_until", new Date().toISOString()).maybeSingle();
+    setBan(data ? { until: data.banned_until, reason: data.reason } : null);
+  };
+  useEffect(() => { void loadBan(); }, [user?.id]);
   const feeOn = useChatFee().data ?? true;
   const send = async () => {
     if (!user || sending.current) return;
@@ -157,6 +197,8 @@ function GroupPage() {
         setText(""); setReplyTo(null);
         void refresh();
       } else if (value) {
+        const mod = await moderateChat({ data: { text: value } });
+        if (!mod.ok) { setBan({ until: mod.until, reason: mod.reason }); setText(""); throw new Error("🚫 Voasakana 30 andro ianao noho ny teny ratsy."); }
         const { error } = await db.rpc("send_chat_message", { _content: value, _reply_to: replyTo?.id ?? null });
         if (error) throw error;
         setText(""); setReplyTo(null);
@@ -164,6 +206,7 @@ function GroupPage() {
       }
     } catch (e: any) {
       const msg = String(e?.message ?? e);
+      if (msg.includes("BANNED:")) { void loadBan(); toast.error("🚫 Voasakana tsy afaka miresaka ao amin'ny Groupe ianao."); return; }
       toast.error(msg.includes("Solde") ? "Solde insuffisant, rechargez" : msg);
     } finally { sending.current = false; setBusy(false); }
   };
@@ -292,6 +335,14 @@ function GroupPage() {
             </div>
           ) : null}
 
+          {ban ? (
+            <div className="border-t border-destructive/40 bg-destructive/10 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
+              <p className="text-sm font-bold text-destructive">🚫 Voasakana tsy afaka miresaka ianao</p>
+              <p className="mt-1 text-xs text-muted-foreground">Antony : {ban.reason}</p>
+              <p className="mt-1 text-xs">Hiverina afaka miresaka ianao amin'ny <strong>{new Date(ban.until).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })}</strong>, na rehefa avahan'ny Admin.</p>
+              <p className="mt-2 text-[11px] text-muted-foreground">Afaka mamaky ny hafatra ianao fa tsy afaka manoratra.</p>
+            </div>
+          ) : (
           <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="flex items-end gap-2 border-t border-border bg-card px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
             <label aria-label="Joindre une image" className="cursor-pointer rounded-full p-2 text-primary hover:bg-secondary">
               <ImagePlus className="h-5 w-5" />
@@ -301,7 +352,7 @@ function GroupPage() {
               {rec ? <Square className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </button>
             {rec ? <RecTimer start={recStart} /> : (
-              <textarea value={text} maxLength={500} rows={1}
+              <textarea value={text} maxLength={4000} rows={1}
                 onChange={(e) => { setText(e.target.value); e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px"; }}
                 placeholder={file ? "Légende (optionnel)…" : "Message…"} className="bsm-input !py-2 !text-sm resize-none leading-snug" style={{ maxHeight: 160 }} />
             )}
@@ -309,6 +360,8 @@ function GroupPage() {
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </button>
           </form>
+          )}
+          {isAdmin ? <BanAdmin /> : null}
         </section>
 
         {viewer ? (
