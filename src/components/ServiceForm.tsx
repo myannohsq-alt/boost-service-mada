@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
 import { showOrderSent } from "@/components/OrderSentOverlay";
-import { privateLinkIssue, cleanPastedLink, linkKindIssue } from "@/lib/link-check";
+import { privateLinkIssue, cleanPastedLink, linkKindIssue, platformMismatch } from "@/lib/link-check";
 import { FACEBOOK_GASY_KEY, type ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
 
@@ -66,7 +66,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     catch { return setError("Entrez un lien valide commençant par https://"); }
     if (url.protocol !== "https:" || !url.hostname.includes("."))
       return setError("Entrez un lien valide commençant par https://");
-    const linkIssue = privateLinkIssue(url) ?? linkKindIssue(url, service.name_fr ?? "");
+    const linkIssue = platformMismatch(url, group.platform) ?? privateLinkIssue(url) ?? linkKindIssue(url, service.name_fr ?? "");
     if (linkIssue) return setError(linkIssue);
     if (needsReaction && !reaction) return setError("Choisissez un type de réaction.");
     if (!Number.isSafeInteger(quantity) || quantity < min)

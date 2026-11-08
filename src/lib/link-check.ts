@@ -33,6 +33,34 @@ export function cleanPastedLink(raw: string): string {
   return s;
 }
 
+const PLATFORM_HOSTS: Record<string, RegExp> = {
+  facebook: /(^|\.)(facebook\.com|fb\.com|fb\.watch|fb\.me)$/,
+  instagram: /(^|\.)(instagram\.com|instagr\.am)$/,
+  tiktok: /(^|\.)tiktok\.com$/,
+  youtube: /(^|\.)(youtube\.com|youtu\.be)$/,
+  twitter: /(^|\.)(twitter\.com|x\.com)$/,
+  threads: /(^|\.)threads\.(net|com)$/,
+  telegram: /(^|\.)(t\.me|telegram\.(org|me))$/,
+  spotify: /(^|\.)spotify\.(com|link)$/,
+};
+const PLATFORM_LABEL: Record<string, string> = {
+  facebook: "Facebook", instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube",
+  twitter: "X (Twitter)", threads: "Threads", telegram: "Telegram", spotify: "Spotify",
+};
+
+/** Blocks a link from another social network (e.g. a Facebook link in a TikTok service). */
+export function platformMismatch(url: URL, platform: string): string | null {
+  const p = platform.toLowerCase();
+  const host = url.hostname.toLowerCase();
+  const expected = PLATFORM_HOSTS[p];
+  if (!expected || expected.test(host)) return null;
+  const other = Object.keys(PLATFORM_HOSTS).find((k) => PLATFORM_HOSTS[k].test(host));
+  const label = PLATFORM_LABEL[p];
+  return other
+    ? `Rohy ${PLATFORM_LABEL[other]} ity fa service ${label} no nosafidianao. Apetraho rohy ${label}, na mandehana any amin'ny service ${PLATFORM_LABEL[other]}.`
+    : `Apetraho rohy ${label} marina.`;
+}
+
 const POST_RE = /\/(posts|videos?|reel|reels|photo|photos|permalink|story\.php|watch|p)\b|story_fbid=|fbid=|\/share\/(p|v|r)\//i;
 const PROFILE_FB_RE = /^\/(profile\.php|people\/)/i;
 
