@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminSync } from "@/components/AdminSync";
 import { AdminMitadyVola } from "@/components/AdminMitadyVola";
+import { GasyManualAdmin } from "@/components/GasyManualAdmin";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -148,9 +149,20 @@ function AdminPage() {
 
         {tab === "Commandes" ? (
           <div className="space-y-3">
+            <GasyManualAdmin onDone={setMsg} />
             {(data?.orders ?? []).map((o) => (
-              <div key={o.id} className="bsm-card p-4">
-                <p className="font-semibold">{o.service_label}</p>
+              <div key={o.id} className={`bsm-card p-4 ${o.provider === "manuel" ? "border-2 border-primary" : ""}`}>
+                <p className="font-semibold">
+                  {o.provider === "manuel" ? <span className="mr-2 rounded bg-primary px-2 py-0.5 text-xs text-primary-foreground">🇲🇬 Manuel Gasy</span> : null}
+                  {o.service_label}
+                  {o.notes?.startsWith("reaction:") ? <span className="ml-1 text-xs text-muted-foreground">({o.notes.slice(9).split(";")[0]})</span> : null}
+                </p>
+                {o.provider === "manuel" ? (
+                  <div className="mt-1 flex gap-2">
+                    <button className="rounded bg-secondary px-2 py-1 text-xs" onClick={() => { void navigator.clipboard.writeText(o.target_link); setMsg("📋 Lien copié"); }}>📋 Copier</button>
+                    <a className="rounded bg-secondary px-2 py-1 text-xs" href={o.target_link} target="_blank" rel="noreferrer">🔗 Ouvrir</a>
+                  </div>
+                ) : null}
                 <p className="break-all text-xs text-muted-foreground">{o.target_link}</p>
                 <p className="text-sm text-gold">
                   {o.quantity} • {formatAr(Number(o.amount))} • {o.status}
