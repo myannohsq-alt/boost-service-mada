@@ -226,6 +226,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_bans: {
+        Row: {
+          author_name: string
+          banned_until: string
+          created_at: string
+          message: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          author_name?: string
+          banned_until: string
+          created_at?: string
+          message?: string
+          reason?: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          banned_until?: string
+          created_at?: string
+          message?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_message_reactions: {
         Row: {
           created_at: string
