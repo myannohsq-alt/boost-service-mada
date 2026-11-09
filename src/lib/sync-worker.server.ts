@@ -74,6 +74,7 @@ async function sweepUnsentOrders(db: Admin): Promise<number> {
     .from("orders")
     .select("id")
     .is("provider_order_id", null)
+    .neq("provider", "manuel")
     .in("status", ["pending", "processing"])
     .lt("created_at", cutoff)
     .order("created_at", { ascending: true })
