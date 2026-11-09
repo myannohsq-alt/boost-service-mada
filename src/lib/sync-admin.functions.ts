@@ -96,22 +96,19 @@ const NEXUS_URL = "https://nexusmadagasikara.lovable.app/api/public/nexus-api";
 export const getNexusStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context as never);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin.from("provider_settings").select("nexus_api_key").limit(1).maybeSingle();
-    return { has_key: Boolean(data?.nexus_api_key) };
+    const rpc = context.supabase.rpc as unknown as (n: string, a?: object) => Promise<{ data: unknown; error: { message: string } | null }>;
+    const { data, error } = await rpc("admin_nexus_key_status");
+    if (error) throw new Error(error.message);
+    return { has_key: Boolean(data) };
   });
 
 export const saveNexusKey = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { key: string }) => ({ key: String(d.key ?? "").trim().slice(0, 500) }))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context as never);
     if (!data.key) throw new Error("Clé vide");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin.from("provider_settings").select("id").limit(1).single();
-    if (!row) throw new Error("Réglages introuvables");
-    const { error } = await supabaseAdmin.from("provider_settings").update({ nexus_api_key: data.key }).eq("id", row.id);
+    const rpc = context.supabase.rpc as unknown as (n: string, a?: object) => Promise<{ error: { message: string } | null }>;
+    const { error } = await rpc("admin_set_nexus_key", { _key: data.key });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -119,11 +116,11 @@ export const saveNexusKey = createServerFn({ method: "POST" })
 export const testNexusKey = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context as never);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin.from("provider_settings").select("nexus_api_key").limit(1).maybeSingle();
-    if (!data?.nexus_api_key) return { ok: false, message: "Clé non configurée" };
-    const res = await fetch(`${NEXUS_URL}/tasks`, { headers: { Authorization: `Bearer ${data.nexus_api_key}` } });
+    const rpc = context.supabase.rpc as unknown as (n: string, a?: object) => Promise<{ data: unknown; error: { message: string } | null }>;
+    const { data: key, error } = await rpc("admin_get_nexus_key");
+    if (error) return { ok: false, message: error.message };
+    if (!key) return { ok: false, message: "Clé non configurée" };
+    const res = await fetch(`${NEXUS_URL}/tasks`, { headers: { Authorization: `Bearer ${String(key)}` } });
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     return res.ok
       ? { ok: true, message: "Connexion NexusMada OK" }
