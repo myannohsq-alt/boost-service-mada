@@ -11,6 +11,54 @@ import {
 } from "@/lib/sync-admin.functions";
 import { AdminMapping } from "@/components/AdminMapping";
 import { AdminDebug } from "@/components/AdminDebug";
+import { getNexusStatus, saveNexusKey, testNexusKey } from "@/lib/sync-admin.functions";
+
+function NexusKeyCard({ onDone }: { onDone: (msg: string) => void }) {
+  const qc = useQueryClient();
+  const statusFn = useServerFn(getNexusStatus);
+  const saveFn = useServerFn(saveNexusKey);
+  const testFn = useServerFn(testNexusKey);
+  const [key, setKey] = useState("");
+  const { data } = useQuery({ queryKey: ["nexus-status"], queryFn: () => statusFn({ data: undefined as never }) });
+  const save = useMutation({
+    mutationFn: () => saveFn({ data: { key } }),
+    onSuccess: async () => {
+      setKey("");
+      onDone("✅ Clé API NexusMada enregistrée");
+      await qc.invalidateQueries({ queryKey: ["nexus-status"] });
+    },
+    onError: (e: Error) => onDone(`❌ ${e.message}`),
+  });
+  const test = useMutation({
+    mutationFn: () => testFn({ data: undefined as never }),
+    onSuccess: (r) => onDone(r.ok ? `✅ ${r.message}` : `❌ ${r.message}`),
+    onError: (e: Error) => onDone(`❌ ${e.message}`),
+  });
+  return (
+    <div className="bsm-card space-y-3 p-4">
+      <h3 className="font-display text-sm font-bold">🇲🇬 Connexion NexusMada (Boost Gasy)</h3>
+      <p className="text-xs text-muted-foreground">
+        {data?.has_key ? "✅ Clé configurée" : "⚠️ Clé non configurée"} — nexusmadagasikara.lovable.app
+      </p>
+      <input
+        className="bsm-input w-full"
+        type="password"
+        autoComplete="off"
+        placeholder="Coller la clé API NexusMada (nxs_...)"
+        value={key}
+        onChange={(e) => setKey(e.target.value)}
+      />
+      <div className="flex gap-2">
+        <button className="bsm-btn bsm-btn-primary !py-2 !text-xs" disabled={save.isPending || !key.trim()} onClick={() => save.mutate()}>
+          💾 Enregistrer
+        </button>
+        <button className="bsm-btn !py-2 !text-xs" disabled={test.isPending || !data?.has_key} onClick={() => test.mutate()}>
+          🔌 Tester la connexion
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function ServicePicker({ onDone }: { onDone: (msg: string) => void }) {
   const qc = useQueryClient();
@@ -218,6 +266,8 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
           💾 Enregistrer la clé Smmfollows
         </button>
       </div>
+
+      <NexusKeyCard onDone={onDone} />
 
       <AdminDebug onDone={onDone} />
 

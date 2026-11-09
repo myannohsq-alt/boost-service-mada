@@ -1037,6 +1037,7 @@ export type Database = {
           cron_secret: string
           id: string
           markup_percent: number
+          nexus_api_key: string
           pause_reason: string
           paused: boolean
           rate_limit_hits: number
@@ -1060,6 +1061,7 @@ export type Database = {
           cron_secret?: string
           id?: string
           markup_percent?: number
+          nexus_api_key?: string
           pause_reason?: string
           paused?: boolean
           rate_limit_hits?: number
@@ -1083,6 +1085,7 @@ export type Database = {
           cron_secret?: string
           id?: string
           markup_percent?: number
+          nexus_api_key?: string
           pause_reason?: string
           paused?: boolean
           rate_limit_hits?: number
