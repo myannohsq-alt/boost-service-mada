@@ -91,6 +91,45 @@ export const saveProviderSettings = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const NEXUS_URL = "https://nexusmadagasikara.lovable.app/api/public/nexus-api";
+
+export const getNexusStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.from("provider_settings").select("nexus_api_key").limit(1).maybeSingle();
+    return { has_key: Boolean(data?.nexus_api_key) };
+  });
+
+export const saveNexusKey = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { key: string }) => ({ key: String(d.key ?? "").trim().slice(0, 500) }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    if (!data.key) throw new Error("Clé vide");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin.from("provider_settings").select("id").limit(1).single();
+    if (!row) throw new Error("Réglages introuvables");
+    const { error } = await supabaseAdmin.from("provider_settings").update({ nexus_api_key: data.key }).eq("id", row.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const testNexusKey = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.from("provider_settings").select("nexus_api_key").limit(1).maybeSingle();
+    if (!data?.nexus_api_key) return { ok: false, message: "Clé non configurée" };
+    const res = await fetch(`${NEXUS_URL}/tasks`, { headers: { Authorization: `Bearer ${data.nexus_api_key}` } });
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    return res.ok
+      ? { ok: true, message: "Connexion NexusMada OK" }
+      : { ok: false, message: body.error || `Erreur ${res.status}` };
+  });
+
 export const resumeSync = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

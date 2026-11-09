@@ -219,6 +219,8 @@ export function AdminSync({ onDone }: { onDone: (msg: string) => void }) {
         </button>
       </div>
 
+      <NexusKeyCard onDone={onDone} />
+
       <AdminDebug onDone={onDone} />
 
       <ServicePicker onDone={onDone} />
