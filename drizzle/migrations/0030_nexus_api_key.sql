@@ -1,0 +1,1 @@
+ALTER TABLE public.provider_settings ADD COLUMN IF NOT EXISTS nexus_api_key text NOT NULL DEFAULT '';
