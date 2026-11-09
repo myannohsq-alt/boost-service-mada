@@ -74,6 +74,7 @@ async function sweepUnsentOrders(db: Admin): Promise<number> {
     .from("orders")
     .select("id")
     .is("provider_order_id", null)
+    .neq("provider", "manuel")
     .in("status", ["pending", "processing"])
     .lt("created_at", cutoff)
     .order("created_at", { ascending: true })
@@ -454,6 +455,11 @@ async function submitOrder(
         .maybeSingle()
     : { data: null };
 
+  // Manual services (Facebook Gasy) are fulfilled by the admin by hand.
+  if ((service?.provider_name ?? "").toLowerCase() === "manuel") {
+    await db.from("orders").update({ status: "processing", provider: "manuel" }).eq("id", orderId).eq("status", "pending");
+    return `commande ${orderId}: manuelle (admin)`;
+  }
   // Services marked "Smmfollows" go to that panel with its own API key.
   const viaSmmfollows = (service?.provider_name ?? "").toLowerCase() === "smmfollows";
   if (viaSmmfollows) {
