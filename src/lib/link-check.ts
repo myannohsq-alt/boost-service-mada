@@ -70,6 +70,8 @@ export function linkKindIssue(url: URL, serviceName: string): string | null {
   const full = url.pathname + url.search;
   const isPost = POST_RE.test(full);
   const host = url.hostname;
+  if (/membre|member|groupe|group/.test(name) && host.includes("facebook.com") && !/^\/groups\//i.test(url.pathname))
+    return "Membres Groupe : apetraho ny rohy GROUPE (facebook.com/groups/...), fa tsy rohy profil na publication.";
   if (/follower|abonn|membre|member/.test(name) && isPost)
     return "Followers : apetraho ny rohy PROFIL na PAGE, fa tsy rohy publication/vidéo.";
   if (/réaction|reaction|comment|like|j'aime|partage|share|vue|view/.test(name) && !/follower|abonn/.test(name)) {
