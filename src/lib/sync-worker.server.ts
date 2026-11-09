@@ -454,6 +454,11 @@ async function submitOrder(
         .maybeSingle()
     : { data: null };
 
+  // Manual services (Facebook Gasy) are fulfilled by the admin by hand.
+  if ((service?.provider_name ?? "").toLowerCase() === "manuel") {
+    await db.from("orders").update({ status: "processing", provider: "manuel" }).eq("id", orderId).eq("status", "pending");
+    return `commande ${orderId}: manuelle (admin)`;
+  }
   // Services marked "Smmfollows" go to that panel with its own API key.
   const viaSmmfollows = (service?.provider_name ?? "").toLowerCase() === "smmfollows";
   if (viaSmmfollows) {
