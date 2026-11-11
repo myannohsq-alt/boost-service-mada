@@ -134,6 +134,7 @@ export type Database = {
           done_count: number
           id: string
           link: string
+          order_id: string | null
           phone: string
           price: number
           quantity: number
@@ -147,6 +148,7 @@ export type Database = {
           done_count?: number
           id?: string
           link: string
+          order_id?: string | null
           phone: string
           price?: number
           quantity: number
@@ -160,6 +162,7 @@ export type Database = {
           done_count?: number
           id?: string
           link?: string
+          order_id?: string | null
           phone?: string
           price?: number
           quantity?: number
@@ -1564,6 +1567,9 @@ export type Database = {
         Returns: boolean
       }
       admin_cancel_order: { Args: { _id: string }; Returns: undefined }
+      admin_get_nexus_key: { Args: never; Returns: string }
+      admin_nexus_key_status: { Args: never; Returns: boolean }
+      admin_set_nexus_key: { Args: { _key: string }; Returns: undefined }
       app_user_stats: { Args: never; Returns: Json }
       approve_boost_order: { Args: { _id: string }; Returns: undefined }
       approve_recharge: { Args: { _recharge_id: string }; Returns: undefined }
@@ -1607,6 +1613,7 @@ export type Database = {
           is_me: boolean
         }[]
       }
+      escalate_gasy_orders: { Args: never; Returns: undefined }
       game_recent_spins: {
         Args: { _limit?: number }
         Returns: {
@@ -1740,6 +1747,7 @@ export type Database = {
       public_stats: { Args: never; Returns: Json }
       queue_contest_push: { Args: never; Returns: undefined }
       queue_daily_push: { Args: { _slot: number }; Returns: undefined }
+      queue_missions_push: { Args: never; Returns: undefined }
       recent_saturday_winners: {
         Args: { _limit?: number }
         Returns: {

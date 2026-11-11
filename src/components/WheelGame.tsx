@@ -201,11 +201,26 @@ export function WheelGame() {
         </div>
 
         {winners.length > 0 && (
-          <div className="mt-3 rounded-xl border border-gold/40 bg-background/40 p-3 text-xs">
-            <p className="mb-1 font-bold text-gold">🏅 Mpandresy herinandro farany</p>
-            {winners.map((w) => (
-              <p key={w.id} className="flex justify-between"><span>{w.category === "trophy" ? "🏆" : w.category === "star" ? "⭐" : "🥉⭐"} {w.author_name} ({w.score})</span><b className="text-primary">+{w.prize} Ar</b></p>
-            ))}
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gold/50 bg-gradient-to-b from-gold/15 to-background/40">
+            <div className="flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-gold px-3 py-2 text-sm font-extrabold text-primary-foreground">
+              <Trophy className="h-4 w-4" /> Mpandresy herinandro farany
+            </div>
+            <div className="divide-y divide-border">
+              {winners.map((w, i) => {
+                const medal = ["🥇", "🥈", "🥉"][i] ?? "🏅";
+                const cat = w.category === "trophy" ? "🏆 Amboara betsaka indrindra" : w.category === "star" ? "⭐ Kintana betsaka indrindra" : "⭐ Laharana faha-3 (kintana)";
+                return (
+                  <div key={w.id} className="flex items-center gap-3 px-3 py-2.5">
+                    <span className="text-2xl leading-none">{medal}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-extrabold">{w.author_name}</p>
+                      <p className="text-[11px] text-muted-foreground">{cat} · {w.score} pts</p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-black text-primary">+{formatAr(w.prize)}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
         <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-muted-foreground"><Star className="h-3 w-3 text-gold" /> Ny loka azo amin'ny lalao ihany no isaina, tsy ny isa ao amin'ny profil.</p>
