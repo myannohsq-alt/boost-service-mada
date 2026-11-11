@@ -225,6 +225,13 @@
       "when": 1794205900000,
       "tag": "0031_nexus_key_rpc",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1794397665756,
+      "tag": "0032_gasy_missions_and_order_notifications",
+      "breakpoints": true
     }
   ]
 }
