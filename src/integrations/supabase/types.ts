@@ -1613,6 +1613,21 @@ export type Database = {
           is_me: boolean
         }[]
       }
+      current_contest: {
+        Args: never
+        Returns: {
+          created_at: string
+          ends_at: string
+          id: string
+          min_invites: number
+          prize: number
+          settled: boolean
+          starts_at: string
+          title: string
+          winner_invites: number
+          winner_name: string
+        }[]
+      }
       escalate_gasy_orders: { Args: never; Returns: undefined }
       game_recent_spins: {
         Args: { _limit?: number }

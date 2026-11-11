@@ -14,7 +14,7 @@ function useCountdown(to: string | undefined) {
 export function ContestCard() {
   const { data: c } = useQuery({
     queryKey: ["contest"],
-    queryFn: async () => (await supabase.from("referral_contests").select("*").order("created_at", { ascending: false }).limit(1).maybeSingle()).data,
+    queryFn: async () => ((await supabase.rpc("current_contest")).data ?? [])[0] ?? null,
     refetchInterval: 60_000,
   });
   const { data: board } = useQuery({
