@@ -232,6 +232,13 @@
       "when": 1794397665756,
       "tag": "0032_gasy_missions_and_order_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1794397949032,
+      "tag": "0033_contest_reads_via_function",
+      "breakpoints": true
     }
   ]
 }
