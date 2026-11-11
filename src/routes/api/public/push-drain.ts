@@ -32,6 +32,10 @@ export const Route = createFileRoute("/api/public/push-drain")({
             }
             targets = targets.filter((s: { user_id: string }) => admins!.has(s.user_id));
           }
+          if (typeof item.target === "string" && item.target.startsWith("user:")) {
+            const uid = item.target.slice(5);
+            targets = targets.filter((s: { user_id: string }) => s.user_id === uid);
+          }
           if (item.exclude_user) targets = targets.filter((s: { user_id: string }) => s.user_id !== item.exclude_user);
           await Promise.all(targets.map(async (s: { id: string; endpoint: string; p256dh: string; auth: string }) => {
             try {

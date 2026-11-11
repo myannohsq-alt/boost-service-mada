@@ -27,22 +27,15 @@ const input = "w-full rounded-xl border border-white/10 bg-[#0A0F0A] px-4 py-3 t
 const cta = "w-full rounded-xl bg-gradient-to-r from-[#FF7A00] to-[#FF9500] py-3 font-black text-black disabled:opacity-50";
 const ar = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} Ar`;
 
-const TYPES = [
-  { id: "followers", label: "Followers", reward: 15 },
-  { id: "likes", label: "Réactions", reward: 10 },
-  { id: "comments", label: "Commentaires", reward: 15 },
-] as const;
-type TypeId = (typeof TYPES)[number]["id"];
-
 function MitadyVola() {
   const { user } = useAuth();
-  const [tab, setTab] = useState<"vola" | "missions" | "commande">("vola");
+  const [tab, setTab] = useState<"vola" | "missions">("vola");
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-[#0A0F0A] to-[#111D13] text-white" style={{ fontFamily: "'Space Grotesk', Inter, sans-serif" }}>
         <div className="mx-auto w-full max-w-[480px] space-y-4 p-4">
           <div className="flex rounded-full bg-[#111D13] p-1">
-            {([["vola", "Mitady Vola"], ["missions", "Missions"], ["commande", "Commande"]] as const).map(([k, l]) => (
+            {([["vola", "Mitady Vola"], ["missions", "Missions"]] as const).map(([k, l]) => (
               <button key={k} onClick={() => setTab(k)} className={`flex-1 rounded-full py-2 text-sm font-bold ${tab === k ? "bg-[#0A0F0A] text-white" : "text-white/50"}`}>{l}</button>
             ))}
           </div>
@@ -53,7 +46,7 @@ function MitadyVola() {
             </div>
           ) : tab === "vola" ? (
             <><Hero /><BoosterForm /><Wallet /></>
-          ) : tab === "missions" ? <Missions /> : <ClientOrder />}
+          ) : <Missions />}
         </div>
       </div>
     </Layout>
@@ -264,123 +257,6 @@ function ProofModal({ missionId, onClose, onDone }: { missionId: string; onClose
           <button onClick={send} disabled={busy} className="rounded-xl bg-[#00FF88] py-2.5 text-sm font-black text-black disabled:opacity-50">Envoyer</button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function ClientOrder() {
-  const qc = useQueryClient();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [link, setLink] = useState("");
-  const [types, setTypes] = useState<TypeId[]>(["followers"]);
-  const [qty, setQty] = useState(100);
-  const [busy, setBusy] = useState(false);
-  const { data: orders = [] } = useQuery({
-    queryKey: ["my-boost-orders"],
-    queryFn: async () => (await db.from("boost_orders").select("*").order("created_at", { ascending: false }).limit(10)).data ?? [],
-  });
-  const toggle = (t: TypeId) => setTypes((p) => (p.includes(t) ? p.filter((x) => x !== t) : [...p, t]));
-  const changeQty = (d: number) => setQty((q) => Math.min(5000, Math.max(100, q + d)));
-  const total = types.length * qty * 20;
-  const { profile, isAdmin, refresh } = useAuth() as any;
-  const bal = Number(profile?.balance ?? 0);
-  const lowBal = !isAdmin && (bal < 2000 || bal < total);
-  const [proofOrder, setProofOrder] = useState<string | null>(null);
-  const submit = async () => {
-    const ph = phone.replace(/\s/g, "");
-    if (name.trim().length < 2) return toast.error("Soraty ny anarana");
-    if (!/^0\d{9}$/.test(ph)) return toast.error("Numéro diso");
-    if (!/^https:\/\//i.test(link.trim())) return toast.error("Lien https:// ilaina");
-    if (!types.length) return toast.error("Mifidiana karazana iray farafahakeliny");
-    if (lowBal) return toast.error("Solde tsy ampy: 2000 Ar farafahakeliny. Mameno solde aloha.");
-    setBusy(true);
-    const { error } = await db.rpc("place_boost_order", { _name: name.trim(), _phone: ph, _link: link.trim(), _types: types, _qty: qty });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Commande voaray ✅ Efa miseho amin'ny Missions");
-    void refresh?.();
-    void qc.invalidateQueries({ queryKey: ["my-boost-orders"] });
-    void qc.invalidateQueries({ queryKey: ["missions"] });
-    return undefined;
-  };
-  return (
-    <div className={card}>
-      <h2 className="font-bold">Hanao commande (boost avy amin'ny communauté)</h2>
-      <div className="mt-3 space-y-2">
-        <input className={input} placeholder="Anarana" maxLength={100} value={name} onChange={(e) => setName(e.target.value)} />
-        <input className={input} placeholder="Téléphone 03X XX XXX XX" inputMode="tel" maxLength={14} value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <div className="grid grid-cols-2 gap-2">
-          {TYPES.map((t) => {
-            const on = types.includes(t.id);
-            return (
-              <button key={t.id} onClick={() => toggle(t.id)} className={`rounded-xl py-2.5 text-sm font-bold ${on ? "bg-[#00FF88] text-black" : "border border-white/10 bg-[#0A0F0A]"}`}>
-                {t.label} {t.reward}Ar
-              </button>
-            );
-          })}
-          <button disabled className="rounded-xl border border-white/10 bg-[#0A0F0A] py-2.5 text-sm font-bold text-white/30">Partages (tsy ho ela)</button>
-        </div>
-        <input className={input} placeholder="https://facebook.com/..." maxLength={500} value={link} onChange={(e) => setLink(e.target.value)} />
-        <div className="flex gap-2">
-          <button onClick={() => changeQty(-100)} className="rounded-xl bg-white/10 px-4 font-black">-</button>
-          <div className="flex-1 rounded-xl border border-white/10 bg-[#0A0F0A] py-3 text-center font-black">{qty}</div>
-          <button onClick={() => changeQty(100)} className="rounded-xl bg-white/10 px-4 font-black">+</button>
-        </div>
-        <p className="text-sm font-bold">{types.map((t) => TYPES.find((x) => x.id === t)!.label).join(" + ") || "—"} x {qty} = <span className="text-[#FFD60A]">{ar(total)}</span></p>
-        <p className="text-[11px] text-white/50">100=2000Ar | 1000=20000Ar • Booster reçoit 10-15Ar/u selon type + bonus &gt;5/j</p>
-        {lowBal ? (
-          <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-2 text-xs font-bold text-red-300">
-            Solde tsy ampy ({ar(bal)}). 2 000 Ar farafahakeliny ary {ar(total)} ilaina. <Link to="/depot" className="underline">Mameno solde</Link>
-          </p>
-        ) : null}
-        <button onClick={submit} disabled={busy || lowBal} className={cta}>Commander - {ar(total)}</button>
-      </div>
-      {orders.map((o: any) => (
-        <div key={o.id} className="mt-3 rounded-xl bg-[#0A0F0A] p-3 text-xs">
-          <div className="flex justify-between"><span>{o.service_type} × {o.quantity}</span><span className="text-white/50">{o.status === "processing" ? "En cours" : o.status === "completed" ? "Vita ✅" : o.status === "cancelled" ? "Nofoanana" : o.status}</span></div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full bg-[#00FF88]" style={{ width: `${Math.min(100, (o.done_count / o.quantity) * 100)}%` }} /></div>
-          <p className="mt-1">{o.done_count}/{o.quantity}</p>
-          <button onClick={() => setProofOrder(o.id)} className="mt-2 rounded-lg border border-[#00FF88]/40 px-3 py-1.5 font-bold text-[#00FF88]">📸 Jereo ny porofo</button>
-        </div>
-      ))}
-      {proofOrder ? <ProofsViewer orderId={proofOrder} onClose={() => setProofOrder(null)} /> : null}
-    </div>
-  );
-}
-
-function ProofsViewer({ orderId, onClose }: { orderId: string; onClose: () => void }) {
-  const [big, setBig] = useState<string | null>(null);
-  const { data = [], isLoading } = useQuery({
-    queryKey: ["order-proofs", orderId],
-    queryFn: async () => {
-      const rows = ((await db.rpc("order_proofs", { _order_id: orderId })).data ?? []) as any[];
-      const paths = rows.map((r) => r.proof_path).filter(Boolean);
-      const urls: Record<string, string> = {};
-      if (paths.length) {
-        const { data: s } = await supabase.storage.from("uploads").createSignedUrls(paths, 3600);
-        for (const x of s ?? []) if (x.path && x.signedUrl) urls[x.path] = x.signedUrl;
-      }
-      return rows.map((r) => ({ ...r, url: r.proof_path ? urls[r.proof_path] : null }));
-    },
-  });
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={onClose}>
-      <div className="max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-[20px] border border-white/20 bg-[#111D13] p-5 text-white" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between"><h3 className="font-black">📸 Porofo nalefa</h3><button onClick={onClose} className="text-sm text-white/60">✕</button></div>
-        {isLoading ? <p className="mt-3 text-xs text-white/50">Miandry...</p> : null}
-        {!isLoading && !data.length ? <p className="mt-3 text-xs text-white/50">Mbola tsy misy porofo.</p> : null}
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          {data.map((r: any) => (
-            <div key={r.id} className="rounded-xl bg-[#0A0F0A] p-2 text-[10px]">
-              {r.url ? <img src={r.url} alt="Porofo" onClick={() => setBig(r.url)} className="h-28 w-full cursor-pointer rounded-lg object-cover" /> : <div className="flex h-28 items-center justify-center text-white/30">Tsy misy sary</div>}
-              <p className="mt-1 truncate font-bold">{r.fb_name ?? "Booster"}</p>
-              <p className="text-white/50">{r.status === "approved" ? "Voamarina ✅" : r.status === "rejected" ? "Nolavina" : "Hohamarinina"}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      {big ? <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4" onClick={(e) => { e.stopPropagation(); setBig(null); }}><img src={big} alt="Porofo" className="max-h-full max-w-full rounded-lg" /></div> : null}
     </div>
   );
 }
