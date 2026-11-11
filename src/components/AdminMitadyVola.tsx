@@ -14,10 +14,21 @@ export function AdminMitadyVola() {
     queryFn: async () => {
       const [o, c, w] = await Promise.all([
         db.from("boost_orders").select("*").in("status", ["pending_payment", "pending_approval", "processing"]).order("created_at", { ascending: false }).limit(50),
-        db.from("mission_claims").select("*").eq("status", "pending").order("created_at").limit(100),
+        db.from("mission_claims").select("*, missions(link, kind)").eq("status", "pending").order("created_at").limit(100),
         db.from("booster_withdrawals").select("*").eq("status", "pending").order("created_at").limit(50),
       ]);
-      return { orders: o.data ?? [], claims: c.data ?? [], wds: w.data ?? [] };
+      const claims = (c.data ?? []) as any[];
+      const paths = claims.map((x) => x.proof_path).filter(Boolean);
+      const urls: Record<string, string> = {};
+      if (paths.length) {
+        const { data: su } = await supabase.storage.from("uploads").createSignedUrls(paths, 3600);
+        for (const x of su ?? []) if (x.path && x.signedUrl) urls[x.path] = x.signedUrl;
+      }
+      const ids = [...new Set(claims.map((x) => x.user_id))];
+      const { data: accts } = ids.length ? await db.from("booster_accounts").select("user_id, fb_name, fb_link").in("user_id", ids) : { data: [] };
+      const byUser: Record<string, any> = {};
+      for (const a of accts ?? []) byUser[a.user_id] = a;
+      return { orders: o.data ?? [], claims: claims.map((x) => ({ ...x, url: x.proof_path ? urls[x.proof_path] : null, acct: byUser[x.user_id] })), wds: w.data ?? [] };
     },
   });
   const run = async (fn: string, args: object, ok: string) => {
@@ -48,11 +59,18 @@ export function AdminMitadyVola() {
       <div className="bsm-card p-4">
         <p className="font-semibold">✅ Missions à vérifier ({data?.claims.length ?? 0})</p>
         {data?.claims.map((c: any) => (
-          <div key={c.id} className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs">
-            <span>{c.user_id.slice(0, 8)} • {c.reward} Ar</span>
-            <div className="flex gap-1">
-              <Button size="sm" onClick={() => run("review_mission_claim", { _claim_id: c.id, _approve: true }, "Validé")}>OK</Button>
-              <Button size="sm" variant="outline" onClick={() => run("review_mission_claim", { _claim_id: c.id, _approve: false }, "Refusé")}>Refuser</Button>
+          <div key={c.id} className="mt-3 flex gap-3 border-t border-border pt-3 text-xs">
+            {c.url ? (
+              <a href={c.url} target="_blank" rel="noopener noreferrer" className="shrink-0"><img src={c.url} alt="Porofo" className="h-24 w-20 rounded-lg object-cover" /></a>
+            ) : <div className="flex h-24 w-20 shrink-0 items-center justify-center rounded-lg bg-secondary text-[10px] text-muted-foreground">Tsy misy sary</div>}
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="truncate font-semibold">{c.acct?.fb_name ?? c.user_id.slice(0, 8)} • {c.reward} Ar</p>
+              {c.acct?.fb_link ? <a href={c.acct.fb_link} target="_blank" rel="noopener noreferrer" className="block truncate text-primary underline">👤 Profil booster</a> : null}
+              {c.missions?.link ? <a href={c.missions.link} target="_blank" rel="noopener noreferrer" className="block truncate text-primary underline">🔗 {c.missions.kind} — rohy mission</a> : null}
+              <div className="flex gap-1 pt-1">
+                <Button size="sm" onClick={() => run("review_mission_claim", { _claim_id: c.id, _approve: true }, "Validé")}>✅ Ekena</Button>
+                <Button size="sm" variant="outline" onClick={() => run("review_mission_claim", { _claim_id: c.id, _approve: false }, "Refusé")}>❌ Lavina</Button>
+              </div>
             </div>
           </div>
         ))}
