@@ -3,7 +3,6 @@
 // backoff, and a circuit breaker for terminal provider errors.
 import { smmgen, mapProviderStatus, isRateLimit, RateLimitError, type SmmgenService } from "./smmgen.server";
 import { isReactionService, reactionProviderId } from "./reaction-options";
-import { resolveShortLink } from "./resolve-link.server";
 
 const SMMFOLLOWS_URL = "https://smmfollows.com/api/v2";
 const LOCK_NAME = "smmgen-worker";
@@ -494,13 +493,6 @@ async function submitOrder(
   }
   if (!/^https?:\/\//i.test(order.target_link ?? "")) {
     throw new Error("Lien invalide : il doit commencer par http(s)://");
-  }
-  {
-    const resolved = await resolveShortLink(order.target_link);
-    if (resolved !== order.target_link) {
-      order.target_link = resolved;
-      await db.from("orders").update({ target_link: resolved }).eq("id", orderId);
-    }
   }
   if (order.quantity < min || order.quantity > max) {
     throw new Error(`Quantité hors limites fournisseur (min ${min}, max ${max})`);
