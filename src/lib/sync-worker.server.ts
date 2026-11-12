@@ -499,8 +499,8 @@ async function submitOrder(
   }
 
   // Réaction Mix on posts: split evenly into 👍 J'aime, ❤️ J'adore, 🥰 Solidaire only.
-  // Invisible mix uses one native provider mix product (19819), so only visible mix is split.
-  const isPostMix = !!(!viaSmmfollows && service && reactionNote?.[1] === "mix" && !/commentaire|comment/i.test(service.name_fr) && !/;visibility:invisible/.test(order.notes ?? ""));
+  // Invisible mix is split into 👍 + ❤️ only (no Haha), per owner request.
+  const isPostMix = !!(!viaSmmfollows && service && reactionNote?.[1] === "mix" && !/commentaire|comment/i.test(service.name_fr));
   let res: Awaited<ReturnType<typeof api.add>>;
   if (isPostMix) {
     const invisible = /;visibility:invisible/.test(order.notes ?? "");
