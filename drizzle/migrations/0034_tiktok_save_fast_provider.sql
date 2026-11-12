@@ -1,0 +1,1 @@
+UPDATE public.services SET provider_service_id='19583', provider_name='SMMGen', provider_min=100, provider_rate_usd=0.006 WHERE id='a5e4c467-4cc4-4878-b231-945b0b0a5be8';
