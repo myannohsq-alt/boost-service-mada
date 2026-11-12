@@ -42,6 +42,24 @@ function isBlockingError(message: string): boolean {
   );
 }
 
+async function refundDuplicateLink(db: Admin, orderId: string) {
+  const { data: o } = await db.from("orders").select("id, user_id, amount, status, service_label").eq("id", orderId).maybeSingle();
+  if (!o || ["done", "rejected", "cancelled"].includes(o.status)) return;
+  const msg = "Commande déjà active sur ce lien — remboursée automatiquement";
+  const { data: upd } = await db.from("orders")
+    .update({ status: "rejected", admin_note: msg, api_error: msg, provider_error: msg, next_retry_at: null })
+    .eq("id", orderId).in("status", ["pending", "processing", "failed"]).select("id");
+  if (!upd?.length || Number(o.amount) <= 0) return;
+  const { data: p } = await db.from("profiles").select("balance").eq("id", o.user_id).maybeSingle();
+  if (!p) return;
+  await db.from("profiles").update({ balance: Number(p.balance) + Number(o.amount) }).eq("id", o.user_id);
+  await db.from("notifications").insert({
+    user_id: o.user_id,
+    title: "Commande remboursée ↩️",
+    body: `${o.service_label} — ${o.amount} Ar naverina. Mbola misy commande eo am-pandehanana amin'io lien io, andraso ho vita aloha.`,
+  });
+}
+
 // Exponential backoff (with jitter) for a queued job attempt.
 function jobBackoffMs(attempts: number) {
   const base = Math.min(60_000 * 2 ** Math.max(0, attempts - 1), 30 * 60_000);
@@ -185,6 +203,14 @@ export async function runSyncCycle(trigger: string): Promise<CycleResult> {
         failed += 1;
 
         const attempts = job.attempts + 1;
+        // Duplicate link: provider will never accept it while the first runs — refund at once.
+        if (job.kind === "submit_order" && /active order with this link/i.test(message)) {
+          const orderId = (job.payload as { order_id?: string } | null)?.order_id;
+          if (orderId) await refundDuplicateLink(db, orderId);
+          await db.from("sync_jobs").update({ status: "done", processed_at: new Date().toISOString(), last_error: message.slice(0, 500) }).eq("id", job.id);
+          notes.push(`commande ${orderId}: lien déjà actif — remboursée`);
+          continue;
+        }
         const giveUp = !limited && (attempts >= MAX_ATTEMPTS || isBlockingError(message));
         const delay = limited
           ? Math.max(e instanceof RateLimitError ? e.retryAfterMs : 60_000, 60_000)

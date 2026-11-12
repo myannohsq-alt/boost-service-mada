@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { formatAr, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { hasActiveOrderOnLink, ACTIVE_LINK_MSG } from "@/lib/active-link";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
 import { showOrderSent } from "@/components/OrderSentOverlay";
@@ -72,6 +73,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     if (!Number.isSafeInteger(quantity) || quantity < min)
       return setError(`Quantité minimum : ${min}`);
     if (insufficient) { toast.error("Solde insuffisant, veuillez recharger"); return setError("Solde insuffisant, veuillez recharger. Jereo ny commandes ao amin'ny compte-nao"); }
+    if (await hasActiveOrderOnLink(url.toString())) { toast.error(ACTIVE_LINK_MSG); return setError(ACTIVE_LINK_MSG); }
     setBusy(true);
     try {
       const { error: err } = isCustomComments
