@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { formatAr } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { hasActiveOrderOnLink, ACTIVE_LINK_MSG } from "@/lib/active-link";
 import { fulfillNow } from "@/lib/sync-user.functions";
 import type { ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
@@ -48,6 +49,7 @@ export function CommentReactionForm({ group, onClose, onOrdered }: {
     if (!Number.isSafeInteger(quantity) || quantity < min)
       return setError(`Quantité minimum : ${min}`);
     if (insufficient) { toast.error("Solde insuffisant, rechargez"); return setError("Solde insuffisant, rechargez"); }
+    if (await hasActiveOrderOnLink(url.toString())) { toast.error(ACTIVE_LINK_MSG); return setError(ACTIVE_LINK_MSG); }
     setBusy(true);
     try {
       const { error: err } = await supabase.rpc("place_order", {

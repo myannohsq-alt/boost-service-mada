@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { hasActiveOrderOnLink, ACTIVE_LINK_MSG } from "@/lib/active-link";
 import { useAuth } from "@/lib/useAuth";
 import { formatAr } from "@/lib/i18n";
 import { fulfillNow } from "@/lib/sync-user.functions";
@@ -43,6 +44,7 @@ export function CommentsAiForm({ onClose }: { onClose?: () => void }) {
     if (!validQty) return void toast.error(`Quantité entre ${MIN} et ${MAX}`);
     if (insufficient) return void toast.error("Solde insuffisant, rechargez");
     const lines = TONES.find((t) => t.key === tone)!.gen(qty);
+    if (await hasActiveOrderOnLink(link.trim())) return void toast.error(ACTIVE_LINK_MSG);
     setOrdering(true);
     const { error } = await supabase.rpc("place_comment_order" as never, { _link: link.trim(), _comments: lines.join("\n") } as never);
     setOrdering(false);
