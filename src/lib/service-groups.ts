@@ -102,4 +102,4 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
   return [...map.values()];
 }
 
-export const isClosed = (s: { badge?: string | null }) => /indispo/i.test(s.badge ?? "");
+export const isClosed = (s: { badge?: string | null | undefined }) => /indispo/i.test(s.badge ?? "");
