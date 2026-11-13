@@ -361,6 +361,7 @@ function GroupPage() {
             </button>
           </form>
           )}
+          {!ban && feeOn ? <p className="bg-card pb-1 text-center text-[10.5px] text-muted-foreground">💬 -1 Ar / message{isAdmin ? " (Admin : gratuit)" : ""}</p> : null}
           {isAdmin ? <BanAdmin /> : null}
         </section>
 

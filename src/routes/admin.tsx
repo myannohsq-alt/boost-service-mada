@@ -372,7 +372,7 @@ function AdminServices({ onDone }: { onDone: (m: string) => void }) {
                 s.badge === "indispo" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-foreground"
               }`}
             >
-              {s.badge === "indispo" ? "🔒 Indisponible" : "✅ Disponible"}
+              {s.badge === "indispo" ? "🔒 Désactivé (cliquer pour activer)" : "🔓 Activé (cliquer pour désactiver)"}
             </button>
             <button
               onClick={() => void patch(s.id, { active: !s.active })}
