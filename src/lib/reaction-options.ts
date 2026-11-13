@@ -28,8 +28,8 @@ export function reactionProviderId(key: string, name: string, invisible = false)
     ? // SMMGen instant comment reactions (12724 was removed by the provider).
       { like: "18690", love: "18691", care: "18692", haha: "18694", wow: "18693", sad: "18695", angry: "18696", "photo-love": "18691", mix: "18690" }
     : invisible
-      ? // Hidden data "Working After Update", instant, 5k/day, NO REFILL (~$0.256/1k); 18375-18381 stopped delivering.
-        { like: "18607", love: "18608", care: "18608", haha: "18611", "photo-love": "18608", wow: "18610", sad: "18612", angry: "18613", mix: "18607" }
+      ? // Invisible is temporarily routed to the fast visible products (Hidden Data providers stalled).
+        { like: "17347", love: "17348", care: "17349", haha: "17351", "photo-love": "17348", wow: "17350", sad: "17352", angry: "17353", mix: "17347" }
       : // Global Data Cheapest, instant, 50k/day, NO REFILL (~$0.074/1k).
         { like: "17347", love: "17348", care: "17349", haha: "17351", "photo-love": "17348", wow: "17350", sad: "17352", angry: "17353", mix: "17347" };
   return Object.hasOwn(ids, key) ? ids[key as ReactionKey] : null;

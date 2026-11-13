@@ -163,12 +163,19 @@ function AdminPage() {
                     <a className="rounded bg-secondary px-2 py-1 text-xs" href={o.target_link} target="_blank" rel="noreferrer">🔗 Ouvrir</a>
                   </div>
                 ) : null}
+                {(() => { const u = (data?.profiles ?? []).find((p) => p.id === o.user_id); return (
+                  <p className="text-xs">👤 <b>{u?.name || "Utilisateur"}</b> {u?.phone ? `• 📞 ${u.phone}` : ""} {u?.email ? `• ${u.email}` : ""}</p>
+                ); })()}
+                <p className="text-xs text-muted-foreground">🕒 {new Date(o.created_at).toLocaleString("fr-FR", { timeZone: "Indian/Antananarivo", dateStyle: "medium", timeStyle: "short" })}</p>
+                {o.status === "cancelled" || /rembours/i.test(o.admin_note ?? "") ? (
+                  <p className="mt-1 inline-block rounded bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">✅ EFA VITA REMBOURSEMENT</p>
+                ) : null}
                 <p className="break-all text-xs text-muted-foreground">{o.target_link}</p>
                 <p className="text-sm text-gold">
                   {o.quantity} • {formatAr(Number(o.amount))} • {o.status}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {["processing", "done", "rejected"].map((s) => (
+                  {(o.status === "cancelled" || /rembours/i.test(o.admin_note ?? "") ? [] : ["processing", "done", "rejected"]).map((s) => (
                     <button
                       key={s}
                       className="rounded-lg bg-secondary px-3 py-2 text-xs font-semibold"
@@ -183,7 +190,7 @@ function AdminPage() {
                       {s === "processing" ? "🔵 En cours" : s === "done" ? "🟢 Terminée" : "🔴 Refusée"}
                     </button>
                   ))}
-                  {!["done", "rejected", "cancelled"].includes(o.status) ? (
+                  {!["done", "rejected", "cancelled"].includes(o.status) && !/rembours/i.test(o.admin_note ?? "") ? (
                     <button
                       className="rounded-lg bg-destructive px-3 py-2 text-xs font-semibold text-destructive-foreground"
                       onClick={() => {
