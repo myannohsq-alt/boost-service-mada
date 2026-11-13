@@ -1,5 +1,4 @@
 import { Lock } from "lucide-react";
-import { isClosed } from "@/lib/service-groups";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -12,7 +11,7 @@ import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
 import { showOrderSent } from "@/components/OrderSentOverlay";
 import { privateLinkIssue, cleanPastedLink, linkKindIssue, platformMismatch } from "@/lib/link-check";
-import { FACEBOOK_GASY_KEY, type ServiceGroup } from "@/lib/service-groups";
+import { FACEBOOK_GASY_KEY, isClosed, type ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
 
 const QUICK = [100, 500, 1000, 5000];
