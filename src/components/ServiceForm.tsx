@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -10,7 +11,7 @@ import { fulfillNow } from "@/lib/sync-user.functions";
 import { REACTIONS, isReactionService, type ReactionKey } from "@/lib/reaction-options";
 import { showOrderSent } from "@/components/OrderSentOverlay";
 import { privateLinkIssue, cleanPastedLink, linkKindIssue, platformMismatch } from "@/lib/link-check";
-import { FACEBOOK_GASY_KEY, type ServiceGroup } from "@/lib/service-groups";
+import { FACEBOOK_GASY_KEY, isClosed, type ServiceGroup } from "@/lib/service-groups";
 import { ServiceBadge } from "@/components/ServiceBadge";
 
 const QUICK = [100, 500, 1000, 5000];
@@ -36,6 +37,8 @@ export function ServiceForm({ group, onClose, onOrdered }: {
   const followerVisibility = !needsReaction && !isFacebookGasy && /follower/i.test(group.nameFr)
     && group.options.some((o) => /invisible|tsy hita/i.test(o.service.name_fr));
   // Retain the existing service variant for pricing and provider mapping.
+  const invisibleClosed = (hasVisibility || followerVisibility) && !group.options.some((o) => /invisible|tsy hita/i.test(o.service.name_fr) && !isClosed(o.service));
+  const visibleClosed = (hasVisibility || followerVisibility) && !group.options.some((o) => /visible|hita/i.test(o.service.name_fr) && !/invisible|tsy hita/i.test(o.service.name_fr) && !isClosed(o.service));
   const matchingOptions = hasVisibility || followerVisibility
     ? group.options.filter((option) => visibility === "invisible"
       ? /invisible|tsy hita/i.test(option.service.name_fr)
@@ -45,6 +48,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
     (best, current) => !best || current.service.unit < best.service.unit ? current : best,
     undefined,
   )?.service;
+  const serviceClosed = !service || isClosed(service);
   const isCustomComments = /^commentaires custom/i.test(service?.name_fr ?? group.nameFr);
   const [commentsText, setCommentsText] = useState("");
   const commentLines = commentsText.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -59,7 +63,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
 
   async function submit() {
     setError(null);
-    if (!service) return setError("Service indisponible.");
+    if (!service || isClosed(service)) return setError("🔒 Service fermé temporairement.");
     let url: URL;
     const cleaned = cleanPastedLink(link);
     if (cleaned !== link) setLink(cleaned);
@@ -132,22 +136,28 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {followerVisibility && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de Followers</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
-          {([["invisible", "🕶️ Followers Invisible", "800 Ar/100"], ["visible", "👁️ Followers Visible", "300 Ar/100"]] as const).map(([v, label, price]) => <Button key={v} type="button" variant="outline"
+          {([["invisible", "🕶️ Followers Invisible", "800 Ar/100"], ["visible", "👁️ Followers Visible", "300 Ar/100"]] as const).map(([v, label, price]) => {
+            const locked = v === "invisible" ? invisibleClosed : visibleClosed;
+            return <Button key={v} type="button" variant="outline" disabled={locked}
             aria-pressed={visibility === v} onClick={() => { setVisibility(v); setError(null); }}
-            className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === v ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
-            <span>{label}</span><span className="opacity-80">{price}</span>
-          </Button>)}
+            className={`relative h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${locked ? LOCKED : visibility === v ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+            {locked ? <LockTag /> : null}
+            <span>{label}</span><span className="opacity-80">{locked ? "Fermé temporairement" : price}</span>
+          </Button>;
+          })}
         </div>
       </fieldset>}
       {hasVisibility && <fieldset>
         <legend className="text-xs text-muted-foreground">Type de Visibilité</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
-          <Button type="button" variant="outline" aria-pressed={visibility === "invisible"} onClick={() => { setVisibility("invisible"); if (reaction && !["like", "love", "haha", "mix"].includes(reaction)) setReaction(null); }}
-            className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "invisible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+          <Button type="button" variant="outline" disabled={invisibleClosed} aria-pressed={visibility === "invisible"} onClick={() => { setVisibility("invisible"); if (reaction && !["like", "love", "haha", "mix"].includes(reaction)) setReaction(null); }}
+            className={`relative h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${invisibleClosed ? LOCKED : visibility === "invisible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+            {invisibleClosed ? <LockTag /> : null}
             <span>Invisible (RAPIDE) • tsy miena 🔥</span>
+            {invisibleClosed ? <span className="text-[10px] opacity-80">Fermé temporairement</span> : null}
           </Button>
-          <Button type="button" variant="outline" aria-pressed={visibility === "visible"} onClick={() => setVisibility("visible")}
-            className={`h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "visible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
+          <Button type="button" variant="outline" disabled={visibleClosed} aria-pressed={visibility === "visible"} onClick={() => setVisibility("visible")}
+            className={`relative ${visibleClosed ? LOCKED : ""} h-auto min-h-14 min-w-0 flex-col whitespace-normal px-2 py-2 text-center text-xs ${visibility === "visible" ? "border-primary bg-primary/15 text-primary" : "border-border bg-secondary text-foreground"}`}>
             <span>Réaction visible 🚩 • (rapid)</span>
           </Button>
         </div>
@@ -190,11 +200,21 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {insufficient && <p className="text-xs text-destructive">Solde insuffisant, veuillez recharger. <Link to="/depot" className="underline">Recharger</Link></p>}
       {error && <p role="alert" className="rounded-md bg-secondary p-2 text-xs text-destructive">{error}</p>}
       <div className="space-y-2">
-        <Button type="button" disabled={busy || insufficient || !service || belowMin} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
+        <Button type="button" disabled={busy || insufficient || serviceClosed || belowMin} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
           {busy ? "Envoi…" : `Commander — ${formatAr(cost)}`}
         </Button>
         <Button type="button" variant="outline" onClick={onClose} className="bsm-btn bsm-btn-ghost w-full">Annuler</Button>
       </div>
     </>}
   </div>;
+}
+
+const LOCKED = "cursor-not-allowed border-dashed border-border bg-muted/40 text-muted-foreground opacity-70 disabled:opacity-70";
+
+function LockTag() {
+  return (
+    <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm" aria-label="Fermé">
+      <Lock className="h-3 w-3" aria-hidden="true" />
+    </span>
+  );
 }

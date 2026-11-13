@@ -77,8 +77,7 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
       map.set(key, group);
     }
 
-    if (/indispo/i.test(s.badge ?? "")) group.badge = s.badge;
-    else if (!group.badge && s.badge) group.badge = s.badge;
+    if (!group.badge && s.badge && !/indispo/i.test(s.badge)) group.badge = s.badge;
     if (!group.note && s.note) group.note = s.note;
     if (unitPrice < group.unitPrice) group.unitPrice = unitPrice;
 
@@ -88,11 +87,19 @@ export function buildServiceGroups(services: ServiceCard[]): ServiceGroup[] {
     const existing = group.options.find((o) => o.key === label);
     if (!existing) {
       group.options.push({ key: label, label, service: s });
-    } else if (s.unit < existing.service.unit) {
+    } else if (isClosed(existing.service) && !isClosed(s)) {
+      existing.service = s;
+    } else if (isClosed(s) === isClosed(existing.service) && s.unit < existing.service.unit) {
       // Keep the smallest pack so a 100-unit order stays available.
       existing.service = s;
     }
   }
 
+  // A product is closed only when every one of its variants is closed.
+  for (const g of map.values()) {
+    if (g.options.every((o) => isClosed(o.service))) g.badge = "INDISPONIBLE";
+  }
   return [...map.values()];
 }
+
+export const isClosed = (s: { badge?: string | null | undefined }) => /indispo/i.test(s.badge ?? "");
