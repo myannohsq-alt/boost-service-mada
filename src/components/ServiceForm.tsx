@@ -201,7 +201,7 @@ export function ServiceForm({ group, onClose, onOrdered }: {
       {insufficient && <p className="text-xs text-destructive">Solde insuffisant, veuillez recharger. <Link to="/depot" className="underline">Recharger</Link></p>}
       {error && <p role="alert" className="rounded-md bg-secondary p-2 text-xs text-destructive">{error}</p>}
       <div className="space-y-2">
-        <Button type="button" disabled={busy || insufficient || !service || belowMin} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
+        <Button type="button" disabled={busy || insufficient || serviceClosed || belowMin} onClick={submit} className="bsm-btn bsm-btn-primary h-12 w-full text-base font-bold">
           {busy ? "Envoi…" : `Commander — ${formatAr(cost)}`}
         </Button>
         <Button type="button" variant="outline" onClick={onClose} className="bsm-btn bsm-btn-ghost w-full">Annuler</Button>
