@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -52,9 +53,10 @@ function ServicesPage() {
       const { data } = await supabase
         .from("services")
         .select("*")
-        .eq("active", true)
         .order("sort_order");
-      return (data ?? []) as unknown as ServiceCard[];
+      // Closed services stay listed but locked, so clients see they are temporarily off.
+      return ((data ?? []) as unknown as (ServiceCard & { active: boolean })[])
+        .map((s) => (s.active ? s : { ...s, badge: "INDISPONIBLE" }));
     },
   });
 
@@ -258,13 +260,15 @@ function ServiceTile({
     <button
       onClick={onClick}
       disabled={unavailable}
-      className="group relative flex w-full flex-col rounded-2xl border border-border bg-card p-[13px] text-left transition hover:border-primary hover:shadow-[0_0_22px_-10px_var(--color-primary)] active:scale-[0.98] disabled:opacity-60"
+      className="group relative flex w-full flex-col rounded-2xl border border-border bg-card p-[13px] text-left transition hover:border-primary hover:shadow-[0_0_22px_-10px_var(--color-primary)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:grayscale-[60%] disabled:hover:border-border disabled:hover:shadow-none disabled:active:scale-100"
     >
       <div className="flex items-start justify-between gap-1">
         <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl ${ic.tone}`}>{ic.icon}</span>
         <div className="flex flex-col items-end gap-1">
           {unavailable ? (
-            <Badge className="bg-muted text-muted-foreground">INDISPONIBLE</Badge>
+            <Badge className="border border-border bg-muted text-muted-foreground">
+              <Lock className="h-2.5 w-2.5" aria-hidden="true" />INDISPONIBLE
+            </Badge>
           ) : id === 101 ? (
             <Badge className="bg-gradient-to-r from-destructive to-primary text-primary-foreground">🔥 TOP</Badge>
           ) : (
@@ -293,6 +297,7 @@ function ServiceTile({
       </p>
 
       <p className="text-base font-bold text-foreground">
+        {unavailable ? <span className="mr-1 inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground"><Lock className="h-3 w-3" aria-hidden="true" />Fermé ·</span> : null}
         {formatAr(per100)} <span className="text-[11px] font-normal text-muted-foreground">/100</span>
       </p>
 
