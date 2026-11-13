@@ -284,12 +284,6 @@ function ServiceTile({
         </div>
       </div>
 
-      {unavailable ? (
-        <span className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1 rounded-2xl bg-background/70 backdrop-blur-[1px]">
-          <span className="text-4xl">🔒</span>
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">TSY MISY ANKEHITRINY</span>
-        </span>
-      ) : null}
       <p className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-[1.2] text-foreground">{premium ? "🇲🇬 BOOST MALAGASY" : name}</p>
       <span className="mt-1.5 w-fit rounded-full border border-border bg-secondary px-2 py-0.5 text-[10.5px] text-muted-foreground">
         ID: {id}
