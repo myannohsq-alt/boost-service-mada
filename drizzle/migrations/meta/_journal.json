@@ -253,6 +253,13 @@
       "when": 1794651916910,
       "tag": "0035_recharge_modes",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1794669828544,
+      "tag": "0036_block_manual_papi_approve",
+      "breakpoints": true
     }
   ]
 }
