@@ -12,6 +12,7 @@ import { useDepositPauses, useDepositAuto } from "@/components/DepositPauseAdmin
 import { useServerFn } from "@tanstack/react-start";
 import { autoRecharge } from "@/lib/depots.functions";
 import { PauseCountdown } from "@/components/PauseCountdown";
+import { PapiDeposit } from "@/components/PapiDeposit";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -195,6 +196,7 @@ function DepotPage() {
             </p>
           </div>
 
+          <PapiDeposit />
 
           {/* --- Choix de l'opérateur --- */}
           <div className="mt-4 grid grid-cols-3 gap-2">

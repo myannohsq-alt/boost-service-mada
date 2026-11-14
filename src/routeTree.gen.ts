@@ -41,6 +41,7 @@ import { Route as ApiCommentsGenerateRouteImport } from './routes/api/comments-g
 import { Route as ApiOrangeDotphpRouteImport } from './routes/api/orange[.]php'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as ApiPublicOrderSmsRouteImport } from './routes/api/public/order-sms'
+import { Route as ApiPublicPapiWebhookRouteImport } from './routes/api/public/papi-webhook'
 import { Route as ApiPublicPushDrainRouteImport } from './routes/api/public/push-drain'
 import { Route as ApiPublicSmmgenSyncRouteImport } from './routes/api/public/smmgen-sync'
 
@@ -205,6 +206,11 @@ const ApiPublicOrderSmsRoute = ApiPublicOrderSmsRouteImport.update({
   path: '/api/public/order-sms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPapiWebhookRoute = ApiPublicPapiWebhookRouteImport.update({
+  id: '/api/public/papi-webhook',
+  path: '/api/public/papi-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPushDrainRoute = ApiPublicPushDrainRouteImport.update({
   id: '/api/public/push-drain',
   path: '/api/public/push-drain',
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
+  '/api/public/papi-webhook': typeof ApiPublicPapiWebhookRoute
   '/api/public/push-drain': typeof ApiPublicPushDrainRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
@@ -285,6 +292,7 @@ export interface FileRoutesByTo {
   '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
+  '/api/public/papi-webhook': typeof ApiPublicPapiWebhookRoute
   '/api/public/push-drain': typeof ApiPublicPushDrainRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/api/orange.php': typeof ApiOrangeDotphpRoute
   '/invite/$code': typeof InviteCodeRoute
   '/api/public/order-sms': typeof ApiPublicOrderSmsRoute
+  '/api/public/papi-webhook': typeof ApiPublicPapiWebhookRoute
   '/api/public/push-drain': typeof ApiPublicPushDrainRoute
   '/api/public/smmgen-sync': typeof ApiPublicSmmgenSyncRoute
 }
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
+    | '/api/public/papi-webhook'
     | '/api/public/push-drain'
     | '/api/public/smmgen-sync'
   fileRoutesByTo: FileRoutesByTo
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
+    | '/api/public/papi-webhook'
     | '/api/public/push-drain'
     | '/api/public/smmgen-sync'
   id:
@@ -432,6 +443,7 @@ export interface FileRouteTypes {
     | '/api/orange.php'
     | '/invite/$code'
     | '/api/public/order-sms'
+    | '/api/public/papi-webhook'
     | '/api/public/push-drain'
     | '/api/public/smmgen-sync'
   fileRoutesById: FileRoutesById
@@ -469,6 +481,7 @@ export interface RootRouteChildren {
   ApiOrangeDotphpRoute: typeof ApiOrangeDotphpRoute
   InviteCodeRoute: typeof InviteCodeRoute
   ApiPublicOrderSmsRoute: typeof ApiPublicOrderSmsRoute
+  ApiPublicPapiWebhookRoute: typeof ApiPublicPapiWebhookRoute
   ApiPublicPushDrainRoute: typeof ApiPublicPushDrainRoute
   ApiPublicSmmgenSyncRoute: typeof ApiPublicSmmgenSyncRoute
 }
@@ -699,6 +712,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOrderSmsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/papi-webhook': {
+      id: '/api/public/papi-webhook'
+      path: '/api/public/papi-webhook'
+      fullPath: '/api/public/papi-webhook'
+      preLoaderRoute: typeof ApiPublicPapiWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/push-drain': {
       id: '/api/public/push-drain'
       path: '/api/public/push-drain'
@@ -749,6 +769,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiOrangeDotphpRoute: ApiOrangeDotphpRoute,
   InviteCodeRoute: InviteCodeRoute,
   ApiPublicOrderSmsRoute: ApiPublicOrderSmsRoute,
+  ApiPublicPapiWebhookRoute: ApiPublicPapiWebhookRoute,
   ApiPublicPushDrainRoute: ApiPublicPushDrainRoute,
   ApiPublicSmmgenSyncRoute: ApiPublicSmmgenSyncRoute,
 }
