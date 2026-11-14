@@ -453,18 +453,21 @@ export type Database = {
       deposit_pauses: {
         Row: {
           auto_enabled: boolean
+          closed: boolean
           method: string
           paused_until: string | null
           updated_at: string
         }
         Insert: {
           auto_enabled?: boolean
+          closed?: boolean
           method: string
           paused_until?: string | null
           updated_at?: string
         }
         Update: {
           auto_enabled?: boolean
+          closed?: boolean
           method?: string
           paused_until?: string | null
           updated_at?: string
@@ -1680,6 +1683,13 @@ export type Database = {
         Returns: {
           method: string
           paused_until: string
+        }[]
+      }
+      get_recharge_modes: {
+        Args: never
+        Returns: {
+          closed: boolean
+          method: string
         }[]
       }
       has_role: {
