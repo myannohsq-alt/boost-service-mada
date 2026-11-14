@@ -53,19 +53,10 @@ export function PapiDeposit() {
   };
 
   return (
+    <>
     <div className="bsm-card mt-4 p-4">
       <p className="font-display text-base font-extrabold">⚡ Dépôt automatique instantané</p>
       <p className="mt-1 text-xs text-muted-foreground">Payez via Papi, votre solde est crédité dès la confirmation.</p>
-      <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-3">
-        <p className="mb-2 text-xs font-extrabold text-primary">📖 Comment payer ?</p>
-        <ol className="space-y-1.5 text-[12px] leading-snug text-muted-foreground">
-          <li><b className="text-foreground">1️⃣ Opérateur :</b> choisissez MVola, Orange Money ou Airtel Money.</li>
-          <li><b className="text-foreground">2️⃣ Montant :</b> saisissez le montant (minimum 1 000 Ar).</li>
-          <li><b className="text-foreground">3️⃣ Payer maintenant :</b> vous êtes redirigé vers la page de paiement sécurisée.</li>
-          <li><b className="text-foreground">4️⃣ Confirmez :</b> entrez votre numéro puis validez avec votre code secret Mobile Money.</li>
-          <li><b className="text-foreground">⚡ Solde crédité :</b> automatiquement dès la confirmation, sans attendre l'Admin.</li>
-        </ol>
-      </div>
       {state !== "idle" && (
         <p className="mt-3 rounded-lg border border-border p-2 text-sm font-semibold">
           {state === "pending" && "⏳ En attente de confirmation…"}
@@ -88,5 +79,16 @@ export function PapiDeposit() {
         {busy ? "Redirection…" : `Payer ${n >= 1000 ? formatAr(n) : ""} maintenant`}
       </button>
     </div>
+      <div className="bsm-card mt-5 p-4">
+        <p className="mb-2 font-semibold">📖 Comment payer ?</p>
+        <ol className="space-y-1.5 text-[12px] leading-snug text-muted-foreground">
+          <li><b className="text-foreground">1️⃣ Opérateur :</b> choisissez MVola, Orange Money ou Airtel Money.</li>
+          <li><b className="text-foreground">2️⃣ Montant :</b> saisissez le montant (minimum 1 000 Ar).</li>
+          <li><b className="text-foreground">3️⃣ Payer maintenant :</b> vous êtes redirigé vers la page de paiement sécurisée.</li>
+          <li><b className="text-foreground">4️⃣ Confirmez :</b> entrez votre numéro puis validez avec votre code secret Mobile Money.</li>
+          <li><b className="text-foreground">⚡ Solde crédité :</b> automatiquement dès la confirmation, sans attendre l'Admin.</li>
+        </ol>
+      </div>
+    </>
   );
 }
