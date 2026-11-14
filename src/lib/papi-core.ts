@@ -22,7 +22,7 @@ export async function verifyPapiSignature(rawBody: string, header: string | null
     const [k, ...rest] = item.trim().split("=");
     if (k) parts[k] = rest.join("=");
   }
-  const t = parts.t ?? "", v1 = parts.v1 ?? "";
+  const t = parts["t"] ?? "", v1 = parts["v1"] ?? "";
   if (!/^\d+$/.test(t) || !/^[0-9a-f]{64}$/.test(v1)) return false;
   if (Math.abs(nowSec - Number(t)) > 300) return false;
   const expected = await hmacHex(secret, `${t}.${rawBody}`);

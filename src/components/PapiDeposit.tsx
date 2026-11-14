@@ -41,7 +41,7 @@ export function PapiDeposit() {
 
   const n = Number(amount);
   const submit = async () => {
-    if (!Number.isInteger(n) || n < 1000 || n > 2_000_000) return toast.error("Montant entre 1 000 et 2 000 000 Ar");
+    if (!Number.isInteger(n) || n < 1000 || n > 2_000_000) { toast.error("Montant entre 1 000 et 2 000 000 Ar"); return; }
     setBusy(true);
     try {
       const out = await create({ data: { amount: n, method, origin: window.location.origin } });
