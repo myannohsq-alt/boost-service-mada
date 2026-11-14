@@ -109,7 +109,13 @@ function AdminPage() {
                 <p className="text-xs text-muted-foreground">
                   Envoi : {r.sender_phone} • Réf : {r.reference} • {r.status}
                 </p>
-                {r.status === "pending" ? (
+                {r.sender_phone === "PAPI" ? (
+                  <p className="mt-2 text-xs font-semibold text-primary">
+                    ⚡ Recharge Instantané (Papi) — crédité automatiquement uniquement si Papi confirme le paiement
+                    {r.status === "pending" ? " • ⏳ Paiement non encore reçu" : ""}
+                  </p>
+                ) : null}
+                {r.status === "pending" && r.sender_phone !== "PAPI" ? (
                   <div className="mt-3 flex gap-2">
                     <button
                       className="bsm-btn bsm-btn-primary !py-2 !text-xs"
