@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Minus, Plus, CheckCircle2, PauseCircle, Landmark, Lightbulb } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { RechargeModesAdmin } from "@/components/RechargeModes";
 
 const LABELS: Record<string, string> = { mvola: "MVola", orange: "Orange Money", airtel: "Airtel Money" };
 const STEP = 5;
@@ -74,6 +75,7 @@ export function DepositPauseAdmin() {
   return (
     <div className="mb-4 space-y-3 rounded-2xl border border-primary/50 bg-card p-4 shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_25%,transparent)]">
       <p className="flex items-center gap-2 text-sm font-bold"><Landmark className="h-5 w-5 text-primary" /> Suspendre les dépôts par opérateur</p>
+      <RechargeModesAdmin />
       <OrangeAutoToggle />
       {Object.keys(LABELS).map((m) => {
         const until = data?.[m];

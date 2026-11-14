@@ -13,6 +13,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { autoRecharge } from "@/lib/depots.functions";
 import { PauseCountdown } from "@/components/PauseCountdown";
 import { PapiDeposit } from "@/components/PapiDeposit";
+import { RechargeModePicker, useRechargeModes, type RechargeMode } from "@/components/RechargeModes";
 
 const MIN_DEPOSIT = 1000;
 const MAX_DEPOSIT = 2_000_000;
@@ -65,6 +66,15 @@ function DepotPage() {
   const [copied, setCopied] = useState(false);
   const [called, setCalled] = useState(false);
   const copyTimer = useRef<number | null>(null);
+  const { data: modes } = useRechargeModes();
+  const [mode, setMode] = useState<RechargeMode>("instant");
+  useEffect(() => {
+    if (!modes) return;
+    if (modes[mode]) {
+      const other: RechargeMode = mode === "instant" ? "manual" : "instant";
+      if (!modes[other]) setMode(other);
+    }
+  }, [modes, mode]);
 
   const active = OPERATORS.find((o) => o.id === op) ?? OPERATORS[0]!;
   const { data: pauses } = useDepositPauses();
@@ -196,8 +206,10 @@ function DepotPage() {
             </p>
           </div>
 
-          <PapiDeposit />
+          <RechargeModePicker value={mode} onChange={setMode} />
+          {mode === "instant" && <PapiDeposit />}
 
+          {mode === "manual" && (<>
           {/* --- Choix de l'opérateur --- */}
           <div className="mt-4 grid grid-cols-3 gap-2">
             {OPERATORS.map((o) => {
@@ -475,6 +487,7 @@ function DepotPage() {
               Vérifiez bien avant d'envoyer. Une référence = une seule transaction.
             </p>
           </div>
+          </>)}
 
           {/* --- Historique --- */}
           <div className="mt-6">
