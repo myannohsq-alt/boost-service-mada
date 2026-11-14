@@ -246,6 +246,13 @@
       "when": 1794449697125,
       "tag": "0034_tiktok_save_fast_provider",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1794651916910,
+      "tag": "0035_recharge_modes",
+      "breakpoints": true
     }
   ]
 }

@@ -77,7 +77,6 @@ export function PapiDeposit() {
         className="mt-3 w-full rounded-lg bg-primary p-2.5 text-sm font-extrabold text-primary-foreground disabled:opacity-60">
         {busy ? "Redirection…" : `Payer ${n >= 1000 ? formatAr(n) : ""} maintenant`}
       </button>
-      <p className="mt-2 text-center text-[11px] text-muted-foreground">Ou utilisez le dépôt manuel ci-dessous ↓</p>
     </div>
   );
 }
